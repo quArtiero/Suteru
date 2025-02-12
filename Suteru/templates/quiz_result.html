@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if result == 'correct' %}
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Parabéns!</h4>
+        <p>Resposta correta! Você ganhou pontos.</p>
+    </div>
+{% else %}
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Que pena!</h4>
+        <p>Resposta incorreta. Tente novamente.</p>
+    </div>
+{% endif %}
+<a href="{{ url_for('quizzes') }}" class="btn btn-primary">Voltar aos Quizzes</a>
+{% endblock %}

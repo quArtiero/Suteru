@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Adicionar Novo Quiz</h1>
+<form method="POST" class="mx-auto" style="max-width: 500px;">
+    <div class="form-group">
+        <label for="question">Pergunta:</label>
+        <input type="text" id="question" name="question" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="correct_answer">Resposta Correta:</label>
+        <input type="text" id="correct_answer" name="correct_answer" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="option1">Opção 1:</label>
+        <input type="text" id="option1" name="option1" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="option2">Opção 2:</label>
+        <input type="text" id="option2" name="option2" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="option3">Opção 3:</label>
+        <input type="text" id="option3" name="option3" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="option4">Opção 4:</label>
+        <input type="text" id="option4" name="option4" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="points">Pontos:</label>
+        <input type="number" id="points" name="points" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="topic">Tópico:</label>
+        <select id="topic" name="topic" class="form-control" required>
+            {% for topic in topics %}
+                <option value="{{ topic }}">{{ topic }}</option>
+            {% endfor %}
+            <option value="novo_tema">Novo Tema</option>
+        </select>
+    </div>
+    <div id="new-topic" class="form-group" style="display:none;">
+        <label for="new_topic">Novo Tópico:</label>
+        <input type="text" id="new_topic" name="new_topic" class="form-control">
+    </div>
+    <div class="form-group">
+        <label for="grade">Série:</label>
+        <select id="grade" name="grade" class="form-control" required>
+            <option value="6º ano">6º ano</option>
+            <option value="7º ano">7º ano</option>
+            <option value="8º ano">8º ano</option>
+            <option value="9º ano">9º ano</option>
+            <option value="1º ano EM">1º ano EM</option>
+            <option value="2º ano EM">2º ano EM</option>
+            <option value="3º ano EM">3º ano EM</option>
+        </select>
+    </div>
+    
+    <button type="submit" class="btn btn-success btn-block mt-4">Adicionar Quiz</button>
+</form>
+<script>
+document.getElementById('topic').addEventListener('change', function() {
+    var newTopic = document.getElementById('new-topic');
+    if (this.value === 'novo_tema') {
+        newTopic.style.display = 'block';
+    } else {
+        newTopic.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

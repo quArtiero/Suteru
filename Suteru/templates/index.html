@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="fullscreen-logo-container">
+    <!-- Logo centralizado e expandido -->
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo Šutēru" class="logo-fullscreen">
+    <!-- Texto de apoio -->
+    <p class="lead">Transforme conhecimento em doações de alimentos.</p>
+    <!-- Mostrar o total de kg já doados -->
+    <p class="lead"><strong>Total de alimentos doados: {{ total_kg_donated }} kg</strong></p>
+    <!-- Botões de ação -->
+    <div class="button-group">
+        <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">Login</a>
+        <a href="{{ url_for('register') }}" class="btn btn-success btn-lg">Registrar-se</a>
+    </div>
+</div>
+{% endblock %}

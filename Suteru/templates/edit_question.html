@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Editar Pergunta</h1>
+<form method="POST" class="mx-auto" style="max-width: 600px;">
+    <div class="form-group">
+        <label for="question">Pergunta:</label>
+        <textarea id="question" name="question" class="form-control" required>{{ question[1] }}</textarea>
+    </div>
+    <div class="form-group">
+        <label for="correct_answer">Resposta Correta:</label>
+        <input type="text" id="correct_answer" name="correct_answer" class="form-control" value="{{ question[2] }}" required>
+    </div>
+    <div class="form-group">
+        <label for="option1">Opção 1:</label>
+        <input type="text" id="option1" name="option1" class="form-control" value="{{ question[3] }}" required>
+    </div>
+    <div class="form-group">
+        <label for="option2">Opção 2:</label>
+        <input type="text" id="option2" name="option2" class="form-control" value="{{ question[4] }}" required>
+    </div>
+    <div class="form-group">
+        <label for="option3">Opção 3:</label>
+        <input type="text" id="option3" name="option3" class="form-control" value="{{ question[5] }}" required>
+    </div>
+    <div class="form-group">
+        <label for="option4">Opção 4:</label>
+        <input type="text" id="option4" name="option4" class="form-control" value="{{ question[6] }}" required>
+    </div>
+    <div class="form-group">
+        <label for="points">Pontos:</label>
+        <input type="number" id="points" name="points" class="form-control" value="{{ question[7] }}" required>
+    </div>
+    <div class="form-group">
+        <label for="topic">Tópico:</label>
+        <select id="topic" name="topic" class="form-control" required>
+            {% for topic in topics %}
+                <option value="{{ topic }}" {% if topic == question[8] %}selected{% endif %}>{{ topic }}</option>
+            {% endfor %}
+            <option value="novo_tema">Novo Tópico</option>
+        </select>
+    </div>
+    <div id="new-topic" class="form-group" style="display: none;">
+        <label for="new_topic">Novo Tópico:</label>
+        <input type="text" id="new_topic" name="new_topic" class="form-control">
+    </div>
+    <div class="form-group">
+        <label for="grade">Série:</label>
+        <select id="grade" name="grade" class="form-control" required>
+            {% for grade in grades %}
+                <option value="{{ grade }}" {% if grade == question[9] %}selected{% endif %}>{{ grade }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn btn-success btn-block mt-4">Atualizar Pergunta</button>
+</form>
+<script>
+    document.getElementById('topic').addEventListener('change', function () {
+        var newTopicField = document.getElementById('new-topic');
+        if (this.value === 'novo_tema') {
+            newTopicField.style.display = 'block';
+        } else {
+            newTopicField.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Escolha seu Tópico</h1>
+<div class="row">
+    {% for t in topics %}
+    <div class="col-md-4 my-2">
+        <a href="{{ url_for('select_difficulty', topic=t) }}" class="btn btn-secondary btn-block btn-lg">{{ t }}</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

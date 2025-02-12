@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Revisar Perguntas Sugeridas</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Pergunta</th>
+            <th>Resposta Correta</th>
+            <th>Opções</th>
+            <th>Tópico</th>
+            <th>Série</th>
+            <th>Pontos</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for suggestion in suggestions %}
+        <tr>
+            <td>{{ suggestion[0] }}</td>
+            <td>{{ suggestion[1] }}</td>
+            <td>{{ suggestion[2] }}</td>
+            <td>{{ suggestion[3] }}, {{ suggestion[4] }}, {{ suggestion[5] }}, {{ suggestion[6] }}</td>
+            <td>{{ suggestion[7] }}</td>
+            <td>{{ suggestion[8] }}</td>
+            <td>{{ suggestion[9] }}</td>
+            <td>
+                <a href="{{ url_for('approve_suggestion', suggestion_id=suggestion[0]) }}" class="btn btn-sm btn-success">Aprovar</a>
+                <a href="{{ url_for('reject_suggestion', suggestion_id=suggestion[0]) }}" class="btn btn-sm btn-danger">Rejeitar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

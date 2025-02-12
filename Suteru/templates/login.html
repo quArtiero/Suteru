@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Login</h1>
+<form method="POST" class="mx-auto" style="max-width: 500px;">
+    <!-- Campo para nome de usuário ou e-mail -->
+    <div class="form-group">
+        <label for="username_or_email">Usuário ou E-mail:</label>
+        <input type="text" id="username_or_email" name="username_or_email" class="form-control" required>
+    </div>
+    <!-- Campo para senha -->
+    <div class="form-group">
+        <label for="password">Senha:</label>
+        <input type="password" id="password" name="password" class="form-control" required>
+    </div>
+    <!-- Botão de submissão -->
+    <button type="submit" class="btn btn-primary btn-block mt-4">Entrar</button>
+</form>
+<p class="mt-3 text-center">
+    Não possui uma conta? <a href="{{ url_for('register') }}">Registre-se aqui</a>.
+</p>
+
+{% endblock %}
