@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Gerenciamento de Perguntas</h1>
+<p>Total de Perguntas: {{ total_quizzes }}</p>
+
+<!-- Formulário de Filtros -->
+<form method="GET" action="{{ url_for('admin_quizzes') }}">
+    <div class="form-group">
+        <label for="topic">Filtrar por Tópico:</label>
+        <select id="topic" name="topic" class="form-control">
+            <option value="">Todos</option>
+            {% for topic in topics %}
+            <option value="{{ topic }}">{{ topic }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="grade">Filtrar por Série:</label>
+        <select id="grade" name="grade" class="form-control">
+            <option value="">Todas</option>
+            {% for grade in grades %}
+            <option value="{{ grade }}">{{ grade }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Filtrar</button>
+</form>
+
+<!-- Lista de Perguntas -->
+<form method="POST" action="{{ url_for('delete_selected_questions') }}">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th><input type="checkbox" id="select-all"></th>
+                <th>ID</th>
+                <th>Pergunta</th>
+                <th>Tópico</th>
+                <th>Série</th>
+                <th>Pontos</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for quiz in quizzes %}
+            <tr class="{% if quiz in duplicates %} table-warning {% endif %}">
+                <td><input type="checkbox" name="selected_questions" value="{{ quiz[0] }}"></td>
+                <td>{{ quiz[0] }}</td>
+                <td>{{ quiz[1] }}</td>
+                <td>{{ quiz[7] }}</td> <!-- Tópico -->
+                <td>{{ quiz[8] }}</td> <!-- Série -->
+                <td>{{ quiz[6] }}</td> <!-- Pontos -->
+                <td>
+                    <a href="{{ url_for('edit_question', question_id=quiz[0]) }}" class="btn btn-sm btn-primary">Editar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button type="submit" class="btn btn-danger">Deletar Selecionadas</button>
+</form>
+
+<!-- Botão para Deletar Duplicatas -->
+<form method="POST" action="{{ url_for('delete_duplicates') }}">
+    <button type="submit" class="btn btn-danger">Deletar Duplicatas</button>
+</form>
+
+<script>
+    document.getElementById('select-all').addEventListener('change', function() {
+        var checkboxes = document.querySelectorAll('input[name="selected_questions"]');
+        for (var checkbox of checkboxes) {
+            checkbox.checked = this.checked;
+        }
+    });
+</script>
+{% endblock %}

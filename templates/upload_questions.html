@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Upload de Perguntas em Massa</h1>
+<form method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 600px;">
+    <div class="form-group">
+        <label for="csv_file">Arquivo CSV:</label>
+        <input type="file" id="csv_file" name="csv_file" accept=".csv" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Fazer Upload</button>
+</form>
+
+<hr>
+
+<h3>Instruções para o Arquivo CSV</h3>
+<p>O arquivo CSV deve seguir o seguinte formato e ordem de colunas:</p>
+<ol>
+    <li><strong>question</strong>: Texto da pergunta.</li>
+    <li><strong>correct_answer</strong>: Resposta correta.</li>
+    <li><strong>option1</strong>: Opção de resposta 1.</li>
+    <li><strong>option2</strong>: Opção de resposta 2.</li>
+    <li><strong>option3</strong>: Opção de resposta 3.</li>
+    <li><strong>option4</strong>: Opção de resposta 4.</li>
+    <li><strong>points</strong>: Pontuação atribuída à pergunta (número inteiro).</li>
+    <li><strong>topic</strong>: Tópico ao qual a pergunta pertence.</li>
+    <li><strong>grade</strong>: Série escolar correspondente (e.g., "6º ano", "1º ano EM").</li>
+</ol>
+<p>Cada linha do arquivo CSV deve representar uma pergunta, seguindo exatamente essa ordem de colunas. As colunas devem estar separadas por vírgula (,) e, se houver vírgulas no texto, certifique-se de que o campo esteja entre aspas.</p>
+
+<h4>Exemplo de Linha CSV:</h4>
+<pre>
+"Qual é a capital da França?","Paris","Paris","Londres","Berlim","Roma",10,"Geografia","6º ano"
+</pre>
+
+<p>Certifique-se também de que o arquivo esteja salvo com codificação <strong>UTF-8</strong> para suportar caracteres especiais.</p>
+
+<p>Você pode baixar um modelo de arquivo CSV <a href="{{ url_for('download_csv_template') }}">aqui</a>.</p>
+
+{% endblock %}

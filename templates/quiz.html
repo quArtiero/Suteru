@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{ quiz[1] }}</h1>
+<form method="POST">
+    <div class="list-group">
+        <button type="submit" name="answer" value="{{ quiz[3] }}" class="list-group-item list-group-item-action">{{ quiz[3] }}</button>
+        <button type="submit" name="answer" value="{{ quiz[4] }}" class="list-group-item list-group-item-action">{{ quiz[4] }}</button>
+        <button type="submit" name="answer" value="{{ quiz[5] }}" class="list-group-item list-group-item-action">{{ quiz[5] }}</button>
+        <button type="submit" name="answer" value="{{ quiz[6] }}" class="list-group-item list-group-item-action">{{ quiz[6] }}</button>
+    </div>
+</form>
+<a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-block mt-4">Encerrar Quiz</a>
+{% endblock %}
