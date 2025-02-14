@@ -1,25 +1,73 @@
 import psycopg2
 import os
-from flask import session
+from flask import session, flash
 from werkzeug.security import generate_password_hash
 
 POINTS_TO_KG = 10  # This configures the number of points to kg
 
 
+class PostgresConnectionFactory:
+    _connection = None  # Stores a single connection instance
+
+    @staticmethod
+    def get_connection():
+        """Returns an existing connection or creates a new one if needed."""
+        if (
+            PostgresConnectionFactory._connection is None
+            or PostgresConnectionFactory._connection.closed
+        ):
+            return PostgresConnectionFactory._create_new_connection()
+
+        # Check if the connection is still alive
+        try:
+            with PostgresConnectionFactory._connection.cursor() as cursor:
+                cursor.execute("SELECT 1;")  # Test query
+        except psycopg2.Error:
+            print("Connection lost, reconnecting...")
+            return PostgresConnectionFactory._create_new_connection()
+
+        return PostgresConnectionFactory._connection
+
+    @staticmethod
+    def _create_new_connection():
+        """Creates a new database connection."""
+        try:
+            PostgresConnectionFactory._connection = psycopg2.connect(
+                os.environ["internal_db_url"]
+            )
+            print("New database connection established.")
+        except psycopg2.Error as e:
+            print(f"Database connection error: {e}")
+            PostgresConnectionFactory._connection = (
+                None  # Prevent usage of an invalid connection
+            )
+        return PostgresConnectionFactory._connection
+
+
 def get_topics():
-    with psycopg2.connect(os.environ["internal_db_url"]) as conn:
+    conn = PostgresConnectionFactory.get_connection()
+    try:
         c = conn.cursor()
         with conn.cursor() as c:
             c.execute("SELECT DISTINCT topic FROM quizzes")
             topics = [row[0] for row in c.fetchall()]
-    return topics
+        return topics
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
 
 
 def get_grades_for_topic(topic):
-    with psycopg2.connect(os.environ["internal_db_url"]) as conn:
+    conn = PostgresConnectionFactory.get_connection()
+    try:
         with conn.cursor() as c:
             c.execute("SELECT DISTINCT grade FROM quizzes WHERE topic = %s", (topic,))
             grades = [row[0] for row in c.fetchall()]
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
+        return None
+
     grade_order = [
         "6º ano",
         "7º ano",
@@ -37,19 +85,24 @@ def get_grades_for_topic(topic):
 
 def get_user_role():
     if "user_id" in session:
-        with psycopg2.connect(os.environ["internal_db_url"]) as conn:
+        conn = PostgresConnectionFactory.get_connection()
+        try:
             with conn.cursor() as c:
                 c = conn.cursor()
                 c.execute("SELECT role FROM users WHERE id = %s", (session["user_id"],))
                 result = c.fetchone()
 
                 role = result[0] if result else None
-        return role
+                return role
+        except psycopg2.Error as e:
+            print(f"Database connection error: {e}")
+            conn.rollback()
     return None
 
 
 def get_user(username, email=None):
-    with psycopg2.connect(os.environ["internal_db_url"]) as conn:
+    conn = conn = PostgresConnectionFactory.get_connection()
+    try:
         with conn.cursor() as c:
             if email is not None:
                 c.execute(
@@ -59,26 +112,31 @@ def get_user(username, email=None):
             else:
                 c.execute("SELECT * FROM users WHERE username = %s", (username,))
             return c.fetchone()
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
 
 
 def get_all_user_points():
     db_error = False
     data = {"total_points": 0, "total_kg_donated": 0}
+    conn = PostgresConnectionFactory.get_connection()
     try:
-        with psycopg2.connect(os.environ["internal_db_url"]) as conn:
-            with conn.cursor() as c:
-                c.execute("SELECT SUM(points) FROM user_points")
-                data["total_points"] = c.fetchone()[0] or 0
-                data["total_kg_donated"] = data["total_points"] // POINTS_TO_KG
-    except psycopg2.DatabaseError as e:
-        print(f"Erro no banco de dados: {e}")
+        with conn.cursor() as c:
+            c.execute("SELECT SUM(points) FROM user_points")
+            data["total_points"] = c.fetchone()[0] or 0
+            data["total_kg_donated"] = data["total_points"] // POINTS_TO_KG
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
         db_error = True
 
     return db_error, data
 
 
 def get_user_points(user_id):
-    with psycopg2.connect(os.environ["internal_db_url"]) as conn:
+    conn = PostgresConnectionFactory.get_connection()
+    try:
         with conn.cursor() as c:
             c.execute(
                 "SELECT SUM(points) FROM user_points " "WHERE user_id = %s",
@@ -87,23 +145,37 @@ def get_user_points(user_id):
             total_points = c.fetchone()[0] or 0
             food_donation = total_points // POINTS_TO_KG
             return total_points, food_donation
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
+        return 0, 0
 
 
 def update_user_role(username, role):
-    with psycopg2.connect(os.environ["internal_db_url"]) as conn:
+    conn = PostgresConnectionFactory.get_connection()
+    try:
         with conn.cursor() as c:
             c.execute("UPDATE users SET role = ? WHERE username = ?", (role, username))
             conn.commit()
             print(f"O usuário '{username}' agora é um administrador.")
+            return True
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
+        return False
 
 
 def delete_selected_questions_db(selected_questions):
-    with psycopg2.connect(os.environ["internal_db_url"]) as conn:
+    conn = PostgresConnectionFactory.get_connection()
+    try:
         with conn.cursor() as c:
             placeholders = ",".join("%s" for _ in selected_questions)
             query = f"DELETE FROM quizzes WHERE id IN ({placeholders})"
             c.execute(query, selected_questions)
             conn.commit()
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
 
 
 def create_new_user(username, email, password):
@@ -113,7 +185,8 @@ def create_new_user(username, email, password):
     # In order to set a user as admin, an admin that was created when the site is created
     # should change the role manually of said user, preferably using a page dedicated to
     # admins
-    with psycopg2.connect(os.environ["internal_db_url"]) as conn:
+    conn = PostgresConnectionFactory.get_connection()
+    try:
         with conn.cursor() as c:
             c.execute(
                 "INSERT INTO users (username, email, password, role) "
@@ -121,6 +194,9 @@ def create_new_user(username, email, password):
                 (username, email, hashed_password, "user"),
             )
             conn.commit()
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
 
 
 def add_quiz_db(request):
@@ -136,7 +212,8 @@ def add_quiz_db(request):
         topic = request.form["new_topic"]
     grade = request.form["grade"]
 
-    with psycopg2.connect(os.environ["internal_db_url"]) as conn:
+    conn = PostgresConnectionFactory.get_connection()
+    try:
         with conn.cursor() as c:
             c.execute(
                 """
@@ -158,15 +235,19 @@ def add_quiz_db(request):
                 ),
             )
             conn.commit()
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
 
 
 def get_specific_quiz(quiz_id, user_id, answer):
-    with psycopg2.connect(os.environ["internal_db_url"]) as conn:
+    conn = PostgresConnectionFactory.get_connection()
+    try:
         with conn.cursor() as c:
             c.execute("SELECT * FROM quizzes WHERE id = %s", (quiz_id,))
             quiz = c.fetchone()
 
-            is_correct = answer == quiz[2]
+            is_correct = 1 if (answer == quiz[2]) else 0
             points = quiz[9] if is_correct else 0
 
             c.execute(
@@ -177,10 +258,14 @@ def get_specific_quiz(quiz_id, user_id, answer):
             )
             conn.commit()
             return is_correct, quiz
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
 
 
 def get_random_quiz(user_id, topic, grade):
-    with psycopg2.connect(os.environ["internal_db_url"]) as conn:
+    conn = PostgresConnectionFactory.get_connection()
+    try:
         with conn.cursor() as c:
             c.execute(
                 """
@@ -197,10 +282,14 @@ def get_random_quiz(user_id, topic, grade):
             )
             quiz = c.fetchone()
             return quiz
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
 
 
 def get_leaderboard():
-    with psycopg2.connect(os.environ["internal_db_url"]) as conn:
+    conn = PostgresConnectionFactory.get_connection()
+    try:
         with conn.cursor() as c:
             c.execute(
                 """
@@ -215,6 +304,9 @@ def get_leaderboard():
             )
             leaderboard = c.fetchall()
             return leaderboard
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
 
 
 def create_suggestion(request):
@@ -228,7 +320,8 @@ def create_suggestion(request):
     topic = request.form["topic"]
     grade = request.form["grade"]
 
-    with psycopg2.connect(os.environ["internal_db_url"]) as conn:
+    conn = PostgresConnectionFactory.get_connection()
+    try:
         with conn.cursor() as c:
             c.execute(
                 """
@@ -248,26 +341,43 @@ def create_suggestion(request):
                 ),
             )
             conn.commit()
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
 
 
 def execute_fetch(*args):
-    with psycopg2.connect(os.environ["internal_db_url"]) as conn:
+    conn = PostgresConnectionFactory.get_connection()
+    try:
         with conn.cursor() as c:
-            return c.execute(args).fetchall()
+            c.execute(*args)
+            try:
+                tmp = c.fetchall()
+            except psycopg2.ProgrammingError:
+                tmp = []
+            return tmp
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
 
 
 def execute_commit(*args, **kwargs):
-    with psycopg2.connect(os.environ["internal_db_url"]) as conn:
+    conn = PostgresConnectionFactory.get_connection()
+    try:
         with conn.cursor() as c:
             if kwargs.get("many", False):
-                c.executemany(args)
+                c.executemany(*args)
             else:
-                c.execute(args)
+                c.execute(*args)
             conn.commit()
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
 
 
 def upload_questions_db(csv_input):
-    with psycopg2.connect(os.environ["internal_db_url"]) as conn:
+    conn = PostgresConnectionFactory.get_connection()
+    try:
         with conn.cursor() as c:
             for idx, row in enumerate(csv_input):
                 if len(row) != 9:
@@ -282,12 +392,15 @@ def upload_questions_db(csv_input):
                     tuple(row),
                 )
         conn.commit()
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
 
 
 def create_database():
     # Verifica se o arquivo de banco de dados já existe e o remove
     # Conecta ao banco de dados (será criado um novo)
-    conn = psycopg2.connect(os.environ["internal_db_url"])
+    conn = PostgresConnectionFactory.get_connection()
     c = conn.cursor()
 
     # Criação da tabela de usuários com a coluna 'email'
@@ -364,5 +477,4 @@ def create_database():
     print("Tabela 'user_points' criada com sucesso.")
 
     conn.commit()
-    conn.close()
     print("Banco de dados criado e todas as tabelas foram configuradas com sucesso.")

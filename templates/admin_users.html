@@ -5,13 +5,21 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th><a href="{{ url_for('admin_users', sort='username', order='asc' if sort_column != 'username' or sort_order == 'desc' else 'desc') }}">Usuário</a></th>
+            <th><a
+                    href="{{ url_for('admin_users', sort='username', order='asc' if sort_column != 'username' or sort_order == 'desc' else 'desc') }}">Usuário</a>
+            </th>
             <th>Email</th>
             <th>Papel</th>
-            <th><a href="{{ url_for('admin_users', sort='total_points', order='asc' if sort_column != 'total_points' or sort_order == 'desc' else 'desc') }}">Pontos</a></th>
+            <th><a
+                    href="{{ url_for('admin_users', sort='total_points', order='asc' if sort_column != 'total_points' or sort_order == 'desc' else 'desc') }}">Pontos</a>
+            </th>
             <th>Quilos Doados</th>
-            <th><a href="{{ url_for('admin_users', sort='accuracy_rate', order='asc' if sort_column != 'accuracy_rate' or sort_order == 'desc' else 'desc') }}">Taxa de Acerto (%)</a></th>
-            <th><a href="{{ url_for('admin_users', sort='register_date', order='asc' if sort_column != 'register_date' or sort_order == 'desc' else 'desc') }}">Data de Registro</a></th>
+            <th><a
+                    href="{{ url_for('admin_users', sort='accuracy_rate', order='asc' if sort_column != 'accuracy_rate' or sort_order == 'desc' else 'desc') }}">Taxa
+                    de Acerto (%)</a></th>
+            <th><a
+                    href="{{ url_for('admin_users', sort='register_date', order='asc' if sort_column != 'register_date' or sort_order == 'desc' else 'desc') }}">Data
+                    de Registro</a></th>
             <th>Ações</th>
         </tr>
     </thead>
@@ -27,9 +35,15 @@
             <td>{{ "%.2f"|format(user[6]) }}</td>
             <td>{{ user[7] }}</td>
             <td>
-                <a href="{{ url_for('promote_user', user_id=user[0]) }}" class="btn btn-sm btn-success">Promover</a>
-                <a href="{{ url_for('demote_user', user_id=user[0]) }}" class="btn btn-sm btn-warning">Demover</a>
-                <a href="{{ url_for('delete_user', user_id=user[0]) }}" class="btn btn-sm btn-danger">Excluir</a>
+                <form action="{{ url_for('promote_user', user_id=user[0]) }}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-success">Promover</button>
+                </form>
+                <form action="{{ url_for('demote_user', user_id=user[0]) }}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-warning">Demover</button>
+                </form>
+                <form action="{{ url_for('delete_user', user_id=user[0]) }}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                </form>
             </td>
         </tr>
         {% endfor %}
