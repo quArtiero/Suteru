@@ -318,15 +318,19 @@ def leaderboard():
     return render_template("leaderboard.html", leaderboard=leaderboard)
 
 
-@app.route("/suggest_question", methods=["POST"])
+@app.route("/suggest_question", methods=["GET", "POST"])
 def suggest_question():
-    if "user_id" in session:
-        database.create_suggestion(request)
-        flash("Sugestão enviada para revisão!", "success")
-        return redirect(url_for("dashboard"))
-    else:
-        flash("Você precisa estar logado.", "warning")
-        return redirect(url_for("login"))
+    if request.method == "POST":
+        if "user_id" in session:
+            database.create_suggestion(request)
+            flash("Sugestão enviada para revisão!", "success")
+            return redirect(url_for("dashboard"))
+        else:
+            flash("Você precisa estar logado.", "warning")
+            return redirect(url_for("login"))
+
+    if request.method == "GET":
+        return render_template("suggest_question.html")
 
 
 @app.route("/admin/quizzes")
@@ -535,18 +539,27 @@ def admin_dashboard():
     if "user_id" in session:
         role = database.get_user_role()
         if role == "admin":
+
             kg_per_day = database.execute_fetch(
                 "SELECT date(timestamp) as date, "
                 f"SUM(points)/{database.POINTS_TO_KG} as kg_donated FROM user_points "
                 "GROUP BY date(timestamp) ORDER BY date(timestamp) "
                 "DESC LIMIT 7"
             )
+            if kg_per_day is None:
+                kg_per_day = 0
 
-            total_users = database.execute_fetch("SELECT COUNT(*) FROM users")[0][0]
+            total_users = database.execute_fetch("SELECT COUNT(*) FROM users")
+            if total_users is None:
+                total_users = 0
+            else:
+                total_users = total_users[0][0]
 
-            total_quizzes = database.execute_fetch("SELECT COUNT(*) FROM user_points")[0][
-                0
-            ]
+            total_quizzes = database.execute_fetch("SELECT COUNT(*) FROM user_points")
+            if total_quizzes is None:
+                total_quizzes = 0
+            else:
+                total_quizzes = total_quizzes[0][0]
 
             quizzes = database.execute_fetch("SELECT * FROM quizzes")
 
@@ -671,7 +684,10 @@ def admin_users():
                 SELECT u.id, u.username, u.email, u.role, 
                        COALESCE(SUM(up.points), 0) as total_points,
                        COALESCE(SUM(up.points) / 10, 0) as total_kg_donated,
-                       COALESCE(SUM(CASE WHEN up.is_correct = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(up.id), 0) as accuracy_rate,
+                       CASE 
+                          WHEN COUNT(up.id) = 0 THEN 0
+                          ELSE ROUND(SUM(CASE WHEN up.is_correct = 1 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(up.id), 0), 2)
+                       END AS accuracy_rate,
                        u.register_date
                 FROM users u
                 LEFT JOIN user_points up ON u.id = up.user_id
@@ -685,6 +701,77 @@ def admin_users():
                 sort_column=sort_column,
                 sort_order=sort_order,
             )
+        else:
+            flash(
+                "Acesso negado. Você não tem permissão para acessar esta página.",
+                "danger",
+            )
+            return redirect(url_for("dashboard"))
+    else:
+        flash("Você precisa estar logado.", "warning")
+        return redirect(url_for("login"))
+
+
+@app.route("/admin/users/promote/<int:user_id>", methods=["POST"])
+def promote_user(user_id):
+    if "user_id" in session:
+        role = database.get_user_role()
+        if role == "admin":
+            database.execute_commit(
+                f"""update users
+                    set role = 'admin'
+                    where id = '{user_id}'
+                """
+            )
+            flash("Cargo do usuário alterado para administrador", "success")
+            return redirect(url_for("admin_users"))
+        else:
+            flash(
+                "Acesso negado. Você não tem permissão para acessar esta página.",
+                "danger",
+            )
+            return redirect(url_for("dashboard"))
+    else:
+        flash("Você precisa estar logado.", "warning")
+        return redirect(url_for("login"))
+
+
+@app.route("/admin/users/demote/<int:user_id>", methods=["POST"])
+def demote_user(user_id):
+    if "user_id" in session:
+        role = database.get_user_role()
+        if role == "admin":
+            database.execute_commit(
+                f"""update users
+                    set role = 'user'
+                    where id = '{user_id}'
+                """
+            )
+            flash("Permissões de administrador do usuário revogadas", "success")
+            return redirect(url_for("admin_users"))
+        else:
+            flash(
+                "Acesso negado. Você não tem permissão para acessar esta página.",
+                "danger",
+            )
+            return redirect(url_for("dashboard"))
+    else:
+        flash("Você precisa estar logado.", "warning")
+        return redirect(url_for("login"))
+
+
+@app.route("/admin/users/delete/<int:user_id>", methods=["POST"])
+def delete_user(user_id):
+    if "user_id" in session:
+        role = database.get_user_role()
+        if role == "admin":
+            database.execute_commit(
+                f"""delete from users
+                    where id = '{user_id}'
+                """
+            )
+            flash("Usuário deletado", "success")
+            return redirect(url_for("admin_users"))
         else:
             flash(
                 "Acesso negado. Você não tem permissão para acessar esta página.",
