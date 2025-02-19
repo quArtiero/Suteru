@@ -91,6 +91,7 @@ main {
 /* Texto de apoio */
 .lead {
 	font-size: 1.5rem;
+	align-items: center;
 	margin-bottom: 30px;
 	color: var(--text-color);
 }
