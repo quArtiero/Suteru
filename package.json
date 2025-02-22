@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "katex": "^0.16.21",
+    "quill": "^2.0.3",
+    "quill-better-table": "^1.2.10",
+    "react-quill": "^2.0.0"
+  }
+}

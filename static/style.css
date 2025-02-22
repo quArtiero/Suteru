@@ -212,3 +212,128 @@ form {
 			font-size: 1.2rem;
 	}
 }
+
+/* Estilos do Quill Editor - ADICIONADO */
+.ql-editor {
+    min-height: 120px;
+    background: white;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+.ql-container.ql-snow {
+    border: 1px solid #dee2e6;
+    margin-bottom: 1rem;
+}
+
+.ql-toolbar.ql-snow {
+    border: 1px solid #dee2e6;
+    background: #f8f9fa;
+}
+
+.question-content .ql-editor,
+.options-list .ql-editor {
+    min-height: auto;
+    border: none;
+    padding: 0.5rem;
+}
+
+.katex {
+    font-size: inherit;
+}
+
+.ql-editor img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Estilos do Quiz - ATUALIZADO com tons de azul */
+.question-content {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.1);
+    border: 1px solid rgba(13, 110, 253, 0.1);
+}
+
+.options-list .form-check {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.options-list .form-check:hover {
+    background: #e7f1ff;
+    border-color: #0d6efd;
+}
+
+.options-list .form-check-input:checked + .form-check-label {
+    color: #0d6efd;
+}
+
+.options-list .form-check-input:checked ~ .form-check {
+    background: #e7f1ff;
+    border-color: #0d6efd;
+}
+
+.options-list .form-check-label {
+    width: 100%;
+    padding-left: 12px;
+    cursor: pointer;
+}
+
+/* Estilos do Quill no Quiz */
+.question-content .ql-editor {
+    min-height: auto;
+    padding: 0;
+    font-size: 1.2rem;
+    color: #0a58ca;
+    font-weight: 500;
+}
+
+.options-list .ql-editor {
+    min-height: auto;
+    padding: 0;
+    color: #495057;
+}
+
+/* Fórmulas matemáticas no Quiz */
+.katex {
+    font-size: 1.1em;
+}
+
+/* Botão de responder */
+.quiz-submit-btn {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    padding: 10px 24px;
+    font-size: 1rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    color: white;
+    font-weight: 500;
+}
+
+.quiz-submit-btn:hover {
+    background-color: #0a58ca;
+    border-color: #0a58ca;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+}
+
+/* Card do Quiz */
+.quiz-card {
+    border: none;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.1);
+    border-radius: 12px;
+}
+
+.quiz-card .card-body {
+    padding: 2rem;
+}

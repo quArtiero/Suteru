@@ -1,13 +1,81 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
 {% block content %}
-<h1>{{ quiz[1] }}</h1>
-<form method="POST">
-    <div class="list-group">
-        <button type="submit" name="answer" value="{{ quiz[3] }}" class="list-group-item list-group-item-action">{{ quiz[3] }}</button>
-        <button type="submit" name="answer" value="{{ quiz[4] }}" class="list-group-item list-group-item-action">{{ quiz[4] }}</button>
-        <button type="submit" name="answer" value="{{ quiz[5] }}" class="list-group-item list-group-item-action">{{ quiz[5] }}</button>
-        <button type="submit" name="answer" value="{{ quiz[6] }}" class="list-group-item list-group-item-action">{{ quiz[6] }}</button>
+<div class="container mt-4">
+    {% if quiz %}
+    <div class="card quiz-card">
+        <div class="card-body">
+            <!-- Questão -->
+            <div class="question-content mb-4">
+                <div class="ql-snow">
+                    <div class="ql-editor">
+                        {{ quiz[1] | safe }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Opções - Apenas as 4 alternativas -->
+            <form method="POST">
+                <div class="options-list">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="answer" value="{{ quiz[3] }}" id="option1" required>
+                        <label class="form-check-label" for="option1">
+                            <div class="ql-snow">
+                                <div class="ql-editor">
+                                    {{ quiz[3] | safe }}
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="answer" value="{{ quiz[4] }}" id="option2" required>
+                        <label class="form-check-label" for="option2">
+                            <div class="ql-snow">
+                                <div class="ql-editor">
+                                    {{ quiz[4] | safe }}
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="answer" value="{{ quiz[5] }}" id="option3" required>
+                        <label class="form-check-label" for="option3">
+                            <div class="ql-snow">
+                                <div class="ql-editor">
+                                    {{ quiz[5] | safe }}
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="answer" value="{{ quiz[6] }}" id="option4" required>
+                        <label class="form-check-label" for="option4">
+                            <div class="ql-snow">
+                                <div class="ql-editor">
+                                    {{ quiz[6] | safe }}
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn quiz-submit-btn">Responder</button>
+            </form>
+        </div>
     </div>
-</form>
-<a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-block mt-4">Encerrar Quiz</a>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.ql-formula').forEach(function(formula) {
+        katex.render(formula.getAttribute('data-value'), formula, {
+            throwOnError: false
+        });
+    });
+});
+</script>
 {% endblock %}

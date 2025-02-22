@@ -3,28 +3,34 @@
 <h1>Editar Pergunta</h1>
 <form method="POST" class="mx-auto" style="max-width: 600px;">
     <div class="form-group">
-        <label for="question">Pergunta:</label>
-        <textarea id="question" name="question" class="form-control" required>{{ question[1] }}</textarea>
+        <label for="question">Pergunta</label>
+        <div id="question-editor"></div>
+        <input type="hidden" name="question">
     </div>
     <div class="form-group">
-        <label for="correct_answer">Resposta Correta:</label>
-        <input type="text" id="correct_answer" name="correct_answer" class="form-control" value="{{ question[2] }}" required>
+        <label for="correct_answer">Resposta Correta</label>
+        <div id="correct-answer-editor"></div>
+        <input type="hidden" name="correct_answer">
     </div>
     <div class="form-group">
-        <label for="option1">Opção 1:</label>
-        <input type="text" id="option1" name="option1" class="form-control" value="{{ question[3] }}" required>
+        <label for="option1">Opção 1</label>
+        <div id="option1-editor"></div>
+        <input type="hidden" name="option1">
     </div>
     <div class="form-group">
-        <label for="option2">Opção 2:</label>
-        <input type="text" id="option2" name="option2" class="form-control" value="{{ question[4] }}" required>
+        <label for="option2">Opção 2</label>
+        <div id="option2-editor"></div>
+        <input type="hidden" name="option2">
     </div>
     <div class="form-group">
-        <label for="option3">Opção 3:</label>
-        <input type="text" id="option3" name="option3" class="form-control" value="{{ question[5] }}" required>
+        <label for="option3">Opção 3</label>
+        <div id="option3-editor"></div>
+        <input type="hidden" name="option3">
     </div>
     <div class="form-group">
-        <label for="option4">Opção 4:</label>
-        <input type="text" id="option4" name="option4" class="form-control" value="{{ question[6] }}" required>
+        <label for="option4">Opção 4</label>
+        <div id="option4-editor"></div>
+        <input type="hidden" name="option4">
     </div>
     <div class="form-group">
         <label for="points">Pontos:</label>
@@ -62,5 +68,39 @@
             newTopicField.style.display = 'none';
         }
     });
+
+    const editorConfig = {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline'],
+                ['image', 'formula'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }]
+            ]
+        }
+    };
+
+    const editors = {
+        question: new Quill('#question-editor', editorConfig),
+        correct_answer: new Quill('#correct-answer-editor', editorConfig),
+        option1: new Quill('#option1-editor', editorConfig),
+        option2: new Quill('#option2-editor', editorConfig),
+        option3: new Quill('#option3-editor', editorConfig),
+        option4: new Quill('#option4-editor', editorConfig)
+    };
+
+    // Preencher os editores com o conteúdo existente
+    editors.question.root.innerHTML = `{{ question[1] | safe }}`;
+    editors.correct_answer.root.innerHTML = `{{ question[2] | safe }}`;
+    editors.option1.root.innerHTML = `{{ question[3] | safe }}`;
+    editors.option2.root.innerHTML = `{{ question[4] | safe }}`;
+    editors.option3.root.innerHTML = `{{ question[5] | safe }}`;
+    editors.option4.root.innerHTML = `{{ question[6] | safe }}`;
+
+    document.querySelector('form').onsubmit = function() {
+        for (let field in editors) {
+            document.querySelector(`input[name=${field}]`).value = editors[field].root.innerHTML;
+        }
+    };
 </script>
 {% endblock %}

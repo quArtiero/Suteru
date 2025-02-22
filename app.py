@@ -8,12 +8,14 @@ from flask import (
     session,
     flash,
     send_from_directory,
+    current_app,
 )
 from werkzeug.security import check_password_hash
 from flask_mail import Mail, Message
 import database
 import psycopg2
 from database import PostgresConnectionFactory
+import sqlite3
 
 
 # Remova a importação do OAuth se não estiver usando
@@ -345,7 +347,7 @@ def suggest_question():
     print("DEBUG - Grades antes de renderizar:", grades)  # Log para ver se grades está correto
 
     if request.method == "POST":
-        # Captura os dados do formulário
+        # O conteúdo já virá como HTML
         question = request.form.get("question")
         correct_answer = request.form.get("correct_answer")
         option1 = request.form.get("option1")
@@ -391,51 +393,61 @@ def admin_quizzes():
     if "user_id" in session:
         role = database.get_user_role()
         if role == "admin":
-            topic_filter = request.args.get("topic", "")
-            grade_filter = request.args.get("grade", "")
-            query = "SELECT * FROM quizzes WHERE 1=1"
-            params = []
-            if topic_filter:
-                query += " AND topic LIKE ?"
-                params.append(f"%{topic_filter}%")
-            if grade_filter:
-                query += " AND grade LIKE ?"
-                params.append(f"%{grade_filter}%")
+            try:
+                # Buscar todos os tópicos distintos
+                conn = database.PostgresConnectionFactory.get_connection()
+                cursor = conn.cursor()
+                cursor.execute("SELECT DISTINCT topic FROM quizzes ORDER BY topic")
+                topics = [topic[0] for topic in cursor.fetchall()]
 
-            # Obter listas de tópicos e séries
-            tmp = database.execute_fetch("SELECT DISTINCT topic FROM quizzes")
-            topics = [row[0] for row in tmp]
+                # Pegar parâmetros de filtro
+                grade = request.args.get('grade')
+                topic = request.args.get('topic')
+                difficulty = request.args.get('difficulty')
 
-            tmp = database.execute_fetch("SELECT DISTINCT topic FROM quizzes")
-            grades = [row[0] for row in tmp]
+                # Construir a query base
+                query = "SELECT * FROM quizzes"
+                params = []
+                conditions = []
 
-            # Aplicar filtros
-            quizzes = database.execute_fetch(query, params)
+                # Adicionar condições de filtro
+                if grade:
+                    conditions.append("grade = %s")
+                    params.append(grade)
+                if topic:
+                    conditions.append("topic = %s")
+                    params.append(topic)
+                if difficulty:
+                    conditions.append("difficulty = %s")
+                    params.append(difficulty)
 
-            # Verificar duplicados
-            question_counts = {}
-            for quiz in quizzes:
-                question = quiz[1].strip().lower()
-                if question in question_counts:
-                    question_counts[question].append(quiz)
-                else:
-                    question_counts[question] = [quiz]
+                # Adicionar WHERE se houver condições
+                if conditions:
+                    query += " WHERE " + " AND ".join(conditions)
 
-            duplicates = [q for qs in question_counts.values() if len(qs) > 1 for q in qs]
+                cursor.execute(query, params)
+                quizzes = cursor.fetchall()
+                cursor.close()
 
-            return render_template(
-                "admin_quizzes.html",
-                quizzes=quizzes,
-                total_quizzes=len(quizzes),
-                duplicates=duplicates,
-                topics=topics,
-                grades=grades,
-            )
+                # Garantir que quizzes não seja None
+                if quizzes is None:
+                    quizzes = []
+
+                return render_template(
+                    "manage_questions.html",
+                    quizzes=quizzes,
+                    topics=topics,  # Passar os tópicos para o template
+                    selected_grade=grade,
+                    selected_topic=topic,
+                    selected_difficulty=difficulty
+                )
+
+            except Exception as e:
+                print(f"Erro ao acessar o banco: {str(e)}")
+                flash("Erro ao acessar o banco de dados.", "danger")
+                return redirect(url_for("dashboard"))
         else:
-            flash(
-                "Acesso negado. Você não tem permissão para acessar esta página.",
-                "danger",
-            )
+            flash("Acesso negado. Você não tem permissão para acessar esta página.", "danger")
             return redirect(url_for("dashboard"))
     else:
         flash("Você precisa estar logado.", "warning")
@@ -482,18 +494,26 @@ def delete_duplicates():
         return redirect(url_for("login"))
 
 
-@app.route("/admin/delete_question/<int:question_id>", methods=["POST"])
+@app.route("/admin/delete_question/<int:question_id>", methods=['GET', 'POST'])
 def delete_question(question_id):
     if "user_id" in session:
         role = database.get_user_role()
         if role == "admin":
-            database.execute_commit("DELETE FROM quizzes WHERE id = ?", (question_id,))
-            flash("Pergunta excluída com sucesso!", "success")
-            return redirect(url_for("admin_quizzes"))
+            try:
+                conn = database.PostgresConnectionFactory.get_connection()
+                cursor = conn.cursor()
+                cursor.execute("DELETE FROM quizzes WHERE id = %s", (question_id,))
+                conn.commit()
+                cursor.close()
+                
+                flash("Questão excluída com sucesso!", "success")
+            except Exception as e:
+                print(f"Erro ao excluir questão: {str(e)}")
+                flash("Erro ao excluir a questão.", "danger")
+            
+            return redirect(url_for('admin_quizzes'))
         else:
-            flash(
-                "Acesso negado. Você não tem permissão para realizar esta ação.", "danger"
-            )
+            flash("Acesso negado. Você não tem permissão para excluir questões.", "danger")
             return redirect(url_for("dashboard"))
     else:
         flash("Você precisa estar logado.", "warning")
