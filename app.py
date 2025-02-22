@@ -13,6 +13,8 @@ from werkzeug.security import check_password_hash
 from flask_mail import Mail, Message
 import database
 import psycopg2
+from database import PostgresConnectionFactory
+
 
 # Remova a importação do OAuth se não estiver usando
 # from authlib.integrations.flask_client import OAuth
@@ -229,6 +231,7 @@ def quiz_continuous():
         return redirect(url_for("login"))
 
     user_id = session["user_id"]
+    role = database.get_user_role()  # Obtém a função do usuário (admin ou user)
     topic = session.get("current_topic")
     grade = session.get("current_grade")
 
@@ -242,11 +245,15 @@ def quiz_continuous():
             flash("Resposta correta! Pontos adicionados.", "success")
         else:
             flash(
-                "Resposta incorreta. A resposta correta era: " f"{quiz[2]}",
+                f"Resposta incorreta. A resposta correta era: {quiz[2]}",
                 "danger",
             )
 
-    quiz = database.get_random_quiz(user_id, topic, grade)
+    # Admins podem sempre receber perguntas, mesmo repetidas
+    if role == "admin":
+        quiz = database.get_random_quiz_admin(topic, grade)
+    else:
+        quiz = database.get_random_quiz(user_id, topic, grade)
 
     if quiz:
         session["current_quiz_id"] = quiz[0]
@@ -255,8 +262,9 @@ def quiz_continuous():
         session.pop("current_quiz_id", None)
         session.pop("current_topic", None)
         session.pop("current_grade", None)
-        flash("Você respondeu todas as perguntas deste " "tópico e série.", "info")
+        flash("Você respondeu todas as perguntas deste tópico e série.", "info")
         return redirect(url_for("dashboard"))
+
 
 
 @app.route("/admin/delete_selected_questions", methods=["POST"])
@@ -320,17 +328,62 @@ def leaderboard():
 
 @app.route("/suggest_question", methods=["GET", "POST"])
 def suggest_question():
-    if request.method == "POST":
-        if "user_id" in session:
-            database.create_suggestion(request)
-            flash("Sugestão enviada para revisão!", "success")
-            return redirect(url_for("dashboard"))
-        else:
-            flash("Você precisa estar logado.", "warning")
-            return redirect(url_for("login"))
+    if "user_id" not in session:
+        flash("Você precisa estar logado para sugerir uma questão.", "warning")
+        return redirect(url_for("login"))
 
-    if request.method == "GET":
-        return render_template("suggest_question.html")
+    conn = PostgresConnectionFactory.get_connection()
+    c = conn.cursor()
+    
+    # Buscar os tópicos disponíveis no banco
+    c.execute("SELECT DISTINCT topic FROM quizzes")
+    topics = [row[0] for row in c.fetchall()]
+
+    # Lista fixa de séries escolares
+    grades = ["6º ano", "7º ano", "8º ano", "9º ano", "1º ano EM", "2º ano EM", "3º ano EM"]
+
+    print("DEBUG - Grades antes de renderizar:", grades)  # Log para ver se grades está correto
+
+    if request.method == "POST":
+        # Captura os dados do formulário
+        question = request.form.get("question")
+        correct_answer = request.form.get("correct_answer")
+        option1 = request.form.get("option1")
+        option2 = request.form.get("option2")
+        option3 = request.form.get("option3")
+        option4 = request.form.get("option4")
+        points = request.form.get("points")
+        topic = request.form.get("topic")
+        grade = request.form.get("grade")
+
+        # Se o usuário escolheu "Novo Tema", pegar o nome do novo tópico
+        if topic == "novo_tema":
+            topic = request.form.get("new_topic")
+
+        # Verificar se todos os campos foram preenchidos
+        if not all([question, correct_answer, option1, option2, option3, option4, points, topic, grade]):
+            flash("Todos os campos são obrigatórios!", "danger")
+            return render_template("suggest_question.html", topics=topics, grades=grades)
+
+        # Inserir a sugestão no banco
+        try:
+            c.execute(
+                "INSERT INTO quizzes (question, correct_answer, option1, option2, option3, option4, points, topic, grade) "
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                (question, correct_answer, option1, option2, option3, option4, points, topic, grade),
+            )
+            conn.commit()
+            flash("Sua sugestão foi enviada para revisão!", "success")
+            return redirect(url_for("dashboard"))
+        except Exception as e:
+            conn.rollback()
+            print("Erro ao inserir no banco:", e)
+            flash("Erro ao salvar sua sugestão. Tente novamente!", "danger")
+
+    return render_template("suggest_question.html", topics=topics, grades=grades)
+
+
+
 
 
 @app.route("/admin/quizzes")
@@ -580,71 +633,93 @@ def admin_dashboard():
 
 @app.route("/admin/edit_question/<int:question_id>", methods=["GET", "POST"])
 def edit_question(question_id):
-    if "user_id" in session:
-        role = database.get_user_role()
-        if role == "admin":
-            if request.method == "POST":
-                question = request.form["question"]
-                correct_answer = request.form["correct_answer"]
-                option1 = request.form["option1"]
-                option2 = request.form["option2"]
-                option3 = request.form["option3"]
-                option4 = request.form["option4"]
-                topic = request.form["topic"]
-                if topic == "novo_tema":
-                    topic = request.form["new_topic"]
-                grade = request.form["grade"]
-                points = int(request.form["points"])
-
-                database.execute_commit(
-                    """
-                    UPDATE quizzes
-                    SET question = ?, correct_answer = ?, option1 = ?,
-                    option2 = ?, option3 = ?, option4 = ?, topic = ?,
-                    grade = ?, points = ?
-                    WHERE id = ?
-                """,
-                    (
-                        question,
-                        correct_answer,
-                        option1,
-                        option2,
-                        option3,
-                        option4,
-                        topic,
-                        grade,
-                        points,
-                        question_id,
-                    ),
-                )
-                flash("Pergunta atualizada com sucesso!", "success")
-                return redirect(url_for("admin_dashboard"))
-            else:
-                question_data = database.execute_fetch(
-                    "SELECT * FROM quizzes WHERE id = ?", (question_id,)
-                )[0]
-                topics = database.get_topics()
-                grades = [
-                    "6º ano",
-                    "7º ano",
-                    "8º ano",
-                    "9º ano",
-                    "1º ano EM",
-                    "2º ano EM",
-                    "3º ano EM",
-                ]
-                return render_template(
-                    "edit_question.html",
-                    question=question_data,
-                    topics=topics,
-                    grades=grades,
-                )
-        else:
-            flash("Acesso negado.", "danger")
-            return redirect(url_for("dashboard"))
-    else:
+    if "user_id" not in session:
         flash("Você precisa estar logado.", "warning")
         return redirect(url_for("login"))
+
+    role = database.get_user_role()
+    if role != "admin":
+        flash("Acesso negado.", "danger")
+        return redirect(url_for("dashboard"))
+
+    conn = PostgresConnectionFactory.get_connection()
+    c = conn.cursor()
+
+    if request.method == "POST":
+        try:
+            question = request.form.get("question")
+            correct_answer = request.form.get("correct_answer")
+            option1 = request.form.get("option1")
+            option2 = request.form.get("option2")
+            option3 = request.form.get("option3")
+            option4 = request.form.get("option4")
+            topic = request.form.get("topic")
+            if topic == "novo_tema":
+                topic = request.form.get("new_topic")
+            grade = request.form.get("grade")
+            points = request.form.get("points")
+
+            # Validar se os dados foram preenchidos
+            if not all([question, correct_answer, option1, option2, option3, option4, topic, grade, points]):
+                flash("Todos os campos são obrigatórios!", "danger")
+                return redirect(url_for("edit_question", question_id=question_id))
+
+            # Atualizar a questão no banco
+            c.execute(
+                """
+                UPDATE quizzes
+                SET question = %s, correct_answer = %s, option1 = %s,
+                    option2 = %s, option3 = %s, option4 = %s, topic = %s,
+                    grade = %s, points = %s
+                WHERE id = %s
+                """,
+                (
+                    question,
+                    correct_answer,
+                    option1,
+                    option2,
+                    option3,
+                    option4,
+                    topic,
+                    grade,
+                    points,
+                    question_id,
+                ),
+            )
+            conn.commit()
+            flash("Pergunta atualizada com sucesso!", "success")
+            return redirect(url_for("admin_dashboard"))
+        except Exception as e:
+            conn.rollback()
+            flash(f"Erro ao atualizar a pergunta: {e}", "danger")
+
+    else:
+        c.execute("SELECT * FROM quizzes WHERE id = %s", (question_id,))
+        question_data = c.fetchone()
+
+        # Verifica se a pergunta foi encontrada
+        if question_data is None:
+            flash(f"Erro: Pergunta com ID {question_id} não encontrada!", "danger")
+            return redirect(url_for("admin_dashboard"))
+
+        topics = database.get_topics()
+        grades = [
+            "6º ano",
+            "7º ano",
+            "8º ano",
+            "9º ano",
+            "1º ano EM",
+            "2º ano EM",
+            "3º ano EM",
+        ]
+
+        return render_template(
+            "edit_question.html",
+            question=question_data,
+            topics=topics,
+            grades=grades,
+        )
+
 
 
 @app.route("/admin/delete_all_questions", methods=["POST"])

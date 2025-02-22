@@ -244,12 +244,19 @@ def get_specific_quiz(quiz_id, user_id, answer):
     conn = PostgresConnectionFactory.get_connection()
     try:
         with conn.cursor() as c:
+            # Buscar o quiz pelo ID
             c.execute("SELECT * FROM quizzes WHERE id = %s", (quiz_id,))
             quiz = c.fetchone()
+
+            # Se não encontrou o quiz, retorna None e exibe erro
+            if quiz is None:
+                print(f"Erro: Quiz com ID {quiz_id} não encontrado!")
+                return None, None  # Evita acessar índices de None
 
             is_correct = 1 if (answer == quiz[2]) else 0
             points = quiz[9] if is_correct else 0
 
+            # Inserir pontos no banco
             c.execute(
                 "INSERT INTO user_points "
                 "(user_id, quiz_id, points, is_correct) "
@@ -259,8 +266,9 @@ def get_specific_quiz(quiz_id, user_id, answer):
             conn.commit()
             return is_correct, quiz
     except psycopg2.Error as e:
-        print(f"Database connection error: {e}")
+        print(f"Erro de conexão com o banco: {e}")
         conn.rollback()
+        return None, None  # Retorna valores padrão para evitar erro
 
 
 def get_random_quiz(user_id, topic, grade):
@@ -285,6 +293,18 @@ def get_random_quiz(user_id, topic, grade):
     except psycopg2.Error as e:
         print(f"Database connection error: {e}")
         conn.rollback()
+
+def get_random_quiz_admin(topic, grade):
+    """Retorna uma questão aleatória de um determinado tópico e série para admins."""
+    conn = PostgresConnectionFactory.get_connection()
+    c = conn.cursor()
+    
+    c.execute(
+        "SELECT * FROM quizzes WHERE topic = %s AND grade = %s ORDER BY RANDOM() LIMIT 1",
+        (topic, grade),
+    )
+    
+    return c.fetchone()  # Retorna qualquer pergunta, sem filtro de usuário
 
 
 def get_leaderboard():
