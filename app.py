@@ -16,6 +16,8 @@ import database
 import psycopg2
 from database import PostgresConnectionFactory
 import sqlite3
+from sqlalchemy import func
+from models import User, Quiz  # Removido Question da importação
 
 
 # Remova a importação do OAuth se não estiver usando
@@ -941,6 +943,26 @@ def upload_questions():
     else:
         flash("Você precisa estar logado.", "warning")
         return redirect(url_for("login"))
+
+
+@app.route('/')
+def landing():
+    # Obtém estatísticas do banco de dados
+    total_users = db.session.query(func.count(User.id)).scalar()
+    total_quizzes = db.session.query(func.count(Quiz.id)).scalar()
+    
+    # Para o total de alimentos, vamos assumir que cada resposta correta = 100g
+    # Ajuste essa lógica conforme sua regra de negócio
+    total_correct_answers = db.session.query(
+        func.sum(User.correct_answers)
+    ).scalar() or 0
+    
+    total_food = (total_correct_answers * 0.1)  # Convertendo para kg (100g = 0.1kg)
+    
+    return render_template('landing.html',
+                         total_users=total_users,
+                         total_quizzes=total_quizzes,
+                         total_food=round(total_food, 1))  # Arredonda para 1 casa decimal
 
 
 if __name__ == "__main__":

@@ -1,4 +1,9 @@
 {% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
 {% block content %}
 <h1>Login</h1>
 <form method="POST" class="mx-auto" style="max-width: 500px;">

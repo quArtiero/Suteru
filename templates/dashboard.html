@@ -1,4 +1,9 @@
 {% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
 {% block content %}
 <h1>Olá, bem-vindo de volta!</h1>
 <p class="lead">Seus Pontos Totais: <strong>{{ total_points }}</strong></p>
