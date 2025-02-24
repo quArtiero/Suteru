@@ -16,8 +16,6 @@ import database
 import psycopg2
 from database import PostgresConnectionFactory
 import sqlite3
-from sqlalchemy import func
-from models import User, Quiz  # Removido Question da importação
 
 
 # Remova a importação do OAuth se não estiver usando
@@ -25,7 +23,7 @@ from models import User, Quiz  # Removido Question da importação
 
 app = Flask(__name__)
 app.secret_key = "minhachave"  # Substitua por sua chave secreta
-
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('internal_db_url')
 # Configurações do Flask-Mail
 app.config["MAIL_SERVER"] = "smtp.seu_servidor.com"
 app.config["MAIL_PORT"] = 587
@@ -298,11 +296,16 @@ def add_quiz():
         if role == "admin":
             if request.method == "POST":
                 database.add_quiz_db(request)
-
                 flash("Quiz adicionado com sucesso!", "success")
                 return redirect(url_for("dashboard"))
             else:
-                topics = database.get_topics()
+                # Buscar tópicos existentes do banco
+                conn = PostgresConnectionFactory.get_connection()
+                cursor = conn.cursor()
+                cursor.execute("SELECT DISTINCT topic FROM quizzes ORDER BY topic")
+                topics = [row[0] for row in cursor.fetchall()]
+                cursor.close()
+
                 grades = [
                     "6º ano",
                     "7º ano",
@@ -314,10 +317,7 @@ def add_quiz():
                 ]
                 return render_template("add_quiz.html", topics=topics, grades=grades)
         else:
-            flash(
-                "Acesso negado. Você não tem permissão para " "adicionar quizzes.",
-                "danger",
-            )
+            flash("Acesso negado. Você não tem permissão para adicionar quizzes.", "danger")
             return redirect(url_for("dashboard"))
     else:
         flash("Você precisa estar logado para adicionar quizzes.", "warning")
@@ -947,22 +947,26 @@ def upload_questions():
 
 @app.route('/')
 def landing():
-    # Obtém estatísticas do banco de dados
-    total_users = db.session.query(func.count(User.id)).scalar()
-    total_quizzes = db.session.query(func.count(Quiz.id)).scalar()
+    conn = PostgresConnectionFactory.get_connection()
+    cursor = conn.cursor()
     
-    # Para o total de alimentos, vamos assumir que cada resposta correta = 100g
-    # Ajuste essa lógica conforme sua regra de negócio
-    total_correct_answers = db.session.query(
-        func.sum(User.correct_answers)
-    ).scalar() or 0
+    cursor.execute("SELECT COUNT(*) FROM users")
+    total_users = cursor.fetchone()[0] or 0
     
-    total_food = (total_correct_answers * 0.1)  # Convertendo para kg (100g = 0.1kg)
+    cursor.execute("SELECT COUNT(*) FROM quizzes")
+    total_quizzes = cursor.fetchone()[0] or 0
+    
+    # Calculando total de alimentos baseado nos pontos
+    cursor.execute("SELECT COALESCE(SUM(points), 0) FROM user_points")
+    total_points = cursor.fetchone()[0] or 0
+    total_food = round(total_points * 0.1, 1)  # 10 pontos = 1kg
+    
+    cursor.close()
     
     return render_template('landing.html',
                          total_users=total_users,
                          total_quizzes=total_quizzes,
-                         total_food=round(total_food, 1))  # Arredonda para 1 casa decimal
+                         total_food=total_food)
 
 
 if __name__ == "__main__":
