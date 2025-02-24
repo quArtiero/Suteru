@@ -1,21 +1,49 @@
-/* Cores Personalizadas */
+/* Modern Color System with CSS Variables */
 :root {
-	--primary-color: #3498db;    /* Azul */
-	--secondary-color: #2ecc71;  /* Verde */
-	--text-color: #333;
-	--background-color: #f2f2f2; /* Cinza claro para o fundo */
-	--header-footer-bg: #2980b9; /* Azul escuro para cabeçalho e rodapé */
+	/* Core colors */
+	--primary-hue: 204;
+	--primary-color: hsl(var(--primary-hue) 85% 45%);
+	--primary-light: hsl(var(--primary-hue) 85% 85%);
+	--primary-dark: hsl(var(--primary-hue) 85% 35%);
+	
+	/* Navbar specific colors */
+	--navbar-bg: #1a1f36;
+	--navbar-text: #ffffff;
+	--navbar-hover: rgba(255, 255, 255, 0.1);
+	
+	/* Semantic colors */
+	--surface-color: #ffffff;
+	--background-color: #f8fafc;
+	--text-color: #1a1f36;
+	
+	/* System colors */
+	--success-color: #22c55e;
+	--error-color: #ef4444;
+	
+	/* Spacing system */
+	--spacing-xs: 0.5rem;
+	--spacing-sm: 1rem;
+	--spacing-md: 1.5rem;
+	--spacing-lg: 2rem;
+	
+	/* Border radius */
+	--radius-sm: 0.375rem;
+	--radius-md: 0.5rem;
+	--radius-lg: 1rem;
+	--radius-full: 9999px;
 }
 
-/* Corpo */
+/* Modern Reset */
 body {
 	display: flex;
 	flex-direction: column;
 	min-height: 100vh;
-	font-family: 'Roboto', sans-serif;
+	font-family: 'Inter', system-ui, sans-serif;
 	background-color: var(--background-color);
 	color: var(--text-color);
 	margin: 0;
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
 }
 
 /* Conteúdo principal */
@@ -25,50 +53,76 @@ main {
 	padding-bottom: 0px; /* Espaço para o rodapé */
 }
 
-/* Navbar */
+/* Modern Navbar Styles */
 .navbar {
-	background-color: var(--header-footer-bg);
+	background: var(--primary-color);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	padding: var(--spacing-sm) var(--spacing-lg);
+	position: sticky;
+	top: 0;
+	z-index: 1000;
 }
 
-.navbar-title {
-	font-size: 32px;
-	color: #fff;
-	font-weight: bold;
-	margin: 0;
-	font-family: 'Roboto', sans-serif;
+.navbar-brand {
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: white;
+	text-decoration: none;
 }
 
-/* Links de Navegação */
+.navbar-nav {
+	display: flex;
+	gap: var(--spacing-md);
+	align-items: center;
+}
+
 .nav-link {
-	font-size: 18px;
-	color: #fff;
+	color: white;
+	text-decoration: none;
+	padding: var(--spacing-xs) var(--spacing-sm);
+	border-radius: var(--radius-md);
+	transition: all 0.2s ease;
 }
 
 .nav-link:hover {
-	color: #dcdde1;
+	background: rgba(255, 255, 255, 0.1);
+	color: white;
 }
 
-/* Botões */
+.nav-link.active {
+	color: white;
+	font-weight: 500;
+	background: rgba(255, 255, 255, 0.15);
+}
+
+/* Responsive navbar */
+@media (max-width: 768px) {
+	.navbar {
+		padding: var(--spacing-xs) var(--spacing-sm);
+	}
+	
+	.navbar-nav {
+		gap: var(--spacing-sm);
+	}
+}
+
+/* Modern Button Styles */
 .btn {
-	border-radius: 50px;
-	padding: 12px 30px;
-	font-size: 18px;
-	transition: all 0.3s ease;
+	background: var(--primary-color);
+	color: white;
+	border-radius: var(--radius-full);
+	padding: var(--spacing-sm) var(--spacing-lg);
+	font-size: 1rem;
+	font-weight: 500;
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	border: none;
+	margin: var(--spacing-xs);
 }
 
 .btn:hover {
 	transform: translateY(-2px);
-	box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-.btn-primary {
-	background-color: var(--primary-color);
-	border-color: var(--primary-color);
-}
-
-.btn-success {
-	background-color: var(--secondary-color);
-	border-color: var(--secondary-color);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	background: var(--primary-dark);
 }
 
 /* Logo na página inicial */
@@ -138,11 +192,18 @@ h1, h2 {
 	margin: 20px auto;
 }
 
-/* Formulários */
+/* Modern Form Controls */
 .form-control {
-	max-width: 500px;
-	margin: 0 auto 15px;
-	border-radius: 5px;
+	border-radius: var(--radius-md);
+	border: 1px solid hsl(var(--primary-hue) 30% 90%);
+	padding: var(--spacing-sm);
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus {
+	outline: none;
+	border-color: var(--primary-color);
+	box-shadow: 0 0 0 3px var(--primary-light);
 }
 
 .form-group {
@@ -165,7 +226,7 @@ form {
 
 /* Rodapé */
 .footer {
-	background-color: var(--header-footer-bg);
+	background-color: var(--primary-dark);
 	color: white;
 	padding: 10px 0;
 }
@@ -185,155 +246,253 @@ form {
 	margin: 10px 0;
 }
 
-/* Responsividade */
+/* Modern Responsive Design */
 @media (max-width: 768px) {
 	.navbar-title {
-			font-size: 24px;
+		font-size: 24px;
 	}
 
 	.btn {
-			font-size: 1rem;
-			padding: 12px 25px;
+		font-size: 1rem;
+		padding: 12px 25px;
 	}
 
 	.nav-link {
-			font-size: 16px;
+		font-size: 16px;
 	}
 
 	.list-group-item {
-			font-size: 18px;
+		font-size: 18px;
 	}
 
 	.logo-fullscreen {
-			max-height: 50vh;
+		max-height: 50vh;
 	}
 
 	.lead {
-			font-size: 1.2rem;
+		font-size: 1.2rem;
+	}
+
+	:root {
+		--spacing-lg: 1.5rem;
+		--spacing-md: 1rem;
+	}
+	
+	.quiz-card .card-body {
+		padding: var(--spacing-md);
 	}
 }
 
 /* Estilos do Quill Editor - ADICIONADO */
 .ql-editor {
-    min-height: 120px;
-    background: white;
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
+	min-height: 120px;
+	background: white;
+	font-family: inherit;
+	font-size: inherit;
+	line-height: inherit;
 }
 
 .ql-container.ql-snow {
-    border: 1px solid #dee2e6;
-    margin-bottom: 1rem;
+	border: 1px solid #dee2e6;
+	margin-bottom: 1rem;
 }
 
 .ql-toolbar.ql-snow {
-    border: 1px solid #dee2e6;
-    background: #f8f9fa;
+	border: 1px solid #dee2e6;
+	background: #f8f9fa;
 }
 
 .question-content .ql-editor,
 .options-list .ql-editor {
-    min-height: auto;
-    border: none;
-    padding: 0.5rem;
+	min-height: auto;
+	border: none;
+	padding: 0.5rem;
 }
 
 .katex {
-    font-size: inherit;
+	font-size: inherit;
 }
 
 .ql-editor img {
-    max-width: 100%;
-    height: auto;
+	max-width: 100%;
+	height: auto;
 }
 
 /* Estilos do Quiz - ATUALIZADO com tons de azul */
 .question-content {
-    background: #ffffff;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 24px;
-    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.1);
-    border: 1px solid rgba(13, 110, 253, 0.1);
+	background: #ffffff;
+	border-radius: 8px;
+	padding: 20px;
+	margin-bottom: 24px;
+	box-shadow: 0 2px 8px rgba(13, 110, 253, 0.1);
+	border: 1px solid rgba(13, 110, 253, 0.1);
 }
 
+/* Modern Quiz Options */
 .options-list .form-check {
-    background: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 6px;
-    padding: 15px;
-    margin-bottom: 12px;
-    transition: all 0.2s ease;
-    cursor: pointer;
+	background: var(--surface-color);
+	border: 1px solid hsl(var(--primary-hue) 30% 90%);
+	border-radius: var(--radius-md);
+	padding: var(--spacing-md);
+	margin-bottom: var(--spacing-sm);
+	transition: all 0.2s ease;
 }
 
 .options-list .form-check:hover {
-    background: #e7f1ff;
-    border-color: #0d6efd;
+	background: var(--primary-light);
+	border-color: var(--primary-color);
 }
 
 .options-list .form-check-input:checked + .form-check-label {
-    color: #0d6efd;
+	color: #0d6efd;
 }
 
 .options-list .form-check-input:checked ~ .form-check {
-    background: #e7f1ff;
-    border-color: #0d6efd;
+	background: #e7f1ff;
+	border-color: #0d6efd;
 }
 
 .options-list .form-check-label {
-    width: 100%;
-    padding-left: 12px;
-    cursor: pointer;
+	width: 100%;
+	padding-left: 12px;
+	cursor: pointer;
 }
 
 /* Estilos do Quill no Quiz */
 .question-content .ql-editor {
-    min-height: auto;
-    padding: 0;
-    font-size: 1.2rem;
-    color: #0a58ca;
-    font-weight: 500;
+	min-height: auto;
+	padding: 0;
+	font-size: 1.2rem;
+	color: #0a58ca;
+	font-weight: 500;
 }
 
 .options-list .ql-editor {
-    min-height: auto;
-    padding: 0;
-    color: #495057;
+	min-height: auto;
+	padding: 0;
+	color: #495057;
 }
 
 /* Fórmulas matemáticas no Quiz */
 .katex {
-    font-size: 1.1em;
+	font-size: 1.1em;
 }
 
 /* Botão de responder */
 .quiz-submit-btn {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-    padding: 10px 24px;
-    font-size: 1rem;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-    color: white;
-    font-weight: 500;
+	background-color: #0d6efd;
+	border-color: #0d6efd;
+	padding: 10px 24px;
+	font-size: 1rem;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+	color: white;
+	font-weight: 500;
 }
 
 .quiz-submit-btn:hover {
-    background-color: #0a58ca;
-    border-color: #0a58ca;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+	background-color: #0a58ca;
+	border-color: #0a58ca;
+	transform: translateY(-1px);
+	box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
 }
 
-/* Card do Quiz */
+/* Modern Card Styles */
 .quiz-card {
-    border: none;
-    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.1);
-    border-radius: 12px;
+	background: var(--surface-color);
+	border-radius: var(--radius-lg);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+	border: 1px solid rgba(0, 0, 0, 0.05);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.quiz-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .quiz-card .card-body {
-    padding: 2rem;
+	padding: 2rem;
+}
+
+/* Header/Title section styles */
+.header {
+	background: var(--primary-color);
+	color: white;
+	padding: var(--spacing-md) var(--spacing-lg);
+	text-align: center;
+}
+
+.header h1 {
+	color: white;
+	margin: 0;
+}
+
+.header p {
+	color: rgba(255, 255, 255, 0.9);
+	margin: var(--spacing-xs) 0 0 0;
+}
+
+/* Top section with logo */
+.top-section {
+	background: var(--primary-color);
+	width: 100%;
+	padding: var(--spacing-lg) var(--spacing-lg);
+	text-align: center;
+	color: white;
+}
+
+.logo {
+	max-width: 300px;
+	margin-bottom: var(--spacing-md);
+}
+
+.main-heading {
+	color: white;
+	font-size: 1.5rem;
+	margin: var(--spacing-md) 0;
+}
+
+.stats-text {
+	color: white;
+	font-size: 1.25rem;
+	margin: var(--spacing-md) 0;
+}
+
+.main-container {
+	background-color: var(--background-color);
+	min-height: 100vh;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: var(--spacing-lg);
+	text-align: center;
+}
+
+/* Garantindo que o cabeçalho e o footer fiquem azuis */
+.navbar,
+.header,
+nav,
+.nav-header,
+.top-nav,
+.site-header,
+.footer,
+footer,
+.bottom-nav {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+}
+
+.navbar a,
+.header a,
+nav a,
+.nav-header a,
+.top-nav a,
+.site-header a,
+.footer a,
+footer a,
+.bottom-nav a {
+  color: white !important;
 }
