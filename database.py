@@ -206,7 +206,11 @@ def add_quiz_db(request):
     option2 = request.form["option2"]
     option3 = request.form["option3"]
     option4 = request.form["option4"]
-    points = int(request.form["points"])
+    try:
+        points = int(request.form["points"])
+    except KeyError:
+        # Handle missing points field - could set default or raise custom error
+        points = 0  # or whatever default value makes sense
     topic = request.form["topic"]
     if topic == "novo_tema":
         topic = request.form["new_topic"]
