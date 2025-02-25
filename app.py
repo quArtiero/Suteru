@@ -16,6 +16,7 @@ import database
 import psycopg2
 from database import PostgresConnectionFactory
 import sqlite3
+from constants import GRADES  # Certifique-se que este import existe
 
 
 # Remova a importação do OAuth se não estiver usando
@@ -967,6 +968,22 @@ def landing():
                          total_users=total_users,
                          total_quizzes=total_quizzes,
                          total_food=total_food)
+
+
+@app.route("/manage_questions")
+def manage_questions():
+    questions = database.get_questions_db()
+    topics = database.get_topics_db()
+    
+    # Debug prints
+    print("Debug - GRADES:", GRADES)
+    print("Debug - Type of GRADES:", type(GRADES))
+    print("Debug - Topics:", topics)
+    
+    return render_template("manage_questions.html", 
+                         questions=questions,
+                         topics=topics,
+                         grades=GRADES)
 
 
 if __name__ == "__main__":

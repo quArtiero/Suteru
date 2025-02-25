@@ -1,0 +1,50 @@
+/* Preview Question Styles */
+.preview-container {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.preview-header {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.preview-header h5 {
+    margin: 0;
+    color: #333;
+}
+
+.preview-content {
+    padding: 20px;
+}
+
+.question-content {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.answer-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.answer-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.option-letter {
+    color: #666;
+    min-width: 25px;
+}
+
+.option-text {
+    flex: 1;
+} 

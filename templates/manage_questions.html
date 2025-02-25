@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+
 <div class="container mt-4">
     <h2>Gerenciar Questões</h2>
 
@@ -12,10 +14,9 @@
                     <label for="grade" class="form-label">Série</label>
                     <select class="form-control" name="grade">
                         <option value="">Todas</option>
-                        <option value="6" {% if selected_grade == '6' %}selected{% endif %}>6º ano</option>
-                        <option value="7" {% if selected_grade == '7' %}selected{% endif %}>7º ano</option>
-                        <option value="8" {% if selected_grade == '8' %}selected{% endif %}>8º ano</option>
-                        <option value="9" {% if selected_grade == '9' %}selected{% endif %}>9º ano</option>
+                        {% for grade in grades %}
+                        <option value="{{ grade }}" {% if selected_grade == grade %}selected{% endif %}>{{ grade }}º ano</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-4">
@@ -81,4 +82,65 @@
         </table>
     </div>
 </div>
+
+<div class="filters-container">
+    <div class="form-group">
+        <label for="topic-filter">Tópico:</label>
+        <select class="form-control" id="topic-filter" name="topic-filter">
+            <option value="all">Todos</option>
+            {% for topic in topics %}
+            <option value="{{ topic }}">{{ topic }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="grade-filter">Série Escolar:</label>
+        <select class="form-control" id="grade-filter" name="grade-filter">
+            <option value="all">Todas as séries</option>
+            {% for grade in grades %}
+            <option value="{{ grade }}">{{ grade }}º ano</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<style>
+/* Garantir que os selects sejam clicáveis e visíveis */
+.filters-container select {
+    display: block !important;
+    opacity: 1 !important;
+    position: relative !important;
+    pointer-events: auto !important;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const topicFilter = document.getElementById('topic-filter');
+    const gradeFilter = document.getElementById('grade-filter');
+    const questions = document.querySelectorAll('.question-card');
+
+    function filterQuestions() {
+        const selectedTopic = topicFilter.value;
+        const selectedGrade = gradeFilter.value;
+
+        questions.forEach(question => {
+            const questionTopic = question.getAttribute('data-topic');
+            const questionGrade = question.getAttribute('data-grade');
+            
+            const topicMatch = selectedTopic === 'all' || questionTopic === selectedTopic;
+            const gradeMatch = selectedGrade === 'all' || questionGrade === selectedGrade;
+
+            question.style.display = (topicMatch && gradeMatch) ? '' : 'none';
+        });
+    }
+
+    topicFilter.addEventListener('change', filterQuestions);
+    gradeFilter.addEventListener('change', filterQuestions);
+});
+</script>
 {% endblock %} 
