@@ -6,7 +6,12 @@
 
 {% block content %}
 <h1>Olá, bem-vindo de volta!</h1>
-<p class="lead">Seus Pontos Totais: <strong>{{ total_points }}</strong></p>
-<p class="lead">Total de Doações de Alimentos: <strong>{{ food_donation }} kg</strong></p>
+<div class="stats-container">
+    <div class="stat-card">
+        <h3>Suas Doações</h3>
+        <p>{{ food_donation }} grãos doados</p>
+    </div>
+    <!-- ... other stats ... -->
+</div>
 <a href="{{ url_for('quizzes') }}" class="btn btn-primary btn-lg">Começar um Quiz</a>
 {% endblock %}

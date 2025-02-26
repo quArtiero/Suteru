@@ -13,7 +13,7 @@
             <th><a
                     href="{{ url_for('admin_users', sort='total_points', order='asc' if sort_column != 'total_points' or sort_order == 'desc' else 'desc') }}">Pontos</a>
             </th>
-            <th>Quilos Doados</th>
+            <th>Grãos Doados</th>
             <th><a
                     href="{{ url_for('admin_users', sort='accuracy_rate', order='asc' if sort_column != 'accuracy_rate' or sort_order == 'desc' else 'desc') }}">Taxa
                     de Acerto (%)</a></th>
@@ -31,8 +31,8 @@
             <td>{{ user[2] }}</td>
             <td>{{ user[3] }}</td>
             <td>{{ user[4] }}</td>
-            <td>{{ user[5] }}</td>
-            <td>{{ "%.2f"|format(user[6]) }}</td>
+            <td>{{ user[5] }} grãos</td>
+            <td>{{ "%.2f"|format(user[6]) }}%</td>
             <td>{{ user[7] }}</td>
             <td>
                 <form action="{{ url_for('promote_user', user_id=user[0]) }}" method="post" style="display:inline;">

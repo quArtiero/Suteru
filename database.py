@@ -3,7 +3,7 @@ import os
 from flask import session, flash
 from werkzeug.security import generate_password_hash
 
-POINTS_TO_KG = 10  # This configures the number of points to kg
+POINTS_TO_GRAMS = 1  # Agora deve ser simplesmente 1 ponto = 1 grão
 
 
 class PostgresConnectionFactory:
@@ -119,13 +119,13 @@ def get_user(username, email=None):
 
 def get_all_user_points():
     db_error = False
-    data = {"total_points": 0, "total_kg_donated": 0}
+    data = {"total_points": 0, "total_graos": 0}
     conn = PostgresConnectionFactory.get_connection()
     try:
         with conn.cursor() as c:
             c.execute("SELECT SUM(points) FROM user_points")
             data["total_points"] = c.fetchone()[0] or 0
-            data["total_kg_donated"] = data["total_points"] // POINTS_TO_KG
+            data["total_graos"] = data["total_points"]  # Relação direta 1:1
     except psycopg2.Error as e:
         print(f"Database connection error: {e}")
         conn.rollback()
@@ -143,7 +143,7 @@ def get_user_points(user_id):
                 (user_id,),
             )
             total_points = c.fetchone()[0] or 0
-            food_donation = total_points // POINTS_TO_KG
+            food_donation = total_points  # Relação direta 1:1
             return total_points, food_donation
     except psycopg2.Error as e:
         print(f"Database connection error: {e}")
@@ -318,7 +318,7 @@ def get_leaderboard():
             c.execute(
                 """
                 SELECT u.username, SUM(up.points) as total_points,
-                CAST(SUM(up.points) / 10 AS INTEGER) as total_kg
+                CAST(SUM(up.points) * 1.0 / 1000 AS DECIMAL(10,2)) as total_kg
                 FROM users u
                 JOIN user_points up ON u.id = up.user_id
                 GROUP BY u.username

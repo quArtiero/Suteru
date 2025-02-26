@@ -84,19 +84,6 @@ def inject_user_role():
 # Rotas
 
 
-@app.route("/")
-def home():
-    error_occurred, data = database.get_all_user_points()
-    if error_occurred:
-        flash(
-            "Houve um problema com o banco de dados. " "Tente novamente mais tarde.",
-            "danger",
-        )
-        return render_template("index.html", total_kg_donated=0)
-
-    return render_template("index.html", total_kg_donated=data["total_kg_donated"])
-
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -196,14 +183,32 @@ def logout():
     return redirect(url_for("login"))
 
 
-@app.route("/quizzes")
+@app.route('/quizzes')
 def quizzes():
-    if "user_id" in session:
-        topics = database.get_topics()
-        return render_template("quizzes.html", topics=topics)
-    else:
-        flash("Você precisa estar logado para acessar os quizzes.", "warning")
-        return redirect(url_for("login"))
+    conn = PostgresConnectionFactory.get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT DISTINCT topic FROM quizzes ORDER BY topic")
+    topics = [topic[0] for topic in cursor.fetchall()]
+    
+    cursor.close()
+    conn.close()
+    
+    return render_template('quizzes_list.html', topics=topics)
+
+
+@app.route('/select_difficulty/<topic>')
+def select_difficulty(topic):
+    conn = PostgresConnectionFactory.get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT DISTINCT grade FROM quizzes WHERE topic = %s ORDER BY grade", (topic,))
+    grades = [grade[0] for grade in cursor.fetchall()]
+    
+    cursor.close()
+    conn.close()
+    
+    return render_template('select_difficulty.html', topic=topic, grades=grades)
 
 
 @app.route("/select_grade/<topic>")
@@ -325,10 +330,30 @@ def add_quiz():
         return redirect(url_for("login"))
 
 
-@app.route("/leaderboard")
+@app.route('/leaderboard')
 def leaderboard():
-    leaderboard = database.get_leaderboard()
-    return render_template("leaderboard.html", leaderboard=leaderboard)
+    conn = PostgresConnectionFactory.get_connection()
+    cursor = conn.cursor()
+    
+    # Busca os top usuários ordenados por pontos
+    cursor.execute("""
+        SELECT u.username, COALESCE(SUM(up.points), 0) as total_points 
+        FROM users u 
+        LEFT JOIN user_points up ON u.id = up.user_id 
+        GROUP BY u.id, u.username 
+        ORDER BY total_points DESC
+    """)
+    
+    # Converte o resultado para lista de dicionários
+    leaderboard = [
+        {'username': row[0], 'total_points': row[1] or 0}
+        for row in cursor.fetchall()
+    ]
+    
+    cursor.close()
+    conn.close()
+    
+    return render_template('leaderboard.html', leaderboard=leaderboard)
 
 
 @app.route("/suggest_question", methods=["GET", "POST"])
@@ -615,15 +640,14 @@ def admin_dashboard():
     if "user_id" in session:
         role = database.get_user_role()
         if role == "admin":
-
-            kg_per_day = database.execute_fetch(
+            graos_per_day = database.execute_fetch(
                 "SELECT date(timestamp) as date, "
-                f"SUM(points)/{database.POINTS_TO_KG} as kg_donated FROM user_points "
+                "SUM(points) as graos_doados FROM user_points "
                 "GROUP BY date(timestamp) ORDER BY date(timestamp) "
                 "DESC LIMIT 7"
             )
-            if kg_per_day is None:
-                kg_per_day = 0
+            if graos_per_day is None:
+                graos_per_day = 0
 
             total_users = database.execute_fetch("SELECT COUNT(*) FROM users")
             if total_users is None:
@@ -641,7 +665,7 @@ def admin_dashboard():
 
             return render_template(
                 "admin_dashboard.html",
-                kg_per_day=kg_per_day,
+                graos_per_day=graos_per_day,
                 total_users=total_users,
                 total_quizzes=total_quizzes,
                 quizzes=quizzes,
@@ -781,7 +805,7 @@ def admin_users():
                 f"""
                 SELECT u.id, u.username, u.email, u.role, 
                        COALESCE(SUM(up.points), 0) as total_points,
-                       COALESCE(SUM(up.points) / 10, 0) as total_kg_donated,
+                       COALESCE(SUM(up.points), 0) as total_graos_doados,
                        CASE 
                           WHEN COUNT(up.id) = 0 THEN 0
                           ELSE ROUND(SUM(CASE WHEN up.is_correct = 1 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(up.id), 0), 2)
@@ -957,17 +981,17 @@ def landing():
     cursor.execute("SELECT COUNT(*) FROM quizzes")
     total_quizzes = cursor.fetchone()[0] or 0
     
-    # Calculando total de alimentos baseado nos pontos
     cursor.execute("SELECT COALESCE(SUM(points), 0) FROM user_points")
     total_points = cursor.fetchone()[0] or 0
-    total_food = round(total_points * 0.1, 1)  # 10 pontos = 1kg
+    total_graos = total_points  # Now 1 point = 1 grão
     
     cursor.close()
+    conn.close()
     
     return render_template('landing.html',
                          total_users=total_users,
                          total_quizzes=total_quizzes,
-                         total_food=total_food)
+                         total_graos=total_graos)
 
 
 @app.route("/manage_questions")

@@ -1,0 +1,98 @@
+/* Estilos para a página de Quizzes */
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+  padding-top: var(--spacing-sm);
+}
+
+/* Título e subtítulo */
+h1 {
+  color: var(--primary-color);
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+p {
+  color: var(--text-color);
+  text-align: center;
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Grid de tópicos */
+.topics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+/* Cards dos tópicos */
+.topic-card {
+  background: var(--surface-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.topic-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.topic-name {
+  color: var(--text-color);
+  font-size: 1.6rem;
+  font-weight: 500;
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+  .topics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: var(--spacing-md);
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  p {
+    font-size: 1rem;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .topic-card {
+    padding: var(--spacing-md);
+  }
+
+  .topic-name {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .topics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .topic-card {
+    margin: 0 auto;
+    max-width: 300px;
+  }
+} 

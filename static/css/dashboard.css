@@ -1,14 +1,82 @@
 /* Estilos específicos para dashboard */
 .dashboard-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-lg);
+  max-width: 1200px;
+  margin: 0 auto;
   padding: var(--spacing-lg);
 }
 
-.stats-card {
+h1 {
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-lg);
+  font-size: 2.5rem;
+  text-align: center;
+}
+
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.stat-card {
   background: var(--surface-color);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-md);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: var(--spacing-lg);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card h3 {
+  color: var(--text-color);
+  font-size: 1.2rem;
+  margin-bottom: var(--spacing-sm);
+  opacity: 0.8;
+}
+
+.stat-card p {
+  color: var(--primary-color);
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.btn-primary {
+  display: block;
+  width: fit-content;
+  margin: 2rem auto;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: 1.1rem;
+  border-radius: var(--radius-full);
+  background: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: var(--spacing-md);
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .stat-card p {
+    font-size: 1.5rem;
+  }
 } 

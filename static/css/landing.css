@@ -15,17 +15,33 @@
   margin: 0 auto;
 }
 
+/* Ajustando o container do logo */
+.logo-container {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.logo-image {
+  max-width: 300px;
+  height: auto;
+  filter: brightness(0) invert(1);
+}
+
 .hero-title {
   font-size: 3.5rem;
   font-weight: 700;
   margin-bottom: var(--spacing-md);
   line-height: 1.2;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Melhor legibilidade */
 }
 
 .hero-subtitle {
   font-size: 1.5rem;
   margin-bottom: var(--spacing-lg);
   opacity: 0.9;
+  color: #ffffff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .hero-buttons {

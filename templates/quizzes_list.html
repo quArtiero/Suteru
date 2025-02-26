@@ -1,11 +1,20 @@
 {% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/quizzes.css') }}">
+{% endblock %}
+
 {% block content %}
-<h1>Escolha seu Tópico</h1>
-<div class="row">
-    {% for t in topics %}
-    <div class="col-md-4 my-2">
-        <a href="{{ url_for('select_difficulty', topic=t) }}" class="btn btn-secondary btn-block btn-lg">{{ t }}</a>
+<div class="container">
+    <h1>Escolha seu Tópico</h1>
+    <p>Selecione um tópico para começar seu quiz</p>
+    
+    <div class="topics-grid">
+        {% for topic in topics %}
+        <a href="{{ url_for('select_grade', topic=topic) }}" class="topic-card">
+            <div class="topic-name">{{ topic }}</div>
+        </a>
+        {% endfor %}
     </div>
-    {% endfor %}
 </div>
 {% endblock %}

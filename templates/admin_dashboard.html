@@ -21,22 +21,12 @@
     </ul>
 
     <h2>Quilos doados nos últimos 7 dias</h2>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Data</th>
-                <th>Kg Doado</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for day in kg_per_day %}
-            <tr>
-                <td>{{ day[0] }}</td>
-                <td>{{ day[1] }} kg</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="stats-card">
+        <h3>Doações por Dia</h3>
+        {% for day in graos_per_day %}
+        <p>{{ day[0] }}: {{ day[1] }} grãos</p>
+        {% endfor %}
+    </div>
 
     <h2>Estatísticas Gerais</h2>
     <ul>

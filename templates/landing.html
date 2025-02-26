@@ -7,6 +7,9 @@
 {% block content %}
 <section class="hero-section">
     <div class="hero-content">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo Šutēru" class="logo-image">
+        </div>
         <h1 class="hero-title">Transforme conhecimento em doações de alimentos</h1>
         <p class="hero-subtitle">Responda quizzes, aprenda e ajude a combater a fome. Cada resposta correta se transforma em alimento para quem precisa.</p>
         <div class="hero-buttons">
@@ -19,8 +22,8 @@
 <section class="stats-section">
     <div class="stats-container">
         <div class="stat-item">
-            <div class="stat-number">{{ total_food }}kg</div>
-            <div class="stat-label">Alimentos Doados</div>
+            <h3>Total de Alimentos Doados</h3>
+            <p>{{ total_graos }} grãos</p>
         </div>
         <div class="stat-item">
             <div class="stat-number">{{ total_users }}</div>

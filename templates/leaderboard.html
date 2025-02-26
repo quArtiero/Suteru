@@ -11,17 +11,15 @@
         <tr>
             <th>Posição</th>
             <th>Usuário</th>
-            <th>Pontos</th>
-            <th>Kg Doados</th>
+            <th>Grãos Doados</th>
         </tr>
     </thead>
     <tbody>
         {% for user in leaderboard %}
         <tr>
             <td>{{ loop.index }}</td>
-            <td>{{ user[0] }}</td>
-            <td>{{ user[1] }}</td>
-            <td>{{ user[2] }} kg</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.total_points }} grãos</td>
         </tr>
         {% endfor %}
     </tbody>
