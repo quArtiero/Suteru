@@ -378,11 +378,11 @@ def create_suggestion(request):
         conn.rollback()
 
 
-def execute_fetch(*args):
+def execute_fetch(query, params=()):
     conn = PostgresConnectionFactory.get_connection()
     try:
         with conn.cursor() as c:
-            c.execute(*args)
+            c.execute(query, params)
             try:
                 tmp = c.fetchall()
             except psycopg2.ProgrammingError:
@@ -393,14 +393,14 @@ def execute_fetch(*args):
         conn.rollback()
 
 
-def execute_commit(*args, **kwargs):
+def execute_commit(query, params=(), many=False):
     conn = PostgresConnectionFactory.get_connection()
     try:
         with conn.cursor() as c:
-            if kwargs.get("many", False):
-                c.executemany(*args)
+            if many:
+                c.executemany(query, params)
             else:
-                c.execute(*args)
+                c.execute(query, params)
             conn.commit()
     except psycopg2.Error as e:
         print(f"Database connection error: {e}")

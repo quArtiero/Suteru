@@ -60,7 +60,7 @@ def users():
                 sort_order = "asc"
 
             users = database.execute_fetch(
-                f"""
+                """
                 SELECT u.id, u.username, u.email, u.role, 
                        COALESCE(SUM(up.points), 0) as total_points,
                        COALESCE(SUM(up.points), 0) as total_graos_doados,
@@ -72,8 +72,8 @@ def users():
                 FROM users u
                 LEFT JOIN user_points up ON u.id = up.user_id
                 GROUP BY u.id, u.username, u.email, u.role, u.register_date
-                ORDER BY {sort_column} {sort_order}
-            """
+                ORDER BY """ + sort_column + " " + sort_order,
+                ()
             )
             return render_template(
                 "admin/admin_users.html",
@@ -106,10 +106,8 @@ def promote_user(user_id):
 def demote_user(user_id):
     if "user_id" in session and database.get_user_role() == "admin":
         database.execute_commit(
-            f"""update users
-                set role = 'user'
-                where id = '{user_id}'
-            """
+            "UPDATE users SET role = 'user' WHERE id = %s",
+            (user_id,)
         )
         flash("Permissões de administrador do usuário revogadas", "success")
         return redirect(url_for("admin.users"))
@@ -120,9 +118,8 @@ def demote_user(user_id):
 def delete_user(user_id):
     if "user_id" in session and database.get_user_role() == "admin":
         database.execute_commit(
-            f"""delete from users
-                where id = '{user_id}'
-            """
+            "DELETE FROM users WHERE id = %s",
+            (user_id,)
         )
         flash("Usuário deletado", "success")
         return redirect(url_for("admin.users"))
