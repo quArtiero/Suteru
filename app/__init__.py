@@ -31,3 +31,6 @@ def create_app(config_class=Config):
     app.jinja_env.globals.update(get_user_role=get_user_role)
 
     return app
+
+# Create an application instance for Gunicorn
+app = create_app()
