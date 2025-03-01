@@ -93,12 +93,53 @@ footer {
   margin-bottom: var(--spacing-md);
 }
 
+/* Melhorias nos inputs e selects */
 .form-control {
-  width: 100%;
-  padding: var(--spacing-sm);
+  background-color: white;
+  color: var(--text-color);
   border: 1px solid #dee2e6;
-  border-radius: var(--radius-md);
-  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-light);
+  outline: none;
+}
+
+/* Estilos específicos para selects */
+select.form-control {
+  appearance: auto;
+  padding-right: 2rem;
+  cursor: pointer;
+  background-color: white;
+  color: var(--text-color);
+}
+
+select.form-control option {
+  padding: 0.5rem;
+  background-color: white;
+  color: var(--text-color);
+}
+
+/* Estilos para labels */
+.form-group label {
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+/* Placeholder */
+.form-control::placeholder {
+  color: #6c757d;
+  opacity: 0.8;
+}
+
+/* Disabled state */
+.form-control:disabled,
+.form-control[readonly] {
+  background-color: #e9ecef;
+  opacity: 1;
 }
 
 /* Utilitários */
@@ -123,4 +164,70 @@ footer {
     font-size: 0.9rem;
     padding: var(--spacing-xs) var(--spacing-sm);
   }
+}
+
+/* Melhorias nos selects */
+select.form-control {
+  background-color: white;
+  color: var(--text-color);
+  text-transform: capitalize;
+  cursor: pointer;
+  appearance: auto;
+}
+
+select.form-control option {
+  background: white;
+  color: var(--text-color);
+  padding: var(--spacing-sm);
+  text-transform: capitalize;
+}
+
+select.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-light);
+  outline: none;
 } 
+/* Formulários */
+.form-group {
+  margin-bottom: var(--spacing-md);
+}
+select.form-control,
+.form-control {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 1px solid #dee2e6;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+}
+
+/* Correção específica para selects do Bootstrap */
+select.form-control,
+select.form-select {
+  background-color: #ffffff !important;
+  color: #212529 !important;
+  border: 1px solid #ced4da !important;
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
+  padding: 0.5rem !important;
+}
+
+select.form-control option,
+select.form-select option {
+  background-color: #ffffff !important;
+  color: #212529 !important;
+  padding: 12px !important;
+  font-size: 1rem !important;
+}
+
+/* Hover state */
+select.form-control:hover,
+select.form-select:hover {
+  border-color: var(--primary-color) !important;
+}
+
+/* Focus state */
+select.form-control:focus,
+select.form-select:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+}
