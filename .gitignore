@@ -71,3 +71,24 @@ coverage.xml
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Node
+node_modules/
+.env
+.flaskenv
+__pycache__/
+*.pyc
+.venv/
+.DS_Store
+.env
+.flaskenv
+__pycache__/
+*.pyc
+.venv/
+.DS_Store
+.env
+.flaskenv
+__pycache__/
+*.pyc
+.venv/
+.DS_Store

@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<div class="container mt-4">
+    <h2>Gerenciar Questões</h2>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <label for="grade" class="form-label">Série</label>
+                    <select class="form-control" id="grade" name="grade">
+                        <option value="">Todas</option>
+                        <option value="6º ano" {% if selected_grade == "6º ano" %}selected{% endif %}>6º ano</option>
+                        <option value="7º ano" {% if selected_grade == "7º ano" %}selected{% endif %}>7º ano</option>
+                        <option value="8º ano" {% if selected_grade == "8º ano" %}selected{% endif %}>8º ano</option>
+                        <option value="9º ano" {% if selected_grade == "9º ano" %}selected{% endif %}>9º ano</option>
+                        <option value="1º ano EM" {% if selected_grade == "1º ano EM" %}selected{% endif %}>1º ano EM</option>
+                        <option value="2º ano EM" {% if selected_grade == "2º ano EM" %}selected{% endif %}>2º ano EM</option>
+                        <option value="3º ano EM" {% if selected_grade == "3º ano EM" %}selected{% endif %}>3º ano EM</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="topic" class="form-label">Tópico</label>
+                    <select class="form-control" id="topic" name="topic">
+                        <option value="">Todos</option>
+                        {% for topic in topics %}
+                        <option value="{{ topic }}" {% if selected_topic == topic %}selected{% endif %}>{{ topic }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="difficulty" class="form-label">Dificuldade</label>
+                    <select class="form-control" id="difficulty" name="difficulty">
+                        <option value="">Todas</option>
+                        <option value="Fácil" {% if selected_difficulty == "Fácil" %}selected{% endif %}>Fácil</option>
+                        <option value="Médio" {% if selected_difficulty == "Médio" %}selected{% endif %}>Médio</option>
+                        <option value="Difícil" {% if selected_difficulty == "Difícil" %}selected{% endif %}>Difícil</option>
+                    </select>
+                </div>
+                <div class="col-12 mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-filter"></i> Filtrar
+                    </button>
+                    <a href="{{ url_for('admin.quizzes') }}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Limpar Filtros
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista de Questões -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Questão</th>
+                    <th>Série</th>
+                    <th>Tópico</th>
+                    <th>Dificuldade</th>
+                    <th>Pontos</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for quiz in quizzes %}
+                <tr>
+                    <td>{{ quiz[0] }}</td>
+                    <td>
+                        <div class="ql-snow">
+                            <div class="ql-editor" style="padding: 0;">
+                                {{ quiz[1] | safe }}
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ quiz[8] }}</td>
+                    <td>{{ quiz[7] }}</td>
+                    <td>{{ quiz[10] }}</td>
+                    <td>{{ quiz[9] }}</td>
+                    <td>
+                        <a href="{{ url_for('admin.edit_question', question_id=quiz[0]) }}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                        <a href="{{ url_for('admin.delete_question', question_id=quiz[0]) }}" 
+                           class="btn btn-sm btn-danger" 
+                           onclick="return confirm('Tem certeza que deseja excluir esta questão?')">
+                            <i class="fas fa-trash"></i> Excluir
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.btn-primary {
+    margin-right: 10px;
+}
+
+.table th {
+    background-color: #f8f9fa;
+}
+
+.ql-editor {
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.btn-sm {
+    margin: 2px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Renderizar fórmulas matemáticas
+    document.querySelectorAll('.ql-formula').forEach(function(formula) {
+        katex.render(formula.getAttribute('data-value'), formula, {
+            throwOnError: false
+        });
+    });
+});
+</script>
+{% endblock %} 

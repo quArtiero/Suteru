@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Selecione a Série para o Tópico "{{ topic }}"</h2>
+<ul>
+    {% for grade in grades %}
+    <li>
+        <a href="{{ url_for('quiz.start_quiz', topic=topic, grade=grade) }}" class="btn btn-primary btn-block">{{ grade }}</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

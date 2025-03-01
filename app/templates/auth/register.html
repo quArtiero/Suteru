@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Šutēru Logo" class="auth-logo-image">
+        </div>
+        <h1 class="auth-title">Crie sua conta</h1>
+        <form method="POST" class="auth-form">
+            <div class="form-group">
+                <div class="input-group">
+                    <span class="input-icon"><i class="fas fa-user"></i></span>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Nome de usuário" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <span class="input-icon"><i class="fas fa-envelope"></i></span>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="E-mail" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <span class="input-icon"><i class="fas fa-lock"></i></span>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Senha" required>
+                </div>
+            </div>
+            <button type="submit" class="auth-submit">
+                <i class="fas fa-user-plus"></i> Criar Conta
+            </button>
+        </form>
+        <div class="auth-links">
+            <p>Já possui uma conta? <a href="{{ url_for('auth.login') }}" class="auth-link">Faça login aqui</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

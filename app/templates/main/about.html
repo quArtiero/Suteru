@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <h1 class="text-center mb-4">Sobre o Šutēru</h1>
+                    
+                    <div class="row mb-5">
+                        <div class="col-md-12">
+                            <p class="lead">
+                                Bem-vindo ao Šutēru, a plataforma educacional onde aprender também significa alimentar quem mais precisa. Aqui, cada resposta correta em nossos quizzes se transforma em grãos de arroz doados para combater a fome. É conhecimento e solidariedade unidos em um só lugar.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-5">
+                        <div class="col-md-12">
+                            <h3 class="mb-3">Nossa Missão</h3>
+                            <p class="lead">
+                                Democratizar o aprendizado de forma interativa e acessível, promovendo um impacto social tangível. Acreditamos que, ao unir educação e solidariedade, podemos criar um futuro mais colaborativo e justo.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-5">
+                        <div class="col-md-4">
+                            <div class="text-center mb-4">
+                                <i class="fas fa-graduation-cap fa-3x text-primary mb-3"></i>
+                                <h4>Aprendizado Personalizado</h4>
+                                <p>No Šutēru, você encontra quizzes adaptados ao seu ritmo e nível de conhecimento. Cada usuário avança de acordo com seu próprio tempo, recebendo desafios que incentivam o desenvolvimento contínuo.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center mb-4">
+                                <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                                <h4>Comunidade Colaborativa</h4>
+                                <p>Queremos que cada pessoa se sinta parte ativa do projeto. Além de responder aos quizzes, você pode sugerir novas questões e contribuir para um ambiente de aprendizado em constante evolução.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center mb-4">
+                                <i class="fas fa-heart fa-3x text-primary mb-3"></i>
+                                <h4>Impacto Social</h4>
+                                <p>A cada resposta correta, você não apenas aprende, mas também contribui para alimentar quem mais precisa. Seu conhecimento se transforma em solidariedade.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-5">
+                        <div class="col-md-12">
+                            <h3 class="mb-3">Como Funciona</h3>
+                            <div class="how-it-works">
+                                <ul class="list-unstyled">
+                                    <li class="mb-3">
+                                        <i class="fas fa-question-circle text-success mr-2"></i>
+                                        <strong>Quizzes Interativos:</strong> Escolha entre diversos tópicos e teste seus conhecimentos.
+                                    </li>
+                                    <li class="mb-3">
+                                        <i class="fas fa-hand-holding-heart text-success mr-2"></i>
+                                        <strong>Uma Resposta, Uma Doação:</strong> A cada acerto, grãos de arroz são doados para ajudar quem mais precisa.
+                                    </li>
+                                    <li class="mb-3">
+                                        <i class="fas fa-trophy text-success mr-2"></i>
+                                        <strong>Sistema de Ranking:</strong> Mantenha-se motivado, acompanhe seu progresso e compare seu desempenho com o de outros usuários.
+                                    </li>
+                                    <li class="mb-3">
+                                        <i class="fas fa-chart-line text-success mr-2"></i>
+                                        <strong>Acompanhamento Detalhado:</strong> Monitore quantos grãos já foram doados por meio da sua dedicação e veja seu avanço no aprendizado.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <h3 class="mb-3">Comece Sua Jornada</h3>
+                            <p class="lead mb-4">
+                                Junte-se a nós agora mesmo e faça parte de uma comunidade que aprende, cresce e alimenta. No Šutēru, cada acerto é um passo a mais na construção de um mundo melhor!
+                            </p>
+                            {% if 'user_id' not in session %}
+                            <div class="mb-4">
+                                <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg mr-3">Registrar-se</a>
+                                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg mr-3">Login</a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 15px;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.card-body {
+    padding: 3rem;
+}
+
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.fas {
+    color: var(--primary-color);
+}
+
+.how-it-works li {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.how-it-works i {
+    font-size: 1.2rem;
+}
+
+.lead {
+    line-height: 1.8;
+}
+</style>
+{% endblock %} 

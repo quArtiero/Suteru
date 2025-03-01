@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1>Olá, bem-vindo de volta!</h1>
+<div class="stats-container">
+    <div class="stat-card">
+        <h3>Suas Doações</h3>
+        <p>{{ food_donation }} grãos doados</p>
+    </div>
+    <!-- ... other stats ... -->
+</div>
+<a href="{{ url_for('quiz.quizzes') }}" class="btn btn-primary btn-lg">Começar um Quiz</a>
+{% endblock %}
