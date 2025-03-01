@@ -994,6 +994,11 @@ def landing():
                          total_graos=total_graos)
 
 
+@app.route('/sobre')
+def about():
+    return render_template('about.html', title='Sobre Nós')
+
+
 @app.route("/manage_questions")
 def manage_questions():
     questions = database.get_questions_db()
