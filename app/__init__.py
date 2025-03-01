@@ -14,8 +14,8 @@ def create_app(config_class=Config):
     Talisman(app, content_security_policy={
         'default-src': "'self'",
         'script-src': ["'self'", "'unsafe-inline'", 'code.jquery.com', 'cdn.jsdelivr.net', 'cdnjs.cloudflare.com'],
-        'style-src': ["'self'", "'unsafe-inline'", 'stackpath.bootstrapcdn.com', 'fonts.googleapis.com', 'cdnjs.cloudflare.com'],
-        'font-src': ["'self'", 'fonts.gstatic.com'],
+        'style-src': ["'self'", "'unsafe-inline'", 'stackpath.bootstrapcdn.com', 'fonts.googleapis.com', 'cdnjs.cloudflare.com', 'use.fontawesome.com'],
+        'font-src': ["'self'", 'fonts.gstatic.com', 'cdnjs.cloudflare.com', 'use.fontawesome.com'],
         'img-src': ["'self'", 'data:', 'https:'],
     })
 
