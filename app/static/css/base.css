@@ -231,3 +231,54 @@ select.form-select:focus {
   border-color: var(--primary-color) !important;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
 }
+
+/* Quill Editor Styles */
+.ql-container {
+  min-height: 150px;
+  height: auto;
+  font-size: 1rem;
+  line-height: 1.5;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: var(--radius-md);
+  margin-bottom: 1rem;
+}
+
+.ql-toolbar {
+  border: 1px solid #ccc;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  background: #f8f9fa;
+}
+
+.ql-editor {
+  min-height: 150px;
+  padding: 1rem;
+}
+
+.ql-editor.ql-empty:before {
+  color: #999;
+  content: attr(data-placeholder);
+  float: left;
+  pointer-events: none;
+  height: 0;
+}
+
+.ql-snow .ql-toolbar button {
+  color: var(--text-color);
+}
+
+.ql-snow .ql-toolbar button:hover {
+  color: var(--primary-color);
+}
+
+.ql-snow .ql-toolbar button.ql-active {
+  color: var(--primary-color);
+}
+
+.ql-snow .ql-toolbar button.ql-active .ql-stroke {
+  stroke: var(--primary-color);
+}
+
+.ql-snow .ql-toolbar button.ql-active .ql-fill {
+  fill: var(--primary-color);
+}

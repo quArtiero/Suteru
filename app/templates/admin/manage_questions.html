@@ -1,135 +1,222 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-
 <div class="container mt-4">
-    <h2>Gerenciar Questões</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Gerenciar Questões</h2>
+        <div>
+            <a href="{{ url_for('admin.upload_questions') }}" class="btn btn-primary me-2">
+                <i class="fas fa-upload"></i> Importar CSV
+            </a>
+            <a href="{{ url_for('admin.add_question') }}" class="btn btn-success me-2">
+                <i class="fas fa-plus"></i> Nova Questão
+            </a>
+            <form action="{{ url_for('admin.delete_duplicates') }}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-warning">
+                    <i class="fas fa-trash-alt"></i> Excluir Duplicatas
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- Filtros -->
     <div class="card mb-4">
         <div class="card-body">
-            <form method="GET" class="row g-3">
-                <div class="col-md-4">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
                     <label for="grade" class="form-label">Série</label>
-                    <select class="form-control" id="grade" name="grade">
+                    <select name="grade" id="grade" class="form-select">
                         <option value="">Todas</option>
-                        <option value="6º ano" {% if selected_grade == "6º ano" %}selected{% endif %}>6º ano</option>
-                        <option value="7º ano" {% if selected_grade == "7º ano" %}selected{% endif %}>7º ano</option>
-                        <option value="8º ano" {% if selected_grade == "8º ano" %}selected{% endif %}>8º ano</option>
-                        <option value="9º ano" {% if selected_grade == "9º ano" %}selected{% endif %}>9º ano</option>
-                        <option value="1º ano EM" {% if selected_grade == "1º ano EM" %}selected{% endif %}>1º ano EM</option>
-                        <option value="2º ano EM" {% if selected_grade == "2º ano EM" %}selected{% endif %}>2º ano EM</option>
-                        <option value="3º ano EM" {% if selected_grade == "3º ano EM" %}selected{% endif %}>3º ano EM</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label for="topic" class="form-label">Tópico</label>
-                    <select class="form-control" id="topic" name="topic">
-                        <option value="">Todos</option>
-                        {% for topic in topics %}
-                        <option value="{{ topic }}" {% if selected_topic == topic %}selected{% endif %}>{{ topic }}</option>
+                        {% for grade in grades %}
+                        <option value="{{ grade }}" {% if grade == selected_grade %}selected{% endif %}>
+                            {{ grade }}º Ano
+                        </option>
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-4">
-                    <label for="difficulty" class="form-label">Dificuldade</label>
-                    <select class="form-control" id="difficulty" name="difficulty">
-                        <option value="">Todas</option>
-                        <option value="Fácil" {% if selected_difficulty == "Fácil" %}selected{% endif %}>Fácil</option>
-                        <option value="Médio" {% if selected_difficulty == "Médio" %}selected{% endif %}>Médio</option>
-                        <option value="Difícil" {% if selected_difficulty == "Difícil" %}selected{% endif %}>Difícil</option>
+                <div class="col-md-3">
+                    <label for="topic" class="form-label">Tópico</label>
+                    <select name="topic" id="topic" class="form-select">
+                        <option value="">Todos</option>
+                        {% for topic in topics %}
+                        <option value="{{ topic }}" {% if topic == selected_topic %}selected{% endif %}>
+                            {{ topic }}
+                        </option>
+                        {% endfor %}
                     </select>
                 </div>
-                <div class="col-12 mt-3">
+                <div class="col-md-3">
+                    <label for="difficulty" class="form-label">Dificuldade</label>
+                    <select name="difficulty" id="difficulty" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="easy" {% if difficulty == 'easy' %}selected{% endif %}>Fácil</option>
+                        <option value="medium" {% if difficulty == 'medium' %}selected{% endif %}>Médio</option>
+                        <option value="hard" {% if difficulty == 'hard' %}selected{% endif %}>Difícil</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="search_text" class="form-label">Buscar texto</label>
+                    <input type="text" name="search_text" id="search_text" class="form-control" 
+                           placeholder="Buscar em perguntas e respostas..." 
+                           value="{{ search_text or '' }}">
+                </div>
+                <div class="col-12">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-filter"></i> Filtrar
                     </button>
-                    <a href="{{ url_for('admin.quizzes') }}" class="btn btn-secondary">
-                        <i class="fas fa-times"></i> Limpar Filtros
-                    </a>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Lista de Questões -->
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Questão</th>
-                    <th>Série</th>
-                    <th>Tópico</th>
-                    <th>Dificuldade</th>
-                    <th>Pontos</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for quiz in quizzes %}
-                <tr>
-                    <td>{{ quiz[0] }}</td>
-                    <td>
-                        <div class="ql-snow">
-                            <div class="ql-editor" style="padding: 0;">
-                                {{ quiz[1] | safe }}
-                            </div>
-                        </div>
-                    </td>
-                    <td>{{ quiz[8] }}</td>
-                    <td>{{ quiz[7] }}</td>
-                    <td>{{ quiz[10] }}</td>
-                    <td>{{ quiz[9] }}</td>
-                    <td>
-                        <a href="{{ url_for('admin.edit_question', question_id=quiz[0]) }}" class="btn btn-sm btn-primary">
-                            <i class="fas fa-edit"></i> Editar
+    <!-- Tabela de Questões -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;">
+                                <input type="checkbox" id="select-all" class="form-check-input">
+                            </th>
+                            <th>Questão</th>
+                            <th>Série</th>
+                            <th>Tópico</th>
+                            <th>Pontos</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for quiz in quizzes %}
+                        <tr class="question-row">
+                            <td class="text-center">
+                                <input type="checkbox" name="selected_questions" value="{{ quiz.id }}" 
+                                       class="form-check-input question-checkbox">
+                            </td>
+                            <td>{{ quiz.question }}</td>
+                            <td>{{ quiz.grade }}º Ano</td>
+                            <td>{{ quiz.topic }}</td>
+                            <td>{{ quiz.points }}</td>
+                            <td>
+                                <a href="{{ url_for('admin.edit_question', quiz_id=quiz.id) }}" 
+                                   class="btn btn-sm btn-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ url_for('admin.delete_question', quiz_id=quiz.id) }}" 
+                                      method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-danger" 
+                                            onclick="return confirm('Tem certeza que deseja excluir esta questão?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginação -->
+            <nav aria-label="Navegação de páginas" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.quizzes', page=page-1, grade=selected_grade, topic=selected_topic, difficulty=difficulty, search_text=search_text) }}">
+                            Anterior
                         </a>
-                        <a href="{{ url_for('admin.delete_question', question_id=quiz[0]) }}" 
-                           class="btn btn-sm btn-danger" 
-                           onclick="return confirm('Tem certeza que deseja excluir esta questão?')">
-                            <i class="fas fa-trash"></i> Excluir
+                    </li>
+                    {% endif %}
+                    
+                    {% for p in range(max(1, page-2), min(total_pages+1, page+3)) %}
+                    <li class="page-item {% if p == page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('admin.quizzes', page=p, grade=selected_grade, topic=selected_topic, difficulty=difficulty, search_text=search_text) }}">
+                            {{ p }}
                         </a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    </li>
+                    {% endfor %}
+                    
+                    {% if page < total_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.quizzes', page=page+1, grade=selected_grade, topic=selected_topic, difficulty=difficulty, search_text=search_text) }}">
+                            Próxima
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
     </div>
 </div>
 
+<!-- Botão de Excluir Selecionadas -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1000;">
+    <form action="{{ url_for('admin.delete_selected_questions') }}" method="post" id="delete-selected-form">
+        <button type="submit" class="btn btn-danger" id="delete-selected-btn" disabled>
+            <i class="fas fa-trash"></i> Excluir Selecionadas
+        </button>
+    </form>
+</div>
+
 <style>
-.card {
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-}
-
-.btn-primary {
-    margin-right: 10px;
-}
-
-.table th {
-    background-color: #f8f9fa;
-}
-
-.ql-editor {
-    max-height: 100px;
-    overflow-y: auto;
-}
-
-.btn-sm {
-    margin: 2px;
-}
+    .form-check-input {
+        width: 1.2em;
+        height: 1.2em;
+        margin: 0;
+        top: 2px;
+        cursor: pointer;
+    }
+    .table td:first-child {
+        text-align: center;
+        vertical-align: middle;
+    }
+    .question-row {
+        cursor: pointer;
+    }
+    .question-row:hover {
+        background-color: rgba(0,0,0,.075);
+    }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Renderizar fórmulas matemáticas
-    document.querySelectorAll('.ql-formula').forEach(function(formula) {
-        katex.render(formula.getAttribute('data-value'), formula, {
-            throwOnError: false
+    // Selecionar todas as questões
+    const selectAllCheckbox = document.getElementById('select-all');
+    const questionCheckboxes = document.querySelectorAll('.question-checkbox');
+    
+    selectAllCheckbox.addEventListener('change', function() {
+        questionCheckboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+        updateDeleteButton();
+    });
+
+    // Selecionar questão individual
+    questionCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function(e) {
+            e.stopPropagation();
+            updateDeleteButton();
         });
     });
+
+    // Selecionar linha inteira
+    document.querySelectorAll('.question-row').forEach(row => {
+        row.addEventListener('click', function(e) {
+            // Não selecionar se clicar no checkbox ou nos botões de ação
+            if (e.target.type === 'checkbox' || e.target.closest('td:last-child')) {
+                return;
+            }
+            const checkbox = this.querySelector('.question-checkbox');
+            checkbox.checked = !checkbox.checked;
+            updateDeleteButton();
+        });
+    });
+
+    // Atualizar botão de excluir
+    function updateDeleteButton() {
+        const deleteBtn = document.getElementById('delete-selected-btn');
+        const checkedBoxes = document.querySelectorAll('.question-checkbox:checked');
+        deleteBtn.disabled = checkedBoxes.length === 0;
+    }
 });
 </script>
 {% endblock %} 

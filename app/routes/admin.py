@@ -3,6 +3,7 @@ from app.utils import database
 from app.utils.database import PostgresConnectionFactory
 from app.config import Config
 import os
+import csv
 
 bp = Blueprint('admin', __name__)
 
@@ -141,6 +142,7 @@ def quizzes():
             grade = request.args.get('grade')
             topic = request.args.get('topic')
             difficulty = request.args.get('difficulty')
+            search_text = request.args.get('search', '').strip()
 
             # Construir a query com os filtros
             query = """
@@ -160,6 +162,17 @@ def quizzes():
             if difficulty:
                 query += " AND difficulty = %s"
                 params.append(difficulty)
+            if search_text:
+                query += """ AND (
+                    LOWER(question) LIKE LOWER(%s) OR
+                    LOWER(correct_answer) LIKE LOWER(%s) OR
+                    LOWER(option1) LIKE LOWER(%s) OR
+                    LOWER(option2) LIKE LOWER(%s) OR
+                    LOWER(option3) LIKE LOWER(%s) OR
+                    LOWER(option4) LIKE LOWER(%s)
+                )"""
+                search_pattern = f"%{search_text}%"
+                params.extend([search_pattern] * 6)
 
             query += " ORDER BY id DESC"
 
@@ -176,7 +189,8 @@ def quizzes():
                 topics=topics,
                 selected_grade=grade,
                 selected_topic=topic,
-                selected_difficulty=difficulty
+                selected_difficulty=difficulty,
+                search_text=search_text
             )
 
         except Exception as e:
@@ -288,32 +302,29 @@ def upload_questions():
 
     if request.method == "POST":
         if "csv_file" not in request.files:
-            flash("Nenhum arquivo selecionado.", "warning")
+            flash("Nenhum arquivo selecionado.", "danger")
             return redirect(request.url)
         
         file = request.files["csv_file"]
         if file.filename == "":
-            flash("Nenhum arquivo selecionado.", "warning")
+            flash("Nenhum arquivo selecionado.", "danger")
             return redirect(request.url)
         
         if file and allowed_file(file.filename):
-            import csv
-            import io
-
-            stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
-            csv_input = csv.reader(stream)
             conn = PostgresConnectionFactory.get_connection()
-            c = conn.cursor()
-            
             try:
-                # Pula a primeira linha (cabeçalho)
-                next(csv_input)
+                c = conn.cursor()
+                # Ler o arquivo CSV
+                csv_data = file.read().decode('utf-8').splitlines()
+                reader = csv.reader(csv_data)
+                next(reader)  # Pular o cabeçalho
                 
-                for idx, row in enumerate(csv_input, start=2):  # start=2 porque já pulamos a primeira linha
-                    if len(row) != 9:
-                        flash(f"Erro na linha {idx}: número incorreto de colunas.", "danger")
-                        return redirect(request.url)
-                    
+                for row in reader:
+                    if len(row) != 9:  # Agora esperamos 9 colunas
+                        flash(f"Erro: A linha deve conter exatamente 9 colunas. Linha atual: {row}", "danger")
+                        continue
+                        
+                    # Inserir os dados da questão
                     c.execute(
                         """
                         INSERT INTO quizzes (question, correct_answer, option1, option2, option3, option4, topic, grade, points)
@@ -324,9 +335,10 @@ def upload_questions():
                 conn.commit()
                 flash("Perguntas importadas com sucesso!", "success")
             except Exception as e:
-                flash(f"Ocorreu um erro ao importar as perguntas: {e}", "danger")
                 conn.rollback()
+                flash(f"Ocorreu um erro ao importar as perguntas: {e}", "danger")
             finally:
+                c.close()
                 conn.close()
             return redirect(url_for("admin.dashboard"))
         
@@ -537,6 +549,7 @@ def delete_duplicates():
             )
         """)
         deleted_count = cursor.rowcount
+        
         conn.commit()
         flash(f"{deleted_count} questões duplicadas foram removidas.", "success")
     except Exception as e:

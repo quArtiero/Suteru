@@ -134,67 +134,118 @@
 </div>
 
 <script>
-    const editorConfig = {
-        theme: 'snow',
-        modules: {
-            toolbar: [
-                ['bold', 'italic', 'underline'],
-                ['image', 'formula'],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }]
-            ]
-        }
-    };
-
-    const editors = {
-        question: new Quill('#question-editor', editorConfig),
-        correct_answer: new Quill('#correct-answer-editor', editorConfig),
-        option1: new Quill('#option1-editor', editorConfig),
-        option2: new Quill('#option2-editor', editorConfig),
-        option3: new Quill('#option3-editor', editorConfig),
-        option4: new Quill('#option4-editor', editorConfig)
-    };
-
-    // Preencher os editores com o conteúdo existente
-    editors.question.root.innerHTML = `{{ question[1] | safe }}`;
-    editors.correct_answer.root.innerHTML = `{{ question[2] | safe }}`;
-    editors.option1.root.innerHTML = `{{ question[3] | safe }}`;
-    editors.option2.root.innerHTML = `{{ question[4] | safe }}`;
-    editors.option3.root.innerHTML = `{{ question[5] | safe }}`;
-    editors.option4.root.innerHTML = `{{ question[6] | safe }}`;
-
-    function updatePreview() {
-        document.getElementById('preview-question').innerHTML = editors.question.root.innerHTML;
-        document.getElementById('preview-option1').innerHTML = editors.option1.root.innerHTML;
-        document.getElementById('preview-option2').innerHTML = editors.option2.root.innerHTML;
-        document.getElementById('preview-option3').innerHTML = editors.option3.root.innerHTML;
-        document.getElementById('preview-option4').innerHTML = editors.option4.root.innerHTML;
-
-        document.querySelectorAll('#preview-question .ql-formula, #preview-option1 .ql-formula, #preview-option2 .ql-formula, #preview-option3 .ql-formula, #preview-option4 .ql-formula').forEach(function(formula) {
-            katex.render(formula.getAttribute('data-value'), formula, {
-                throwOnError: false
-            });
-        });
+// Wait for both DOM and Quill to be ready
+function initializeEditors() {
+    console.log('Initializing editors...');
+    console.log('Quill available:', typeof Quill !== 'undefined');
+    
+    if (typeof Quill === 'undefined') {
+        console.error('Quill library not loaded');
+        setTimeout(initializeEditors, 100);
+        return;
     }
 
-    Object.values(editors).forEach(editor => {
-        editor.on('text-change', updatePreview);
-    });
-
-    document.querySelector('form').onsubmit = function() {
-        for (let field in editors) {
-            document.querySelector(`input[name=${field}]`).value = editors[field].root.innerHTML;
+    try {
+        // Check if editor containers exist
+        const editorIds = ['question-editor', 'correct-answer-editor', 'option1-editor', 'option2-editor', 'option3-editor', 'option4-editor'];
+        const missingEditors = editorIds.filter(id => !document.getElementById(id));
+        
+        if (missingEditors.length > 0) {
+            console.error('Missing editor containers:', missingEditors);
+            return;
         }
-    };
 
-    document.getElementById('topic').addEventListener('change', function() {
-        var newTopicField = document.getElementById('new_topic');
-        if (this.value === 'novo_tema') {
-            newTopicField.style.display = 'block';
-        } else {
-            newTopicField.style.display = 'none';
+        console.log('Creating editor configuration...');
+        const editorConfig = {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline'],
+                    ['image', 'formula'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }]
+                ]
+            },
+            placeholder: 'Digite aqui...'
+        };
+
+        console.log('Initializing editors...');
+        const editors = {
+            question: new Quill('#question-editor', editorConfig),
+            correct_answer: new Quill('#correct-answer-editor', editorConfig),
+            option1: new Quill('#option1-editor', editorConfig),
+            option2: new Quill('#option2-editor', editorConfig),
+            option3: new Quill('#option3-editor', editorConfig),
+            option4: new Quill('#option4-editor', editorConfig)
+        };
+
+        // Pre-fill editors with existing content
+        console.log('Pre-filling editors with existing content...');
+        editors.question.root.innerHTML = '{{ quiz.question|safe }}';
+        editors.correct_answer.root.innerHTML = '{{ quiz.correct_answer|safe }}';
+        editors.option1.root.innerHTML = '{{ quiz.option1|safe }}';
+        editors.option2.root.innerHTML = '{{ quiz.option2|safe }}';
+        editors.option3.root.innerHTML = '{{ quiz.option3|safe }}';
+        editors.option4.root.innerHTML = '{{ quiz.option4|safe }}';
+
+        console.log('Setting up preview function...');
+        function updatePreview() {
+            try {
+                document.getElementById('preview-question').innerHTML = editors.question.root.innerHTML;
+                document.getElementById('preview-option1').innerHTML = editors.option1.root.innerHTML;
+                document.getElementById('preview-option2').innerHTML = editors.option2.root.innerHTML;
+                document.getElementById('preview-option3').innerHTML = editors.option3.root.innerHTML;
+                document.getElementById('preview-option4').innerHTML = editors.option4.root.innerHTML;
+
+                document.querySelectorAll('#preview-question .ql-formula, #preview-option1 .ql-formula, #preview-option2 .ql-formula, #preview-option3 .ql-formula, #preview-option4 .ql-formula').forEach(function(formula) {
+                    katex.render(formula.getAttribute('data-value'), formula, {
+                        throwOnError: false
+                    });
+                });
+            } catch (error) {
+                console.error('Error updating preview:', error);
+            }
         }
-    });
 
-    updatePreview();
+        console.log('Setting up event listeners...');
+        Object.values(editors).forEach(editor => {
+            editor.on('text-change', updatePreview);
+        });
+
+        document.querySelector('form').onsubmit = function() {
+            for (let field in editors) {
+                document.querySelector(`input[name=${field}]`).value = editors[field].root.innerHTML;
+            }
+        };
+
+        // Handle new topic input visibility
+        const topicSelect = document.getElementById('topic');
+        const newTopicInput = document.getElementById('new_topic');
+        
+        if (topicSelect && newTopicInput) {
+            topicSelect.addEventListener('change', function() {
+                newTopicInput.style.display = this.value === 'novo_tema' ? 'block' : 'none';
+            });
+        }
+
+        console.log('Initial preview update...');
+        updatePreview();
+        console.log('Editor initialization complete!');
+    } catch (error) {
+        console.error('Error initializing Quill editors:', error);
+        console.error('Error stack:', error.stack);
+    }
+}
+
+// Try to initialize immediately if Quill is already loaded
+if (typeof Quill !== 'undefined') {
+    console.log('Quill already loaded, initializing immediately...');
+    initializeEditors();
+} else {
+    console.log('Waiting for DOM and Quill to load...');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add a small delay to ensure Quill is loaded
+        setTimeout(initializeEditors, 100);
+    });
+}
 </script>
 {% endblock %}
