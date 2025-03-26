@@ -496,3 +496,62 @@ footer a,
 .bottom-nav a {
   color: white !important;
 }
+/* Quill Editor Styles */
+#question-editor,
+#correct-answer-editor,
+#option1-editor,
+#option2-editor,
+#option3-editor,
+#option4-editor {
+    height: 150px !important;
+    margin-bottom: 1rem !important;
+    background-color: white !important;
+}
+
+.ql-container.ql-snow {
+    border: 1px solid #ccc !important;
+    border-radius: var(--radius-md) !important;
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+    background-color: white !important;
+    height: calc(100% - 42px) !important;
+}
+
+.ql-toolbar.ql-snow {
+    border: 1px solid #ccc !important;
+    border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
+    background-color: #f8f9fa !important;
+}
+
+.ql-editor {
+    min-height: 100px !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    padding: 1rem !important;
+}
+
+.ql-editor.ql-blank::before {
+    color: #999 !important;
+    font-style: italic !important;
+}
+
+.ql-editor p {
+    margin-bottom: 0.5rem !important;
+}
+
+.ql-editor img {
+    max-width: 100% !important;
+    height: auto !important;
+}
+
+/* Ensure form groups containing editors have proper spacing */
+.form-group {
+    margin-bottom: 1.5rem !important;
+}
+
+/* Ensure labels are properly spaced */
+.form-group label {
+    margin-bottom: 0.5rem !important;
+    display: block !important;
+}
+

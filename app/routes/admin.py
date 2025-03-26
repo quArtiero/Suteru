@@ -306,17 +306,20 @@ def upload_questions():
             c = conn.cursor()
             
             try:
-                for idx, row in enumerate(csv_input):
+                # Pula a primeira linha (cabeçalho)
+                next(csv_input)
+                
+                for idx, row in enumerate(csv_input, start=2):  # start=2 porque já pulamos a primeira linha
                     if len(row) != 9:
-                        flash(f"Erro na linha {idx + 1}: número incorreto de colunas.", "danger")
+                        flash(f"Erro na linha {idx}: número incorreto de colunas.", "danger")
                         return redirect(request.url)
                     
                     c.execute(
                         """
-                        INSERT INTO quizzes (question, correct_answer, option1, option2, option3, option4, points, topic, grade)
+                        INSERT INTO quizzes (question, correct_answer, option1, option2, option3, option4, topic, grade, points)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                         """,
-                        tuple(row)
+                        (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8])
                     )
                 conn.commit()
                 flash("Perguntas importadas com sucesso!", "success")

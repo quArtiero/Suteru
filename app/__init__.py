@@ -11,13 +11,17 @@ def create_app(config_class=Config):
     app.config.from_object(config_class)
 
     # Add security headers
-    Talisman(app, content_security_policy={
-        'default-src': "'self'",
-        'script-src': ["'self'", "'unsafe-inline'", 'code.jquery.com', 'cdn.jsdelivr.net', 'cdnjs.cloudflare.com'],
-        'style-src': ["'self'", "'unsafe-inline'", 'stackpath.bootstrapcdn.com', 'fonts.googleapis.com', 'cdnjs.cloudflare.com'],
-        'font-src': ["'self'", 'fonts.gstatic.com'],
-        'img-src': ["'self'", 'data:', 'https:'],
-    })
+    Talisman(app, 
+        content_security_policy={
+            'default-src': "'self'",
+            'script-src': ["'self'", "'unsafe-inline'", 'code.jquery.com', 'cdn.jsdelivr.net', 'cdnjs.cloudflare.com'],
+            'style-src': ["'self'", "'unsafe-inline'", 'stackpath.bootstrapcdn.com', 'fonts.googleapis.com', 'cdnjs.cloudflare.com', 'use.fontawesome.com'],
+            'font-src': ["'self'", 'fonts.gstatic.com', 'use.fontawesome.com', 'cdnjs.cloudflare.com'],
+            'img-src': ["'self'", 'data:', 'https:'],
+            'connect-src': ["'self'", 'https:'],
+        },
+        force_https=False  # Desabilita HTTPS forçado para desenvolvimento local
+    )
 
     mail.init_app(app)
 
