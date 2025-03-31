@@ -86,9 +86,18 @@ __pycache__/
 *.pyc
 .venv/
 .DS_Store
-.env
-.flaskenv
-__pycache__/
-*.pyc
-.venv/
+
+# Local development
 .DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Node.js
+node_modules/
+package.json
+package-lock.json
+
+# Example files
+perguntas_exemplo.csv
