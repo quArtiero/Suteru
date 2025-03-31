@@ -131,72 +131,112 @@ def delete_user(user_id):
 def quizzes():
     if "user_id" in session and database.get_user_role() == "admin":
         try:
-            conn = database.PostgresConnectionFactory.get_connection()
-            cursor = conn.cursor()
-            
-            # Obter todos os tópicos distintos
-            cursor.execute("SELECT DISTINCT topic FROM quizzes ORDER BY topic")
-            topics = [topic[0] for topic in cursor.fetchall()]
+            # Get filter parameters
+            grade = request.args.get("grade")
+            topic = request.args.get("topic")
+            points_min = request.args.get("points_min", type=int)
+            points_max = request.args.get("points_max", type=int)
+            sort_by = request.args.get("sort_by", "id_desc")
+            search_text = request.args.get("search", "").strip()
+            page = request.args.get("page", 1, type=int)
+            per_page = 10
 
-            # Obter filtros da URL
-            grade = request.args.get('grade')
-            topic = request.args.get('topic')
-            difficulty = request.args.get('difficulty')
-            search_text = request.args.get('search', '').strip()
-
-            # Construir a query com os filtros
-            query = """
-                SELECT q.id, q.question, q.correct_answer, q.option1, q.option2, q.option3, q.option4,
-                       q.topic, q.grade, q.points, q.difficulty
-                FROM quizzes q
+            # Base query
+            base_query = """
+                SELECT id, question, correct_answer, option1, option2, option3, option4, 
+                       grade, topic, points
+                FROM quizzes
                 WHERE 1=1
             """
+            count_query = "SELECT COUNT(*) FROM quizzes WHERE 1=1"
             params = []
 
+            # Apply filters
             if grade:
-                query += " AND grade = %s"
+                base_query += " AND grade = %s"
+                count_query += " AND grade = %s"
                 params.append(grade)
+            
             if topic:
-                query += " AND topic = %s"
+                base_query += " AND topic = %s"
+                count_query += " AND topic = %s"
                 params.append(topic)
-            if difficulty:
-                query += " AND difficulty = %s"
-                params.append(difficulty)
+            
+            if points_min is not None:
+                base_query += " AND points >= %s"
+                count_query += " AND points >= %s"
+                params.append(points_min)
+            
+            if points_max is not None:
+                base_query += " AND points <= %s"
+                count_query += " AND points <= %s"
+                params.append(points_max)
+            
             if search_text:
-                query += """ AND (
-                    LOWER(question) LIKE LOWER(%s) OR
-                    LOWER(correct_answer) LIKE LOWER(%s) OR
-                    LOWER(option1) LIKE LOWER(%s) OR
-                    LOWER(option2) LIKE LOWER(%s) OR
-                    LOWER(option3) LIKE LOWER(%s) OR
-                    LOWER(option4) LIKE LOWER(%s)
-                )"""
                 search_pattern = f"%{search_text}%"
+                base_query += " AND (question ILIKE %s OR correct_answer ILIKE %s OR option1 ILIKE %s OR option2 ILIKE %s OR option3 ILIKE %s OR option4 ILIKE %s)"
+                count_query += " AND (question ILIKE %s OR correct_answer ILIKE %s OR option1 ILIKE %s OR option2 ILIKE %s OR option3 ILIKE %s OR option4 ILIKE %s)"
+                params.extend([search_pattern] * 6)
                 params.extend([search_pattern] * 6)
 
-            query += " ORDER BY id DESC"
+            # Get total count
+            conn = PostgresConnectionFactory.get_connection()
+            cursor = conn.cursor()
+            try:
+                cursor.execute(count_query, params)
+                total_records = cursor.fetchone()[0]
+                total_pages = (total_records + per_page - 1) // per_page
 
-            # Executar a query
-            cursor.execute(query, params)
-            quizzes = cursor.fetchall()
+                # Ensure page is within valid range
+                page = max(1, min(page, total_pages))
+                offset = (page - 1) * per_page
 
-            cursor.close()
-            conn.close()
+                # Add ordering based on sort_by parameter
+                order_by = {
+                    "id_desc": "id DESC",
+                    "id_asc": "id ASC",
+                    "points_desc": "points DESC",
+                    "points_asc": "points ASC",
+                    "grade_asc": "grade ASC",
+                    "grade_desc": "grade DESC"
+                }.get(sort_by, "id DESC")
+
+                base_query += f" ORDER BY {order_by} LIMIT %s OFFSET %s"
+                params.extend([per_page, offset])
+
+                # Execute main query
+                cursor.execute(base_query, params)
+                quizzes = cursor.fetchall()
+
+                # Get unique topics for filter dropdown
+                cursor.execute("SELECT DISTINCT topic FROM quizzes ORDER BY topic")
+                topics = [row[0] for row in cursor.fetchall()]
+            finally:
+                cursor.close()
+                conn.close()
 
             return render_template(
                 "admin/manage_questions.html",
                 quizzes=quizzes,
                 topics=topics,
+                grades=["6º ano", "7º ano", "8º ano", "9º ano", "1º ano EM", "2º ano EM", "3º ano EM"],
                 selected_grade=grade,
                 selected_topic=topic,
-                selected_difficulty=difficulty,
-                search_text=search_text
+                points_min=points_min,
+                points_max=points_max,
+                sort_by=sort_by,
+                search_text=search_text,
+                page=page,
+                total_pages=total_pages,
+                max=max,
+                min=min,
+                total_questions=total_records
             )
 
         except Exception as e:
-            print(f"Erro ao acessar o banco: {str(e)}")
-            flash("Erro ao acessar o banco de dados.", "danger")
-            return redirect(url_for("auth.dashboard"))
+            print(f"Error in quizzes route: {str(e)}")
+            flash("Erro ao carregar questões", "error")
+            return redirect(url_for("admin.dashboard"))
     
     flash("Acesso negado.", "danger")
     return redirect(url_for("auth.dashboard"))

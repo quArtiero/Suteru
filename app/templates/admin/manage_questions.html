@@ -3,12 +3,15 @@
 {% block content %}
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Gerenciar Questões</h2>
+        <div>
+            <h2 class="mb-1">Gerenciar Questões</h2>
+            <p class="text-muted mb-0">Total de questões: <span class="badge bg-primary">{{ total_questions }}</span></p>
+        </div>
         <div>
             <a href="{{ url_for('admin.upload_questions') }}" class="btn btn-primary me-2">
                 <i class="fas fa-upload"></i> Importar CSV
             </a>
-            <a href="{{ url_for('admin.add_question') }}" class="btn btn-success me-2">
+            <a href="{{ url_for('admin.add_quiz') }}" class="btn btn-success me-2">
                 <i class="fas fa-plus"></i> Nova Questão
             </a>
             <form action="{{ url_for('admin.delete_duplicates') }}" method="post" class="d-inline">
@@ -22,22 +25,26 @@
     <!-- Filtros -->
     <div class="card mb-4">
         <div class="card-body">
+            <h5 class="card-title mb-4">
+                <i class="fas fa-filter me-2"></i>Filtros
+            </h5>
             <form method="get" class="row g-3">
-                <div class="col-md-3">
+                <!-- Filtros Principais -->
+                <div class="col-md-4">
                     <label for="grade" class="form-label">Série</label>
                     <select name="grade" id="grade" class="form-select">
-                        <option value="">Todas</option>
+                        <option value="">Todas as séries</option>
                         {% for grade in grades %}
                         <option value="{{ grade }}" {% if grade == selected_grade %}selected{% endif %}>
-                            {{ grade }}º Ano
+                            {{ grade }}
                         </option>
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <label for="topic" class="form-label">Tópico</label>
                     <select name="topic" id="topic" class="form-select">
-                        <option value="">Todos</option>
+                        <option value="">Todos os tópicos</option>
                         {% for topic in topics %}
                         <option value="{{ topic }}" {% if topic == selected_topic %}selected{% endif %}>
                             {{ topic }}
@@ -45,25 +52,56 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <label for="difficulty" class="form-label">Dificuldade</label>
-                    <select name="difficulty" id="difficulty" class="form-select">
-                        <option value="">Todas</option>
-                        <option value="easy" {% if difficulty == 'easy' %}selected{% endif %}>Fácil</option>
-                        <option value="medium" {% if difficulty == 'medium' %}selected{% endif %}>Médio</option>
-                        <option value="hard" {% if difficulty == 'hard' %}selected{% endif %}>Difícil</option>
+                <div class="col-md-4">
+                    <label for="sort_by" class="form-label">Ordenar por</label>
+                    <select name="sort_by" id="sort_by" class="form-select">
+                        <option value="id_desc" {% if sort_by == 'id_desc' %}selected{% endif %}>Mais Recentes</option>
+                        <option value="id_asc" {% if sort_by == 'id_asc' %}selected{% endif %}>Mais Antigas</option>
+                        <option value="points_desc" {% if sort_by == 'points_desc' %}selected{% endif %}>Pontos (Maior)</option>
+                        <option value="points_asc" {% if sort_by == 'points_asc' %}selected{% endif %}>Pontos (Menor)</option>
+                        <option value="grade_asc" {% if sort_by == 'grade_asc' %}selected{% endif %}>Série (A-Z)</option>
+                        <option value="grade_desc" {% if sort_by == 'grade_desc' %}selected{% endif %}>Série (Z-A)</option>
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <label for="search_text" class="form-label">Buscar texto</label>
-                    <input type="text" name="search_text" id="search_text" class="form-control" 
-                           placeholder="Buscar em perguntas e respostas..." 
-                           value="{{ search_text or '' }}">
+
+                <!-- Filtros de Pontos -->
+                <div class="col-md-6">
+                    <label class="form-label">Pontos</label>
+                    <div class="row g-2">
+                        <div class="col">
+                            <input type="number" name="points_min" id="points_min" class="form-control" 
+                                   placeholder="Mínimo" value="{{ points_min or '' }}" min="0">
+                        </div>
+                        <div class="col">
+                            <input type="number" name="points_max" id="points_max" class="form-control" 
+                                   placeholder="Máximo" value="{{ points_max or '' }}" min="0">
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Busca -->
+                <div class="col-md-6">
+                    <label for="search_text" class="form-label">Buscar texto</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" name="search_text" id="search_text" class="form-control" 
+                               placeholder="Buscar em perguntas e respostas..." 
+                               value="{{ search_text or '' }}">
+                    </div>
+                </div>
+
+                <!-- Botões -->
                 <div class="col-12">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-filter"></i> Filtrar
-                    </button>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter me-2"></i>Aplicar Filtros
+                        </button>
+                        <a href="{{ url_for('admin.quizzes') }}" class="btn btn-primary">
+                            <i class="fas fa-times me-2"></i>Limpar Filtros
+                        </a>
+                    </div>
                 </div>
             </form>
         </div>
@@ -81,8 +119,8 @@
                             </th>
                             <th>Questão</th>
                             <th>Série</th>
-                            <th>Tópico</th>
                             <th>Pontos</th>
+                            <th>Tópico</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -90,19 +128,19 @@
                         {% for quiz in quizzes %}
                         <tr class="question-row">
                             <td class="text-center">
-                                <input type="checkbox" name="selected_questions" value="{{ quiz.id }}" 
+                                <input type="checkbox" name="selected_questions" value="{{ quiz[0] }}" 
                                        class="form-check-input question-checkbox">
                             </td>
-                            <td>{{ quiz.question }}</td>
-                            <td>{{ quiz.grade }}º Ano</td>
-                            <td>{{ quiz.topic }}</td>
-                            <td>{{ quiz.points }}</td>
+                            <td>{{ quiz[1] }}</td>
+                            <td>{{ quiz[7] }}</td>
+                            <td>{{ quiz[9] }}</td>
+                            <td>{{ quiz[8] }}</td>
                             <td>
-                                <a href="{{ url_for('admin.edit_question', quiz_id=quiz.id) }}" 
+                                <a href="{{ url_for('admin.edit_question', question_id=quiz[0]) }}" 
                                    class="btn btn-sm btn-primary">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form action="{{ url_for('admin.delete_question', quiz_id=quiz.id) }}" 
+                                <form action="{{ url_for('admin.delete_question', question_id=quiz[0]) }}" 
                                       method="post" class="d-inline">
                                     <button type="submit" class="btn btn-sm btn-danger" 
                                             onclick="return confirm('Tem certeza que deseja excluir esta questão?')">
@@ -121,15 +159,15 @@
                 <ul class="pagination justify-content-center">
                     {% if page > 1 %}
                     <li class="page-item">
-                        <a class="page-link" href="{{ url_for('admin.quizzes', page=page-1, grade=selected_grade, topic=selected_topic, difficulty=difficulty, search_text=search_text) }}">
-                            Anterior
+                        <a class="page-link" href="{{ url_for('admin.quizzes', page=page-1, grade=selected_grade, topic=selected_topic, search_text=search_text) }}" aria-label="Página anterior">
+                            <i class="fas fa-chevron-left"></i>
                         </a>
                     </li>
                     {% endif %}
                     
                     {% for p in range(max(1, page-2), min(total_pages+1, page+3)) %}
                     <li class="page-item {% if p == page %}active{% endif %}">
-                        <a class="page-link" href="{{ url_for('admin.quizzes', page=p, grade=selected_grade, topic=selected_topic, difficulty=difficulty, search_text=search_text) }}">
+                        <a class="page-link" href="{{ url_for('admin.quizzes', page=p, grade=selected_grade, topic=selected_topic, search_text=search_text) }}">
                             {{ p }}
                         </a>
                     </li>
@@ -137,8 +175,8 @@
                     
                     {% if page < total_pages %}
                     <li class="page-item">
-                        <a class="page-link" href="{{ url_for('admin.quizzes', page=page+1, grade=selected_grade, topic=selected_topic, difficulty=difficulty, search_text=search_text) }}">
-                            Próxima
+                        <a class="page-link" href="{{ url_for('admin.quizzes', page=page+1, grade=selected_grade, topic=selected_topic, search_text=search_text) }}" aria-label="Próxima página">
+                            <i class="fas fa-chevron-right"></i>
                         </a>
                     </li>
                     {% endif %}
