@@ -354,6 +354,9 @@ def upload_questions():
             conn = PostgresConnectionFactory.get_connection()
             try:
                 c = conn.cursor()
+                # Resetar a sequência do ID
+                c.execute("SELECT setval('quizzes_id_seq', (SELECT MAX(id) FROM quizzes));")
+                
                 # Ler o arquivo CSV
                 csv_data = file.read().decode('utf-8').splitlines()
                 reader = csv.reader(csv_data)
@@ -367,20 +370,10 @@ def upload_questions():
                     # Inserir os dados da questão
                     c.execute(
                         """
-                        INSERT INTO quizzes (id, question, correct_answer, option1, option2, option3, option4, topic, grade, points)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                        ON CONFLICT (id) DO UPDATE SET
-                            question = EXCLUDED.question,
-                            correct_answer = EXCLUDED.correct_answer,
-                            option1 = EXCLUDED.option1,
-                            option2 = EXCLUDED.option2,
-                            option3 = EXCLUDED.option3,
-                            option4 = EXCLUDED.option4,
-                            topic = EXCLUDED.topic,
-                            grade = EXCLUDED.grade,
-                            points = EXCLUDED.points
+                        INSERT INTO quizzes (question, correct_answer, option1, option2, option3, option4, topic, grade, points)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                         """,
-                        (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[0])
+                        (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8])
                     )
                 conn.commit()
                 flash("Perguntas importadas com sucesso!", "success")
