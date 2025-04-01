@@ -14,8 +14,9 @@
                 <div class="form-group">
                     <label for="topic">Tópico</label>
                     <select class="form-control" id="topic" name="topic" required>
+                        <option value="" disabled selected>Selecione o tópico</option>
                         {% for topic in topics %}
-                            <option value="{{ topic }}" {% if topic == question[8] %}selected{% endif %}>{{ topic }}</option>
+                        <option value="{{ topic }}" {% if topic == quiz[8] %}selected{% endif %}>{{ topic }}</option>
                         {% endfor %}
                         <option value="novo_tema">Novo Tópico</option>
                     </select>
@@ -23,12 +24,13 @@
                            style="display: none;" placeholder="Digite o novo tópico">
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="form-group">
                     <label for="grade">Série Escolar</label>
                     <select class="form-control" id="grade" name="grade" required>
+                        <option value="" disabled selected>Selecione a série</option>
                         {% for grade in grades %}
-                            <option value="{{ grade }}" {% if grade == question[9] %}selected{% endif %}>{{ grade }}</option>
+                        <option value="{{ grade }}" {% if grade == quiz[7] %}selected{% endif %}>{{ grade }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -74,7 +76,7 @@
 
         <div class="form-group mb-4">
             <label for="points">Pontos:</label>
-            <input type="number" class="form-control" id="points" name="points" value="{{ question[7] }}" required min="0">
+            <input type="number" class="form-control" id="points" name="points" value="{{ quiz[9] }}" required min="0">
         </div>
 
         <!-- Preview da Questão -->
@@ -180,12 +182,12 @@ function initializeEditors() {
 
         // Pre-fill editors with existing content
         console.log('Pre-filling editors with existing content...');
-        editors.question.root.innerHTML = '{{ quiz.question|safe }}';
-        editors.correct_answer.root.innerHTML = '{{ quiz.correct_answer|safe }}';
-        editors.option1.root.innerHTML = '{{ quiz.option1|safe }}';
-        editors.option2.root.innerHTML = '{{ quiz.option2|safe }}';
-        editors.option3.root.innerHTML = '{{ quiz.option3|safe }}';
-        editors.option4.root.innerHTML = '{{ quiz.option4|safe }}';
+        editors.question.root.innerHTML = '{{ quiz[1]|safe }}';
+        editors.correct_answer.root.innerHTML = '{{ quiz[2]|safe }}';
+        editors.option1.root.innerHTML = '{{ quiz[3]|safe }}';
+        editors.option2.root.innerHTML = '{{ quiz[4]|safe }}';
+        editors.option3.root.innerHTML = '{{ quiz[5]|safe }}';
+        editors.option4.root.innerHTML = '{{ quiz[6]|safe }}';
 
         console.log('Setting up preview function...');
         function updatePreview() {
