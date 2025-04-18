@@ -27,18 +27,30 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%; /* Prevent font scaling in landscape */
 }
 
 body {
   font-family: system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   color: var(--text-color);
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 /* Navbar */
 .navbar {
   background-color: var(--header-footer-bg);
   padding: var(--spacing-sm) 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .navbar-brand {
@@ -46,6 +58,7 @@ body {
   text-decoration: none;
   font-size: 1.5rem;
   font-weight: 500;
+  padding: var(--spacing-xs) var(--spacing-sm);
 }
 
 .nav-link {
@@ -53,6 +66,9 @@ body {
   text-decoration: none;
   padding: var(--spacing-xs) var(--spacing-sm);
   transition: color 0.2s ease;
+  display: inline-block;
+  min-height: 44px; /* Minimum touch target size */
+  line-height: 44px;
 }
 
 .nav-link:hover {
@@ -65,6 +81,7 @@ footer {
   padding: var(--spacing-md);
   background-color: var(--header-footer-bg);
   color: white;
+  margin-top: auto;
 }
 
 /* Botões */
@@ -76,6 +93,11 @@ footer {
   transition: all 0.2s ease;
   cursor: pointer;
   border: none;
+  min-height: 44px; /* Minimum touch target size */
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-primary {
@@ -99,6 +121,9 @@ footer {
   color: var(--text-color);
   border: 1px solid #dee2e6;
   transition: all 0.3s ease;
+  min-height: 44px; /* Minimum touch target size */
+  padding: var(--spacing-sm);
+  font-size: 16px; /* Prevent zoom on iOS */
 }
 
 .form-control:focus {
@@ -127,6 +152,7 @@ select.form-control option {
   color: var(--text-color);
   margin-bottom: 0.5rem;
   font-weight: 500;
+  display: block;
 }
 
 /* Placeholder */
@@ -147,6 +173,7 @@ select.form-control option {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 var(--spacing-md);
+  width: 100%;
 }
 
 /* Responsividade */
@@ -154,6 +181,11 @@ select.form-control option {
   :root {
     --spacing-lg: 1.5rem;
     --spacing-md: 1rem;
+    --spacing-sm: 0.75rem;
+  }
+  
+  html {
+    font-size: 14px;
   }
   
   .navbar-brand {
@@ -161,8 +193,32 @@ select.form-control option {
   }
   
   .btn {
-    font-size: 0.9rem;
-    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 1rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+    width: 100%; /* Full width buttons on mobile */
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .container {
+    padding: 0 var(--spacing-sm);
+  }
+  
+  /* Improve touch targets */
+  .form-control,
+  .btn,
+  .nav-link {
+    min-height: 44px;
+    line-height: 44px;
+  }
+  
+  /* Prevent text zoom on form inputs */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  textarea {
+    font-size: 16px !important;
   }
 }
 
@@ -173,6 +229,8 @@ select.form-control {
   text-transform: capitalize;
   cursor: pointer;
   appearance: auto;
+  min-height: 44px;
+  line-height: 44px;
 }
 
 select.form-control option {
@@ -186,11 +244,13 @@ select.form-control:focus {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px var(--primary-light);
   outline: none;
-} 
+}
+
 /* Formulários */
 .form-group {
   margin-bottom: var(--spacing-md);
 }
+
 select.form-control,
 .form-control {
   width: 100%;
@@ -209,6 +269,7 @@ select.form-select {
   font-size: 1rem !important;
   line-height: 1.5 !important;
   padding: 0.5rem !important;
+  min-height: 44px !important;
 }
 
 select.form-control option,
@@ -265,6 +326,7 @@ select.form-select:focus {
 
 .ql-snow .ql-toolbar button {
   color: var(--text-color);
+  min-height: 44px; /* Minimum touch target size */
 }
 
 .ql-snow .ql-toolbar button:hover {
@@ -281,4 +343,42 @@ select.form-select:focus {
 
 .ql-snow .ql-toolbar button.ql-active .ql-fill {
   fill: var(--primary-color);
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 480px) {
+  :root {
+    --spacing-lg: 1.25rem;
+    --spacing-md: 0.875rem;
+    --spacing-sm: 0.625rem;
+  }
+  
+  html {
+    font-size: 13px;
+  }
+  
+  .container {
+    padding: 0 var(--spacing-xs);
+  }
+  
+  /* Improve readability on small screens */
+  p, li, span, div {
+    line-height: 1.6;
+  }
+  
+  /* Optimize spacing for mobile */
+  .form-group {
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  /* Ensure proper spacing in lists */
+  ul, ol {
+    padding-left: var(--spacing-md);
+  }
+  
+  /* Improve button spacing */
+  .btn + .btn {
+    margin-left: 0;
+    margin-top: var(--spacing-sm);
+  }
 }

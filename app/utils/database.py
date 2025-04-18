@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()  # Carrega as variáveis de ambiente do arquivo .env
 
-POINTS_TO_GRAMS = 1  # Agora deve ser simplesmente 1 ponto = 1 grão
+POINTS_TO_GRAMS = 2  # 1 ponto = 2 grãos
 
 
 class PostgresConnectionFactory:
@@ -131,7 +131,7 @@ def get_all_user_points():
         with conn.cursor() as c:
             c.execute("SELECT SUM(points) FROM user_points")
             data["total_points"] = c.fetchone()[0] or 0
-            data["total_graos"] = data["total_points"]  # Relação direta 1:1
+            data["total_graos"] = data["total_points"] * POINTS_TO_GRAMS  # 1 ponto = 2 grãos
     except psycopg2.Error as e:
         print(f"Database connection error: {e}")
         conn.rollback()
@@ -149,7 +149,7 @@ def get_user_points(user_id):
                 (user_id,),
             )
             total_points = c.fetchone()[0] or 0
-            food_donation = total_points  # Relação direta 1:1
+            food_donation = total_points * POINTS_TO_GRAMS  # 1 ponto = 2 grãos
             return total_points, food_donation
     except psycopg2.Error as e:
         print(f"Database connection error: {e}")
@@ -161,7 +161,7 @@ def update_user_role(username, role):
     conn = PostgresConnectionFactory.get_connection()
     try:
         with conn.cursor() as c:
-            c.execute("UPDATE users SET role = ? WHERE username = ?", (role, username))
+            c.execute("UPDATE users SET role = %s WHERE username = %s", (role, username))
             conn.commit()
             print(f"O usuário '{username}' agora é um administrador.")
             return True
@@ -214,14 +214,12 @@ def add_quiz_db(request):
     option4 = request.form["option4"]
     try:
         points = int(request.form["points"])
-    except KeyError:
-        # Handle missing points field - could set default or raise custom error
-        points = 0  # or whatever default value makes sense
+    except (KeyError, ValueError):
+        points = 0  # Default value if points is missing or invalid
     topic = request.form["topic"]
     if topic == "novo_tema":
         topic = request.form["new_topic"]
     grade = request.form["grade"]
-    difficulty = request.form["difficulty"]
 
     conn = PostgresConnectionFactory.get_connection()
     try:
@@ -230,8 +228,8 @@ def add_quiz_db(request):
                 """
                     INSERT INTO quizzes (question, correct_answer,
                     option1, option2, option3, option4, points, topic,
-                    grade, difficulty)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    grade)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """,
                 (
                     question,
@@ -243,13 +241,13 @@ def add_quiz_db(request):
                     points,
                     topic,
                     grade,
-                    difficulty,
                 ),
             )
             conn.commit()
     except psycopg2.Error as e:
         print(f"Database connection error: {e}")
         conn.rollback()
+        raise e
 
 
 def get_specific_quiz(quiz_id, user_id, answer):

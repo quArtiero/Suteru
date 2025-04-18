@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, send_from_directory
 from app.utils import database
-from app.utils.database import PostgresConnectionFactory
+from app.utils.database import PostgresConnectionFactory, POINTS_TO_GRAMS
 from app.config import Config
 import os
 import csv
@@ -17,7 +17,7 @@ def dashboard():
         if role == "admin":
             graos_per_day = database.execute_fetch(
                 "SELECT date(timestamp) as date, "
-                "SUM(points) as graos_doados FROM user_points "
+                f"SUM(points) * {POINTS_TO_GRAMS} as graos_doados FROM user_points "
                 "GROUP BY date(timestamp) ORDER BY date(timestamp) "
                 "DESC LIMIT 7"
             )
@@ -64,7 +64,7 @@ def users():
                 """
                 SELECT u.id, u.username, u.email, u.role, 
                        COALESCE(SUM(up.points), 0) as total_points,
-                       COALESCE(SUM(up.points), 0) as total_graos_doados,
+                       COALESCE(SUM(up.points), 0) * %s as total_graos_doados,
                        CASE 
                           WHEN COUNT(up.id) = 0 THEN 0
                           ELSE ROUND(SUM(CASE WHEN up.is_correct = 1 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(up.id), 0), 2)
@@ -74,7 +74,7 @@ def users():
                 LEFT JOIN user_points up ON u.id = up.user_id
                 GROUP BY u.id, u.username, u.email, u.role, u.register_date
                 ORDER BY """ + sort_column + " " + sort_order,
-                ()
+                (POINTS_TO_GRAMS,)
             )
             return render_template(
                 "admin/admin_users.html",
@@ -306,9 +306,9 @@ def edit_question(question_id):
             flash(f"Erro ao atualizar a pergunta: {e}", "danger")
 
     c.execute("SELECT * FROM quizzes WHERE id = %s", (question_id,))
-    question_data = c.fetchone()
+    quiz = c.fetchone()
 
-    if question_data is None:
+    if quiz is None:
         flash(f"Erro: Pergunta com ID {question_id} não encontrada!", "danger")
         return redirect(url_for("admin.dashboard"))
 
@@ -320,7 +320,7 @@ def edit_question(question_id):
 
     return render_template(
         "admin/edit_question.html",
-        question=question_data,
+        quiz=quiz,
         topics=topics,
         grades=grades,
     )
@@ -433,7 +433,7 @@ def approve_suggestion(suggestion_id):
         suggestion = cursor.fetchone()
         
         if suggestion:
-            # Insere na tabela quizzes
+            # Insere na tabela quizzes (ignorando o campo difficulty)
             cursor.execute("""
                 INSERT INTO quizzes 
                 (question, correct_answer, option1, option2, option3, option4, topic, grade, points)

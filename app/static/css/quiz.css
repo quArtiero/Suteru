@@ -3,6 +3,7 @@
   padding: var(--spacing-lg);
   max-width: 800px;
   margin: 0 auto;
+  width: 100%;
 }
 
 .quiz-header {
@@ -37,6 +38,7 @@
   margin-bottom: var(--spacing-lg);
   padding: var(--spacing-lg);
   transition: transform 0.3s ease;
+  width: 100%;
 }
 
 .question-text {
@@ -59,6 +61,9 @@
   padding: var(--spacing-md);
   cursor: pointer;
   transition: all 0.3s ease;
+  min-height: 60px; /* Minimum touch target size */
+  display: flex;
+  align-items: center;
 }
 
 .option-item:hover {
@@ -89,6 +94,8 @@
   justify-content: space-between;
   align-items: center;
   margin-top: var(--spacing-xl);
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
 }
 
 .quiz-button {
@@ -97,6 +104,10 @@
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  min-height: 44px; /* Minimum touch target size */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .next-button {
@@ -128,9 +139,93 @@
 
   .question-text {
     font-size: 1.1rem;
+    line-height: 1.6;
   }
 
   .option-item {
     padding: var(--spacing-sm);
+    min-height: 50px;
+  }
+
+  .quiz-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .quiz-button {
+    width: 100%;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .quiz-stats {
+    order: -1;
+    margin-bottom: var(--spacing-md);
+  }
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 480px) {
+  .quiz-container {
+    padding: var(--spacing-sm);
+  }
+
+  .quiz-title {
+    font-size: 1.3rem;
+  }
+
+  .question-text {
+    font-size: 1rem;
+  }
+
+  .option-item {
+    padding: var(--spacing-sm);
+    min-height: 44px;
+  }
+
+  .quiz-card {
+    padding: var(--spacing-md);
+  }
+
+  /* Improve readability of math formulas */
+  .katex {
+    font-size: 1.1em;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  /* Ensure proper spacing for Quill editor content */
+  .ql-editor {
+    padding: var(--spacing-sm);
+  }
+
+  /* Improve touch targets for radio buttons */
+  .form-check-input {
+    width: 20px;
+    height: 20px;
+    margin-top: 0;
+  }
+
+  .form-check-label {
+    padding-left: var(--spacing-sm);
+  }
+}
+
+/* Landscape mode improvements */
+@media (max-height: 500px) and (orientation: landscape) {
+  .quiz-container {
+    padding: var(--spacing-sm);
+  }
+
+  .quiz-card {
+    padding: var(--spacing-sm);
+  }
+
+  .option-item {
+    padding: var(--spacing-xs);
+    min-height: 40px;
+  }
+
+  .question-text {
+    margin-bottom: var(--spacing-sm);
   }
 } 

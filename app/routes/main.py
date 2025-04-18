@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, session
-from app.utils.database import PostgresConnectionFactory
+from app.utils.database import PostgresConnectionFactory, POINTS_TO_GRAMS
 
 bp = Blueprint('main', __name__)
 
@@ -16,7 +16,7 @@ def landing():
     
     cursor.execute("SELECT COALESCE(SUM(points), 0) FROM user_points")
     total_points = cursor.fetchone()[0] or 0
-    total_graos = total_points
+    total_graos = total_points * POINTS_TO_GRAMS  # 1 ponto = 2 grãos
     
     cursor.close()
     conn.close()
