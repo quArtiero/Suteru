@@ -35,6 +35,11 @@
             </button>
         </form>
         <div class="auth-links">
+            <p class="terms-links">
+                Ao criar uma conta, você concorda com nossos 
+                <a href="{{ url_for('static', filename='docs/Termos de Uso – Šutēru.pdf') }}" download="Termos_de_Uso.pdf" class="auth-link">Termos e Condições</a> e 
+                <a href="{{ url_for('static', filename='docs/Política de Privacidade – Šutēru.pdf') }}" download="Politica_de_Privacidade.pdf" class="auth-link">Política de Privacidade</a>
+            </p>
             <p>Já possui uma conta? <a href="{{ url_for('auth.login') }}" class="auth-link">Faça login aqui</a></p>
         </div>
     </div>
