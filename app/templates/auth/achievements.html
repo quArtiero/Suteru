@@ -1,0 +1,1469 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/achievements.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="achievements-container">
+    <!-- Header -->
+    <div class="achievements-header">
+        <h1 class="achievements-title">
+            <i class="fas fa-crown"></i>
+            Panteão das Conquistas
+        </h1>
+        <p class="achievements-subtitle">
+            Desbloqueie títulos lendários em sua épica jornada pelo conhecimento
+        </p>
+        
+        <!-- Stats Overview -->
+        <div class="achievements-stats">
+            <div class="stat-item">
+                <i class="fas fa-medal"></i>
+                <span class="stat-number">{% set unlocked = 0 %}{% if total_points >= 1 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if total_points >= 25 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if total_points >= 50 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if total_points >= 100 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if total_points >= 250 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if total_points >= 500 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if total_points >= 1000 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if total_points >= 2500 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if total_points >= 5000 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if approximate_questions >= 5 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if approximate_questions >= 10 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if approximate_questions >= 25 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if approximate_questions >= 50 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if approximate_questions >= 100 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if approximate_questions >= 200 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if approximate_questions >= 365 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if approximate_questions >= 500 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if approximate_questions >= 1000 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if food_donation_meals >= 0.5 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if food_donation_meals >= 1 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if food_donation_meals >= 3 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if food_donation_meals >= 5 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if food_donation_meals >= 10 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if food_donation_meals >= 25 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if food_donation_meals >= 50 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if food_donation_meals >= 100 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if total_points >= 3141 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if total_points >= 1618 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if total_points >= 2718 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if approximate_questions >= 42 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if approximate_questions >= 137 %}{% set unlocked = unlocked + 1 %}{% endif %}{% if total_points >= 299792458 %}{% set unlocked = unlocked + 1 %}{% endif %}{{ unlocked }}</span>
+                <span class="stat-label">Títulos Conquistados</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-percentage"></i>
+                <span class="stat-number">{{ ((unlocked / 55) * 100)|round|int }}%</span>
+                <span class="stat-label">Panteão Completo</span>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Achievement Categories -->
+    <div class="achievements-categories">
+        
+        <!-- 🌟 Despertar do Herói -->
+        <div class="category-section">
+            <h2 class="category-title">
+                <i class="fas fa-magic"></i>
+                Despertar do Herói
+            </h2>
+            <div class="achievements-grid">
+                <!-- Primeiro Brilho -->
+                <div class="achievement-card {% if total_points >= 1 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Primeiro Brilho</h3>
+                        <p class="achievement-description">Desperte seu potencial com seu primeiro ponto</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ (100 if total_points >= 1 else 0) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ total_points if total_points < 1 else 1 }}/1</span>
+                        </div>
+                    </div>
+                    {% if total_points >= 1 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Chama Inicial -->
+                <div class="achievement-card {% if approximate_questions >= 5 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Chama Inicial</h3>
+                        <p class="achievement-description">Acenda a chama do saber com 5 respostas corretas</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((approximate_questions / 5 * 100)|round|int if approximate_questions < 5 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ approximate_questions|round|int if approximate_questions < 5 else 5 }}/5</span>
+                        </div>
+                    </div>
+                    {% if approximate_questions >= 5 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Coração Altruísta -->
+                <div class="achievement-card {% if food_donation_meals >= 0.5 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Coração Altruísta</h3>
+                        <p class="achievement-description">Faça sua primeira doação para quem precisa</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((food_donation_meals / 0.5 * 100)|round|int if food_donation_meals < 0.5 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ food_donation_meals|round(1) if food_donation_meals < 0.5 else 0.5 }}/0.5</span>
+                        </div>
+                    </div>
+                    {% if food_donation_meals >= 0.5 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Sábio Júnior -->
+                <div class="achievement-card {% if total_points >= 25 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Sábio Júnior</h3>
+                        <p class="achievement-description">Demonstre consistência com 25 pontos</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((total_points / 25 * 100)|round|int if total_points < 25 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ total_points if total_points < 25 else 25 }}/25</span>
+                        </div>
+                    </div>
+                    {% if total_points >= 25 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 🧙 Academia dos Mestres -->
+        <div class="category-section">
+            <h2 class="category-title">
+                <i class="fas fa-hat-wizard"></i>
+                Academia dos Mestres
+            </h2>
+            <div class="achievements-grid">
+                <!-- Discípulo Dedicado -->
+                <div class="achievement-card {% if approximate_questions >= 10 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-scroll"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Discípulo Dedicado</h3>
+                        <p class="achievement-description">Responda 10 perguntas com sabedoria</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((approximate_questions / 10 * 100)|round|int if approximate_questions < 10 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ approximate_questions|round|int if approximate_questions < 10 else 10 }}/10</span>
+                        </div>
+                    </div>
+                    {% if approximate_questions >= 10 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Guardião do Conhecimento -->
+                <div class="achievement-card {% if total_points >= 50 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Guardião do Conhecimento</h3>
+                        <p class="achievement-description">Proteja a sabedoria com 50 pontos</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((total_points / 50 * 100)|round|int if total_points < 50 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ total_points if total_points < 50 else 50 }}/50</span>
+                        </div>
+                    </div>
+                    {% if total_points >= 50 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Mestre da Primeira Ordem -->
+                <div class="achievement-card {% if approximate_questions >= 25 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Mestre da Primeira Ordem</h3>
+                        <p class="achievement-description">Conquiste o respeito com 25 perguntas</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((approximate_questions / 25 * 100)|round|int if approximate_questions < 25 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ approximate_questions|round|int if approximate_questions < 25 else 25 }}/25</span>
+                        </div>
+                    </div>
+                    {% if approximate_questions >= 25 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Centurião da Sabedoria -->
+                <div class="achievement-card {% if total_points >= 100 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Centurião da Sabedoria</h3>
+                        <p class="achievement-description">Lidere com 100 pontos de experiência</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((total_points / 100 * 100)|round|int if total_points < 100 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ total_points if total_points < 100 else 100 }}/100</span>
+                        </div>
+                    </div>
+                    {% if total_points >= 100 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 🍽️ Heróis da Esperança -->
+        <div class="category-section">
+            <h2 class="category-title">
+                <i class="fas fa-hands-helping"></i>
+                Heróis da Esperança
+            </h2>
+            <div class="achievements-grid">
+                <!-- Portador da Esperança -->
+                <div class="achievement-card {% if food_donation_meals >= 1 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-dove"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Portador da Esperança</h3>
+                        <p class="achievement-description">Doe sua primeira refeição completa</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((food_donation_meals / 1 * 100)|round|int if food_donation_meals < 1 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ food_donation_meals|round(1) if food_donation_meals < 1 else 1 }}/1</span>
+                        </div>
+                    </div>
+                    {% if food_donation_meals >= 1 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Anjo da Misericórdia -->
+                <div class="achievement-card {% if food_donation_meals >= 3 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-angel"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Anjo da Misericórdia</h3>
+                        <p class="achievement-description">Espalhe bondade com 3 refeições</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((food_donation_meals / 3 * 100)|round|int if food_donation_meals < 3 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ food_donation_meals|round(1) if food_donation_meals < 3 else 3 }}/3</span>
+                        </div>
+                    </div>
+                    {% if food_donation_meals >= 3 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Guardião dos Famintos -->
+                <div class="achievement-card {% if food_donation_meals >= 5 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-shield-heart"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Guardião dos Famintos</h3>
+                        <p class="achievement-description">Proteja os necessitados com 5 refeições</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((food_donation_meals / 5 * 100)|round|int if food_donation_meals < 5 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ food_donation_meals|round(1) if food_donation_meals < 5 else 5 }}/5</span>
+                        </div>
+                    </div>
+                    {% if food_donation_meals >= 5 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Lâmina da Justiça Social -->
+                <div class="achievement-card {% if food_donation_meals >= 10 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-sword"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Lâmina da Justiça Social</h3>
+                        <p class="achievement-description">Corte a desigualdade com 10 refeições</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((food_donation_meals / 10 * 100)|round|int if food_donation_meals < 10 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ food_donation_meals|round(1) if food_donation_meals < 10 else 10 }}/10</span>
+                        </div>
+                    </div>
+                    {% if food_donation_meals >= 10 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔥 Elite dos Sábios -->
+        <div class="category-section">
+            <h2 class="category-title">
+                <i class="fas fa-fire"></i>
+                Elite dos Sábios
+            </h2>
+            <div class="achievements-grid">
+                <!-- Arquimago do Aprendizado -->
+                <div class="achievement-card {% if approximate_questions >= 50 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Arquimago do Aprendizado</h3>
+                        <p class="achievement-description">Domine a magia com 50 perguntas</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((approximate_questions / 50 * 100)|round|int if approximate_questions < 50 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ approximate_questions|round|int if approximate_questions < 50 else 50 }}/50</span>
+                        </div>
+                    </div>
+                    {% if approximate_questions >= 50 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Lorde do Conhecimento -->
+                <div class="achievement-card {% if total_points >= 250 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-chess-king"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Lorde do Conhecimento</h3>
+                        <p class="achievement-description">Reine sobre o saber com 250 pontos</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((total_points / 250 * 100)|round|int if total_points < 250 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ total_points if total_points < 250 else 250 }}/250</span>
+                        </div>
+                    </div>
+                    {% if total_points >= 250 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Imperador das Respostas -->
+                <div class="achievement-card {% if approximate_questions >= 100 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Imperador das Respostas</h3>
+                        <p class="achievement-description">Governe com 100 perguntas corretas</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((approximate_questions / 100 * 100)|round|int if approximate_questions < 100 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ approximate_questions|round|int if approximate_questions < 100 else 100 }}/100</span>
+                        </div>
+                    </div>
+                    {% if approximate_questions >= 100 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Titã da Compaixão -->
+                <div class="achievement-card {% if food_donation_meals >= 25 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-mountain"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Titã da Compaixão</h3>
+                        <p class="achievement-description">Seja um colosso da bondade com 25 refeições</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((food_donation_meals / 25 * 100)|round|int if food_donation_meals < 25 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ food_donation_meals|round(1) if food_donation_meals < 25 else 25 }}/25</span>
+                        </div>
+                    </div>
+                    {% if food_donation_meals >= 25 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 🌟 Lendas Imortais -->
+        <div class="category-section">
+            <h2 class="category-title">
+                <i class="fas fa-infinity"></i>
+                Lendas Imortais
+            </h2>
+            <div class="achievements-grid">
+                <!-- Senhor Supremo -->
+                <div class="achievement-card {% if total_points >= 500 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Senhor Supremo</h3>
+                        <p class="achievement-description">Transcenda com 500 pontos de poder</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((total_points / 500 * 100)|round|int if total_points < 500 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ total_points if total_points < 500 else 500 }}/500</span>
+                        </div>
+                    </div>
+                    {% if total_points >= 500 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Oráculo da Verdade -->
+                <div class="achievement-card {% if approximate_questions >= 200 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-eye-slash"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Oráculo da Verdade</h3>
+                        <p class="achievement-description">Veja além com 200 respostas proféticas</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((approximate_questions / 200 * 100)|round|int if approximate_questions < 200 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ approximate_questions|round|int if approximate_questions < 200 else 200 }}/200</span>
+                        </div>
+                    </div>
+                    {% if approximate_questions >= 200 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Deus da Generosidade -->
+                <div class="achievement-card {% if food_donation_meals >= 50 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-sun"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Deus da Generosidade</h3>
+                        <p class="achievement-description">Ilumine o mundo com 50 refeições divinas</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((food_donation_meals / 50 * 100)|round|int if food_donation_meals < 50 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ food_donation_meals|round(1) if food_donation_meals < 50 else 50 }}/50</span>
+                        </div>
+                    </div>
+                    {% if food_donation_meals >= 50 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Avatar da Mudança -->
+                <div class="achievement-card {% if food_donation_meals >= 100 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-yin-yang"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Avatar da Mudança</h3>
+                        <p class="achievement-description">Equilibre o universo com 100 refeições cósmicas</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((food_donation_meals / 100 * 100)|round|int if food_donation_meals < 100 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ food_donation_meals|round(1) if food_donation_meals < 100 else 100 }}/100</span>
+                        </div>
+                    </div>
+                    {% if food_donation_meals >= 100 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔬 Segredos do Universo -->
+        <div class="category-section">
+            <h2 class="category-title">
+                <i class="fas fa-atom"></i>
+                Segredos do Universo
+            </h2>
+            <div class="achievements-grid">
+                <!-- Discípulo de Arquimedes -->
+                <div class="achievement-card {% if total_points >= 3141 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-circle"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Discípulo de Arquimedes</h3>
+                        <p class="achievement-description">Descubra π com exatos 3.141 pontos</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((total_points / 3141 * 100)|round|int if total_points < 3141 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ total_points if total_points < 3141 else 3141 }}/3141</span>
+                        </div>
+                    </div>
+                    {% if total_points >= 3141 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Guardião da Proporção Áurea -->
+                <div class="achievement-card {% if total_points >= 1618 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-star-of-david"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Guardião da Proporção Áurea</h3>
+                        <p class="achievement-description">Encontre a beleza matemática com 1.618 pontos</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((total_points / 1618 * 100)|round|int if total_points < 1618 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ total_points if total_points < 1618 else 1618 }}/1618</span>
+                        </div>
+                    </div>
+                    {% if total_points >= 1618 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Herdeiro de Euler -->
+                <div class="achievement-card {% if total_points >= 2718 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-infinity"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Herdeiro de Euler</h3>
+                        <p class="achievement-description">Domine o número de Euler com 2.718 pontos</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((total_points / 2718 * 100)|round|int if total_points < 2718 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ total_points if total_points < 2718 else 2718 }}/2718</span>
+                        </div>
+                    </div>
+                    {% if total_points >= 2718 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Resposta para Tudo -->
+                <div class="achievement-card {% if approximate_questions >= 42 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-question"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Resposta para Tudo</h3>
+                        <p class="achievement-description">Encontre o sentido da vida com 42 respostas</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((approximate_questions / 42 * 100)|round|int if approximate_questions < 42 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ approximate_questions|round|int if approximate_questions < 42 else 42 }}/42</span>
+                        </div>
+                    </div>
+                    {% if approximate_questions >= 42 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔥 Conquistas Supremas -->
+        <div class="category-section">
+            <h2 class="category-title">
+                <i class="fas fa-dragon"></i>
+                Conquistas Supremas
+            </h2>
+            <div class="achievements-grid">
+                <!-- Imperador Imortal -->
+                <div class="achievement-card {% if total_points >= 1000 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-dragon"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Imperador Imortal</h3>
+                        <p class="achievement-description">Transcenda a mortalidade com 1.000 pontos</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((total_points / 1000 * 100)|round|int if total_points < 1000 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ total_points if total_points < 1000 else 1000 }}/1000</span>
+                        </div>
+                    </div>
+                    {% if total_points >= 1000 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Vigilante Incansável -->
+                <div class="achievement-card {% if approximate_questions >= 365 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Vigilante Incansável</h3>
+                        <p class="achievement-description">Uma pergunta por dia - 365 respostas</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((approximate_questions / 365 * 100)|round|int if approximate_questions < 365 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ approximate_questions|round|int if approximate_questions < 365 else 365 }}/365</span>
+                        </div>
+                    </div>
+                    {% if approximate_questions >= 365 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Lenda Viva -->
+                <div class="achievement-card {% if total_points >= 2500 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-star-of-life"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Lenda Viva</h3>
+                        <p class="achievement-description">Torne-se lenda com 2.500 pontos épicos</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((total_points / 2500 * 100)|round|int if total_points < 2500 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ total_points if total_points < 2500 else 2500 }}/2500</span>
+                        </div>
+                    </div>
+                    {% if total_points >= 2500 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Guardião Eterno -->
+                <div class="achievement-card {% if approximate_questions >= 1000 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-hourglass-end"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Guardião Eterno</h3>
+                        <p class="achievement-description">Proteja o conhecimento por toda eternidade - 1.000 respostas</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((approximate_questions / 1000 * 100)|round|int if approximate_questions < 1000 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ approximate_questions|round|int if approximate_questions < 1000 else 1000 }}/1000</span>
+                        </div>
+                    </div>
+                    {% if approximate_questions >= 1000 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 🌌 Conquistas Míticas -->
+        <div class="category-section">
+            <h2 class="category-title">
+                <i class="fas fa-rocket"></i>
+                Conquistas Míticas
+            </h2>
+            <div class="achievements-grid">
+                <!-- Viajante Cósmico -->
+                <div class="achievement-card {% if total_points >= 5000 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Viajante Cósmico</h3>
+                        <p class="achievement-description">Explore o universo com 5.000 pontos estelares</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((total_points / 5000 * 100)|round|int if total_points < 5000 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ total_points if total_points < 5000 else 5000 }}/5000</span>
+                        </div>
+                    </div>
+                    {% if total_points >= 5000 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Einstein Reencarnado -->
+                <div class="achievement-card {% if approximate_questions >= 137 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-atom"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Einstein Reencarnado</h3>
+                        <p class="achievement-description">Domine a constante da estrutura fina - 137 respostas</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((approximate_questions / 137 * 100)|round|int if approximate_questions < 137 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ approximate_questions|round|int if approximate_questions < 137 else 137 }}/137</span>
+                        </div>
+                    </div>
+                    {% if approximate_questions >= 137 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Mestre dos Cinco Elementos -->
+                <div class="achievement-card {% if approximate_questions >= 500 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-yin-yang"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Mestre dos Cinco Elementos</h3>
+                        <p class="achievement-description">Domine todos os elementos com 500 respostas</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((approximate_questions / 500 * 100)|round|int if approximate_questions < 500 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ approximate_questions|round|int if approximate_questions < 500 else 500 }}/500</span>
+                        </div>
+                    </div>
+                    {% if approximate_questions >= 500 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Velocidade da Luz -->
+                <div class="achievement-card {% if total_points >= 299792458 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Velocidade da Luz</h3>
+                        <p class="achievement-description">Conquista impossível - 299.792.458 pontos</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((total_points / 299792458 * 100)|round(6) if total_points < 299792458 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ total_points if total_points < 299792458 else 299792458 }}/299792458</span>
+                        </div>
+                    </div>
+                    {% if total_points >= 299792458 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 🧮 Mestres das Disciplinas -->
+        <div class="category-section">
+            <h2 class="category-title">
+                <i class="fas fa-graduation-cap"></i>
+                Mestres das Disciplinas
+            </h2>
+            <div class="achievements-grid">
+                <!-- MATEMÁTICA - Todas as conquistas -->
+                {% set math_count = subject_achievements.get('Matemática', 0) %}
+                
+                <!-- Matemática Nível 1 -->
+                <div class="achievement-card {% if math_count >= 5 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Calculista Iniciante</h3>
+                        <p class="achievement-description">Responda 5 questões de Matemática</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((math_count / 5 * 100)|round|int if math_count < 5 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ math_count if math_count < 5 else 5 }}/5</span>
+                        </div>
+                    </div>
+                    {% if math_count >= 5 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Matemática Nível 2 -->
+                <div class="achievement-card {% if math_count >= 20 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-square-root-alt"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Geometra Dedicado</h3>
+                        <p class="achievement-description">Responda 20 questões de Matemática</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((math_count / 20 * 100)|round|int if math_count < 20 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ math_count if math_count < 20 else 20 }}/20</span>
+                        </div>
+                    </div>
+                    {% if math_count >= 20 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Matemática Nível 3 -->
+                <div class="achievement-card {% if math_count >= 50 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-infinity"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Matemático Supremo</h3>
+                        <p class="achievement-description">Responda 50 questões de Matemática</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((math_count / 50 * 100)|round|int if math_count < 50 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ math_count if math_count < 50 else 50 }}/50</span>
+                        </div>
+                    </div>
+                    {% if math_count >= 50 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- FÍSICA - Todas as conquistas -->
+                {% set physics_count = subject_achievements.get('Física', 0) %}
+                
+                <!-- Física Nível 1 -->
+                <div class="achievement-card {% if physics_count >= 5 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-atom"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Explorador Quântico</h3>
+                        <p class="achievement-description">Responda 5 questões de Física</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((physics_count / 5 * 100)|round|int if physics_count < 5 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ physics_count if physics_count < 5 else 5 }}/5</span>
+                        </div>
+                    </div>
+                    {% if physics_count >= 5 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Física Nível 2 -->
+                <div class="achievement-card {% if physics_count >= 20 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-satellite"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Físico Espacial</h3>
+                        <p class="achievement-description">Responda 20 questões de Física</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((physics_count / 20 * 100)|round|int if physics_count < 20 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ physics_count if physics_count < 20 else 20 }}/20</span>
+                        </div>
+                    </div>
+                    {% if physics_count >= 20 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Física Nível 3 -->
+                <div class="achievement-card {% if physics_count >= 50 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Mestre das Forças</h3>
+                        <p class="achievement-description">Responda 50 questões de Física</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((physics_count / 50 * 100)|round|int if physics_count < 50 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ physics_count if physics_count < 50 else 50 }}/50</span>
+                        </div>
+                    </div>
+                    {% if physics_count >= 50 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- QUÍMICA - Todas as conquistas -->
+                {% set chemistry_count = subject_achievements.get('Química', 0) %}
+                
+                <!-- Química Nível 1 -->
+                <div class="achievement-card {% if chemistry_count >= 5 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Alquimista Iniciante</h3>
+                        <p class="achievement-description">Responda 5 questões de Química</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((chemistry_count / 5 * 100)|round|int if chemistry_count < 5 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ chemistry_count if chemistry_count < 5 else 5 }}/5</span>
+                        </div>
+                    </div>
+                    {% if chemistry_count >= 5 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Química Nível 2 -->
+                <div class="achievement-card {% if chemistry_count >= 20 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-vial"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Químico Molecular</h3>
+                        <p class="achievement-description">Responda 20 questões de Química</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((chemistry_count / 20 * 100)|round|int if chemistry_count < 20 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ chemistry_count if chemistry_count < 20 else 20 }}/20</span>
+                        </div>
+                    </div>
+                    {% if chemistry_count >= 20 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Química Nível 3 -->
+                <div class="achievement-card {% if chemistry_count >= 50 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Senhor dos Elementos</h3>
+                        <p class="achievement-description">Responda 50 questões de Química</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((chemistry_count / 50 * 100)|round|int if chemistry_count < 50 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ chemistry_count if chemistry_count < 50 else 50 }}/50</span>
+                        </div>
+                    </div>
+                    {% if chemistry_count >= 50 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- BIOLOGIA - Todas as conquistas -->
+                {% set biology_count = subject_achievements.get('Biologia', 0) %}
+                
+                <!-- Biologia Nível 1 -->
+                <div class="achievement-card {% if biology_count >= 5 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-dna"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Explorador Celular</h3>
+                        <p class="achievement-description">Responda 5 questões de Biologia</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((biology_count / 5 * 100)|round|int if biology_count < 5 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ biology_count if biology_count < 5 else 5 }}/5</span>
+                        </div>
+                    </div>
+                    {% if biology_count >= 5 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Biologia Nível 2 -->
+                <div class="achievement-card {% if biology_count >= 20 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Biólogo Ecológico</h3>
+                        <p class="achievement-description">Responda 20 questões de Biologia</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((biology_count / 20 * 100)|round|int if biology_count < 20 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ biology_count if biology_count < 20 else 20 }}/20</span>
+                        </div>
+                    </div>
+                    {% if biology_count >= 20 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Biologia Nível 3 -->
+                <div class="achievement-card {% if biology_count >= 50 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-tree"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Guardião da Vida</h3>
+                        <p class="achievement-description">Responda 50 questões de Biologia</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((biology_count / 50 * 100)|round|int if biology_count < 50 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ biology_count if biology_count < 50 else 50 }}/50</span>
+                        </div>
+                    </div>
+                    {% if biology_count >= 50 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- GEOGRAFIA - Todas as conquistas -->
+                {% set geography_count = subject_achievements.get('Geografia', 0) %}
+                
+                <!-- Geografia Nível 1 -->
+                <div class="achievement-card {% if geography_count >= 5 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Explorador Mundial</h3>
+                        <p class="achievement-description">Responda 5 questões de Geografia</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((geography_count / 5 * 100)|round|int if geography_count < 5 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ geography_count if geography_count < 5 else 5 }}/5</span>
+                        </div>
+                    </div>
+                    {% if geography_count >= 5 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Geografia Nível 2 -->
+                <div class="achievement-card {% if geography_count >= 20 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-mountain"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Cartógrafo Aventureiro</h3>
+                        <p class="achievement-description">Responda 20 questões de Geografia</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((geography_count / 20 * 100)|round|int if geography_count < 20 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ geography_count if geography_count < 20 else 20 }}/20</span>
+                        </div>
+                    </div>
+                    {% if geography_count >= 20 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Geografia Nível 3 -->
+                <div class="achievement-card {% if geography_count >= 50 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-compass"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Mestre dos Continentes</h3>
+                        <p class="achievement-description">Responda 50 questões de Geografia</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((geography_count / 50 * 100)|round|int if geography_count < 50 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ geography_count if geography_count < 50 else 50 }}/50</span>
+                        </div>
+                    </div>
+                    {% if geography_count >= 50 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- HISTÓRIA - Todas as conquistas -->
+                {% set history_count = subject_achievements.get('História', 0) %}
+                
+                <!-- História Nível 1 -->
+                <div class="achievement-card {% if history_count >= 5 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-scroll"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Cronista Curioso</h3>
+                        <p class="achievement-description">Responda 5 questões de História</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((history_count / 5 * 100)|round|int if history_count < 5 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ history_count if history_count < 5 else 5 }}/5</span>
+                        </div>
+                    </div>
+                    {% if history_count >= 5 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- História Nível 2 -->
+                <div class="achievement-card {% if history_count >= 20 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Historiador Real</h3>
+                        <p class="achievement-description">Responda 20 questões de História</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((history_count / 20 * 100)|round|int if history_count < 20 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ history_count if history_count < 20 else 20 }}/20</span>
+                        </div>
+                    </div>
+                    {% if history_count >= 20 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- História Nível 3 -->
+                <div class="achievement-card {% if history_count >= 50 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-hourglass-end"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Guardião do Tempo</h3>
+                        <p class="achievement-description">Responda 50 questões de História</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((history_count / 50 * 100)|round|int if history_count < 50 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ history_count if history_count < 50 else 50 }}/50</span>
+                        </div>
+                    </div>
+                    {% if history_count >= 50 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- LITERATURA - Todas as conquistas -->
+                {% set literature_count = subject_achievements.get('Literatura', 0) %}
+                
+                <!-- Literatura Nível 1 -->
+                <div class="achievement-card {% if literature_count >= 5 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Leitor Apaixonado</h3>
+                        <p class="achievement-description">Responda 5 questões de Literatura</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((literature_count / 5 * 100)|round|int if literature_count < 5 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ literature_count if literature_count < 5 else 5 }}/5</span>
+                        </div>
+                    </div>
+                    {% if literature_count >= 5 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Literatura Nível 2 -->
+                <div class="achievement-card {% if literature_count >= 20 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-feather-alt"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Poeta Eloquente</h3>
+                        <p class="achievement-description">Responda 20 questões de Literatura</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((literature_count / 20 * 100)|round|int if literature_count < 20 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ literature_count if literature_count < 20 else 20 }}/20</span>
+                        </div>
+                    </div>
+                    {% if literature_count >= 20 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Literatura Nível 3 -->
+                <div class="achievement-card {% if literature_count >= 50 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-theater-masks"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Mestre das Palavras</h3>
+                        <p class="achievement-description">Responda 50 questões de Literatura</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((literature_count / 50 * 100)|round|int if literature_count < 50 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ literature_count if literature_count < 50 else 50 }}/50</span>
+                        </div>
+                    </div>
+                    {% if literature_count >= 50 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- FILOSOFIA - Todas as conquistas -->
+                {% set philosophy_count = subject_achievements.get('Filosofia', 0) %}
+                
+                <!-- Filosofia Nível 1 -->
+                <div class="achievement-card {% if philosophy_count >= 5 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Pensador Reflexivo</h3>
+                        <p class="achievement-description">Responda 5 questões de Filosofia</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((philosophy_count / 5 * 100)|round|int if philosophy_count < 5 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ philosophy_count if philosophy_count < 5 else 5 }}/5</span>
+                        </div>
+                    </div>
+                    {% if philosophy_count >= 5 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Filosofia Nível 2 -->
+                <div class="achievement-card {% if philosophy_count >= 20 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Filósofo Iluminado</h3>
+                        <p class="achievement-description">Responda 20 questões de Filosofia</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((philosophy_count / 20 * 100)|round|int if philosophy_count < 20 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ philosophy_count if philosophy_count < 20 else 20 }}/20</span>
+                        </div>
+                    </div>
+                    {% if philosophy_count >= 20 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Filosofia Nível 3 -->
+                <div class="achievement-card {% if philosophy_count >= 50 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Sábio Transcendental</h3>
+                        <p class="achievement-description">Responda 50 questões de Filosofia</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((philosophy_count / 50 * 100)|round|int if philosophy_count < 50 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ philosophy_count if philosophy_count < 50 else 50 }}/50</span>
+                        </div>
+                    </div>
+                    {% if philosophy_count >= 50 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- CIÊNCIAS - Todas as conquistas -->
+                {% set science_count = subject_achievements.get('Ciências', 0) %}
+                
+                <!-- Ciências Nível 1 -->
+                <div class="achievement-card {% if science_count >= 5 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-microscope"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Cientista Curioso</h3>
+                        <p class="achievement-description">Responda 5 questões de Ciências</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((science_count / 5 * 100)|round|int if science_count < 5 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ science_count if science_count < 5 else 5 }}/5</span>
+                        </div>
+                    </div>
+                    {% if science_count >= 5 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Ciências Nível 2 -->
+                <div class="achievement-card {% if science_count >= 20 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Pesquisador Espacial</h3>
+                        <p class="achievement-description">Responda 20 questões de Ciências</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((science_count / 20 * 100)|round|int if science_count < 20 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ science_count if science_count < 20 else 20 }}/20</span>
+                        </div>
+                    </div>
+                    {% if science_count >= 20 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Ciências Nível 3 -->
+                <div class="achievement-card {% if science_count >= 50 %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        <i class="fas fa-atom"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h3 class="achievement-name">Gênio Científico</h3>
+                        <p class="achievement-description">Responda 50 questões de Ciências</p>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="{{ ((science_count / 50 * 100)|round|int if science_count < 50 else 100) }}"></div>
+                            </div>
+                            <span class="progress-text">{{ science_count if science_count < 50 else 50 }}/50</span>
+                        </div>
+                    </div>
+                    {% if science_count >= 50 %}
+                    <div class="achievement-badge unlocked">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to Dashboard -->
+    <div class="back-section">
+        <a href="{{ url_for('auth.dashboard') }}" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Retornar ao Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Progress Bar Animation Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate progress bars
+        const progressFills = document.querySelectorAll('.progress-fill');
+        
+        progressFills.forEach((fill, index) => {
+            const width = fill.getAttribute('data-width');
+            
+            setTimeout(() => {
+                fill.style.width = width + '%';
+            }, index * 50); // Stagger animation
+        });
+    });
+</script>
+{% endblock %} 

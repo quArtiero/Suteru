@@ -1,11 +1,537 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h2>Selecione a Série para o Tópico "{{ topic }}"</h2>
-<ul>
-    {% for grade in grades %}
-    <li>
-        <a href="{{ url_for('quiz.start_quiz', topic=topic, grade=grade) }}" class="btn btn-primary btn-block">{{ grade }}</a>
-    </li>
-    {% endfor %}
-</ul>
+<div class="select-grade-modern-container">
+    <!-- Header Section -->
+    <div class="grade-hero">
+        <div class="topic-icon-display">
+            {% if topic == 'Matemática' %}
+                <i class="fas fa-calculator topic-icon math"></i>
+            {% elif topic == 'Português' %}
+                <i class="fas fa-book topic-icon portuguese"></i>
+            {% elif topic == 'História' %}
+                <i class="fas fa-monument topic-icon history"></i>
+            {% elif topic == 'Geografia' %}
+                <i class="fas fa-globe topic-icon geography"></i>
+            {% elif topic == 'Ciências' %}
+                <i class="fas fa-flask topic-icon science"></i>
+            {% elif topic == 'Física' %}
+                <i class="fas fa-atom topic-icon physics"></i>
+            {% elif topic == 'Química' %}
+                <i class="fas fa-vial topic-icon chemistry"></i>
+            {% elif topic == 'Biologia' %}
+                <i class="fas fa-dna topic-icon biology"></i>
+            {% else %}
+                <i class="fas fa-graduation-cap topic-icon default"></i>
+            {% endif %}
+        </div>
+        
+        <h1 class="grade-title">Selecione sua Série</h1>
+        <p class="grade-subtitle">
+            Escolha o nível adequado para <strong>{{ topic }}</strong> e comece sua jornada de conhecimento
+        </p>
+        
+        <div class="topic-badge">
+            <span class="badge-text">{{ topic }}</span>
+        </div>
+    </div>
+
+    <!-- Grades Grid -->
+    <div class="grades-container">
+        <div class="grades-grid">
+            {% for grade in grades %}
+            <a href="{{ url_for('quiz.start_quiz', topic=topic, grade=grade) }}" 
+               class="grade-card" 
+               data-grade="{{ grade }}"
+               data-aos="zoom-in" 
+               data-aos-delay="{{ loop.index0 * 100 }}">
+                
+                <div class="grade-card-background"></div>
+                
+                <div class="grade-icon">
+                    {% if '1' in grade %}
+                        <i class="fas fa-seedling"></i>
+                    {% elif '2' in grade %}
+                        <i class="fas fa-leaf"></i>
+                    {% elif '3' in grade %}
+                        <i class="fas fa-tree"></i>
+                    {% elif '4' in grade %}
+                        <i class="fas fa-mountain"></i>
+                    {% elif '5' in grade %}
+                        <i class="fas fa-trophy"></i>
+                    {% elif '6' in grade %}
+                        <i class="fas fa-star"></i>
+                    {% elif '7' in grade %}
+                        <i class="fas fa-rocket"></i>
+                    {% elif '8' in grade %}
+                        <i class="fas fa-crown"></i>
+                    {% elif '9' in grade %}
+                        <i class="fas fa-gem"></i>
+                    {% elif 'Médio' in grade or 'EM' in grade %}
+                        <i class="fas fa-graduation-cap"></i>
+                    {% else %}
+                        <i class="fas fa-book-open"></i>
+                    {% endif %}
+                </div>
+                
+                <h3 class="grade-name">{{ grade }}</h3>
+                
+                <div class="grade-description">
+                    {% if '1' in grade %}
+                        Primeiros passos no aprendizado
+                    {% elif '2' in grade %}
+                        Crescendo no conhecimento
+                    {% elif '3' in grade %}
+                        Expandindo horizontes
+                    {% elif '4' in grade %}
+                        Consolidando saberes
+                    {% elif '5' in grade %}
+                        Dominando conceitos
+                    {% elif '6' in grade %}
+                        Preparando para novos desafios
+                    {% elif '7' in grade %}
+                        Explorando complexidades
+                    {% elif '8' in grade %}
+                        Aprofundando conhecimentos
+                    {% elif '9' in grade %}
+                        Preparação para o ensino médio
+                    {% elif 'Médio' in grade or 'EM' in grade %}
+                        Rumo à excelência acadêmica
+                    {% else %}
+                        Desenvolvimento contínuo
+                    {% endif %}
+                </div>
+                
+                <div class="grade-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                
+                <div class="card-shine"></div>
+            </a>
+            {% endfor %}
+        </div>
+        
+        <!-- Back Button -->
+        <div class="back-action" data-aos="fade-up" data-aos-delay="500">
+                            <a href="{{ url_for('quiz.quizzes') }}" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Voltar aos Tópicos
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Modern Select Grade Styles */
+.select-grade-modern-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: var(--space-8) var(--space-4);
+}
+
+/* Header Section */
+.grade-hero {
+    text-align: center;
+    margin-bottom: var(--space-12);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.topic-icon-display {
+    margin-bottom: var(--space-6);
+}
+
+.topic-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: var(--radius-full);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-4xl);
+    color: white;
+    box-shadow: var(--shadow-lg);
+    animation: iconFloat 3s ease-in-out infinite;
+}
+
+/* Topic-specific colors */
+.topic-icon.math {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.topic-icon.portuguese {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.topic-icon.history {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.topic-icon.geography {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+}
+
+.topic-icon.science {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.topic-icon.physics {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+}
+
+.topic-icon.chemistry {
+    background: linear-gradient(135deg, #ec4899, #db2777);
+}
+
+.topic-icon.biology {
+    background: linear-gradient(135deg, #84cc16, #65a30d);
+}
+
+.topic-icon.default {
+    background: var(--gradient-primary);
+}
+
+.grade-title {
+    font-size: var(--text-4xl);
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: var(--space-4);
+}
+
+.grade-subtitle {
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: var(--space-6);
+}
+
+.topic-badge {
+    display: inline-block;
+    background: var(--gradient-primary);
+    color: white;
+    padding: var(--space-2) var(--space-6);
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: var(--text-base);
+    box-shadow: var(--shadow-md);
+}
+
+/* Grades Container */
+.grades-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.grades-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-6);
+    margin-bottom: var(--space-12);
+}
+
+/* Grade Cards */
+.grade-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-lg);
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-height: 220px;
+    justify-content: space-between;
+}
+
+.grade-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-2xl);
+    border-color: var(--primary-200);
+    color: inherit;
+    text-decoration: none;
+}
+
+.grade-card-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transition: transform var(--transition-base);
+}
+
+.grade-card:hover .grade-card-background {
+    transform: scaleX(1);
+}
+
+.grade-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--primary-100);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-xl);
+    color: var(--primary-600);
+    margin-bottom: var(--space-4);
+    transition: all var(--transition-base);
+}
+
+.grade-card:hover .grade-icon {
+    background: var(--gradient-primary);
+    color: white;
+    transform: scale(1.1) rotate(5deg);
+}
+
+.grade-name {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-3);
+    transition: color var(--transition-base);
+}
+
+.grade-card:hover .grade-name {
+    color: var(--primary-600);
+}
+
+.grade-description {
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    margin-bottom: var(--space-4);
+    font-style: italic;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
+.grade-arrow {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-50);
+    color: var(--primary-600);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-base);
+    margin-top: auto;
+}
+
+.grade-card:hover .grade-arrow {
+    background: var(--primary-600);
+    color: white;
+    transform: translateX(5px);
+}
+
+.card-shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s;
+}
+
+.grade-card:hover .card-shine {
+    left: 100%;
+}
+
+/* Grade-specific hover colors */
+.grade-card[data-grade*="1"]:hover .grade-icon {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.grade-card[data-grade*="2"]:hover .grade-icon {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.grade-card[data-grade*="3"]:hover .grade-icon {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+}
+
+.grade-card[data-grade*="4"]:hover .grade-icon {
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+}
+
+.grade-card[data-grade*="5"]:hover .grade-icon {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.grade-card[data-grade*="6"]:hover .grade-icon {
+    background: linear-gradient(135deg, #d946ef, #c026d3);
+}
+
+.grade-card[data-grade*="7"]:hover .grade-icon {
+    background: linear-gradient(135deg, #ec4899, #db2777);
+}
+
+.grade-card[data-grade*="8"]:hover .grade-icon {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.grade-card[data-grade*="9"]:hover .grade-icon {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.grade-card[data-grade*="Médio"]:hover .grade-icon,
+.grade-card[data-grade*="EM"]:hover .grade-icon {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+}
+
+/* Back Action */
+.back-action {
+    text-align: center;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-6);
+    background: white;
+    color: var(--primary-600);
+    text-decoration: none;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    border: 2px solid var(--primary-200);
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-md);
+}
+
+.back-btn:hover {
+    color: var(--primary-700);
+    text-decoration: none;
+    border-color: var(--primary-300);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .grade-title {
+        font-size: var(--text-2xl);
+    }
+    
+    .grades-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-4);
+    }
+    
+    .grade-card {
+        min-height: 180px;
+        padding: var(--space-6);
+    }
+    
+    .topic-icon {
+        width: 80px;
+        height: 80px;
+        font-size: var(--text-2xl);
+    }
+    
+    .grade-icon {
+        width: 50px;
+        height: 50px;
+        font-size: var(--text-lg);
+    }
+}
+
+/* Animations */
+@keyframes iconFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+[data-aos="zoom-in"] {
+    opacity: 0;
+    transform: scale(0.8);
+    animation: zoomIn 0.6s ease forwards;
+}
+
+[data-aos="fade-up"] {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 0.6s ease forwards;
+}
+
+@keyframes zoomIn {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Staggered animation for grade cards
+    const cards = document.querySelectorAll('[data-aos="zoom-in"]');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 100}ms`;
+    });
+    
+    // Add click ripple effect
+    const gradeCards = document.querySelectorAll('.grade-card');
+    gradeCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            const ripple = document.createElement('div');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                background: rgba(59, 130, 246, 0.3);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: ripple 0.6s ease-out;
+                pointer-events: none;
+                z-index: 10;
+            `;
+            
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+});
+
+// CSS for ripple animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes ripple {
+        to {
+            transform: scale(2);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>
 {% endblock %}

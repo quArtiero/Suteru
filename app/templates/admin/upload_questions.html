@@ -1,38 +1,709 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h1>Upload de Perguntas em Massa</h1>
-<form method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 600px;">
-    <div class="form-group">
-        <label for="csv_file">Arquivo CSV:</label>
-        <input type="file" id="csv_file" name="csv_file" accept=".csv" class="form-control" required>
+<div class="upload-questions-modern">
+    <!-- Header da Página -->
+    <div class="upload-header mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="display-5 font-weight-bold text-primary mb-2">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload de Questões em Massa
+                </h1>
+                <p class="lead text-muted mb-0">
+                    Importe múltiplas questões utilizando arquivos CSV
+                </p>
+            </div>
+            <div class="header-actions">
+                <a href="{{ url_for('static', filename='templates/modelo_perguntas.csv') }}" 
+                   class="btn btn-outline-info" download>
+                    <i class="fas fa-download"></i> Baixar Modelo
+                </a>
+            </div>
+        </div>
     </div>
-    <button type="submit" class="btn btn-primary">Fazer Upload</button>
-</form>
 
-<hr>
+    <!-- Instruções -->
+    <div class="instructions-section mb-4">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="instruction-card">
+                    <h3><i class="fas fa-info-circle text-info"></i> Como usar esta funcionalidade</h3>
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h5>Baixe o modelo CSV</h5>
+                                <p>Use o botão acima para baixar o template com a estrutura correta</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h5>Preencha as questões</h5>
+                                <p>Complete o arquivo com suas questões, alternativas e respostas corretas</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h5>Faça o upload</h5>
+                                <p>Arraste o arquivo para a área abaixo ou clique para selecionar</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="format-card">
+                    <h4><i class="fas fa-file-csv text-success"></i> Formato Esperado</h4>
+                    <div class="format-info">
+                        <div class="format-item">
+                            <strong>Campos obrigatórios:</strong>
+                            <ul>
+                                <li>Pergunta</li>
+                                <li>Resposta Correta</li>
+                                <li>Alternativa 1, 2, 3, 4</li>
+                                <li>Tópico</li>
+                                <li>Série</li>
+                                <li>Pontos</li>
+                            </ul>
+                        </div>
+                        <div class="format-note">
+                            <i class="fas fa-lightbulb text-warning"></i>
+                            <small>Certifique-se de que todas as linhas estão preenchidas corretamente</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<h3>Instruções para o Arquivo CSV</h3>
-<p>O arquivo CSV deve seguir o seguinte formato e ordem de colunas:</p>
-<ol>
-    <li><strong>question</strong>: Texto da pergunta.</li>
-    <li><strong>correct_answer</strong>: Resposta correta.</li>
-    <li><strong>option1</strong>: Opção de resposta 1.</li>
-    <li><strong>option2</strong>: Opção de resposta 2.</li>
-    <li><strong>option3</strong>: Opção de resposta 3.</li>
-    <li><strong>option4</strong>: Opção de resposta 4.</li>
-    <li><strong>points</strong>: Pontuação atribuída à pergunta (número inteiro).</li>
-    <li><strong>topic</strong>: Tópico ao qual a pergunta pertence.</li>
-    <li><strong>grade</strong>: Série escolar correspondente (e.g., "6º ano", "1º ano EM").</li>
-</ol>
-<p>Cada linha do arquivo CSV deve representar uma pergunta, seguindo exatamente essa ordem de colunas. As colunas devem estar separadas por vírgula (,) e, se houver vírgulas no texto, certifique-se de que o campo esteja entre aspas.</p>
+    <!-- Área de Upload -->
+    <div class="upload-section">
+        <form action="{{ url_for('admin.upload_questions') }}" method="post" enctype="multipart/form-data" id="uploadForm">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-content">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3>Arraste seu arquivo CSV aqui</h3>
+                    <p>ou clique para selecionar um arquivo</p>
+                    <input type="file" name="file" id="fileInput" accept=".csv" required>
+                    <div class="file-requirements">
+                        <small>
+                            <i class="fas fa-check text-success"></i> Apenas arquivos CSV<br>
+                            <i class="fas fa-check text-success"></i> Tamanho máximo: 10MB<br>
+                            <i class="fas fa-check text-success"></i> Codificação: UTF-8
+                        </small>
+                    </div>
+                </div>
+                
+                <!-- File Preview -->
+                <div class="file-preview" id="filePreview" style="display: none;">
+                    <div class="file-info">
+                        <div class="file-icon">
+                            <i class="fas fa-file-csv text-success"></i>
+                        </div>
+                        <div class="file-details">
+                            <h5 id="fileName"></h5>
+                            <p id="fileSize"></p>
+                            <div class="file-status">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <span>Arquivo pronto para upload</span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-danger" id="removeFile">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-<h4>Exemplo de Linha CSV:</h4>
-<pre>
-"Qual é a capital da França?","Paris","Paris","Londres","Berlim","Roma",10,"Geografia","6º ano"
-</pre>
+            <!-- Validação Options -->
+            <div class="validation-options mb-4">
+                <h4><i class="fas fa-shield-check text-primary"></i> Opções de Validação</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check form-check-modern">
+                            <input class="form-check-input" type="checkbox" id="validateDuplicates" name="validate_duplicates" checked>
+                            <label class="form-check-label" for="validateDuplicates">
+                                <strong>Verificar duplicatas</strong>
+                                <span>Detectar questões que já existem no sistema</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check form-check-modern">
+                            <input class="form-check-input" type="checkbox" id="validateFormat" name="validate_format" checked>
+                            <label class="form-check-label" for="validateFormat">
+                                <strong>Validar formato</strong>
+                                <span>Verificar se todos os campos estão preenchidos</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-<p>Certifique-se também de que o arquivo esteja salvo com codificação <strong>UTF-8</strong> para suportar caracteres especiais.</p>
+            <!-- Submit Button -->
+            <div class="submit-section">
+                <button type="submit" class="btn btn-primary btn-lg px-5" id="submitBtn" disabled>
+                    <i class="fas fa-upload"></i>
+                    Iniciar Upload
+                </button>
+                <div class="upload-help">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i>
+                        O processo pode levar alguns minutos dependendo do tamanho do arquivo
+                    </small>
+                </div>
+            </div>
+        </form>
+    </div>
 
-<p>Você pode baixar um modelo de arquivo CSV <a href="{{ url_for('admin.download_csv_template') }}">aqui</a>.</p>
+    <!-- Progress Section -->
+    <div class="progress-section" id="progressSection" style="display: none;">
+        <div class="progress-card">
+            <h4><i class="fas fa-cog fa-spin text-primary"></i> Processando arquivo...</h4>
+            <div class="progress mb-3">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                     role="progressbar" style="width: 0%" id="progressBar">
+                </div>
+            </div>
+            <div class="progress-info" id="progressInfo">
+                Preparando upload...
+            </div>
+        </div>
+    </div>
 
+    <!-- Results Section -->
+    {% if upload_results %}
+    <div class="results-section mt-4">
+        <div class="results-card">
+            <h3>
+                <i class="fas fa-chart-pie text-success"></i> 
+                Resultados do Upload
+            </h3>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="result-stat success">
+                        <div class="stat-number">{{ upload_results.success_count or 0 }}</div>
+                        <div class="stat-label">Questões Adicionadas</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="result-stat warning">
+                        <div class="stat-number">{{ upload_results.duplicate_count or 0 }}</div>
+                        <div class="stat-label">Duplicatas Ignoradas</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="result-stat danger">
+                        <div class="stat-number">{{ upload_results.error_count or 0 }}</div>
+                        <div class="stat-label">Erros Encontrados</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="result-stat info">
+                        <div class="stat-number">{{ upload_results.total_processed or 0 }}</div>
+                        <div class="stat-label">Total Processado</div>
+                    </div>
+                </div>
+            </div>
+            
+            {% if upload_results.errors %}
+            <div class="errors-section mt-4">
+                <h5><i class="fas fa-exclamation-triangle text-warning"></i> Erros Encontrados</h5>
+                <div class="errors-list">
+                    {% for error in upload_results.errors %}
+                    <div class="error-item">
+                        <strong>Linha {{ error.line }}:</strong> {{ error.message }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.upload-questions-modern {
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+    min-height: 100vh;
+}
+
+.upload-header {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.instruction-card, .format-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+    height: 100%;
+}
+
+.instruction-card h3 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.step-content h5 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.step-content p {
+    color: #7c8db5;
+    margin: 0;
+}
+
+.format-card h4 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.format-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.format-info li {
+    padding: 0.25rem 0;
+    color: #6c757d;
+}
+
+.format-info li::before {
+    content: '•';
+    color: #3b82f6;
+    margin-right: 0.5rem;
+    font-weight: bold;
+}
+
+.format-note {
+    background: rgba(255, 193, 7, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.upload-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.upload-area {
+    border: 3px dashed #d1d5db;
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-area:hover {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.02);
+}
+
+.upload-area.dragover {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.05);
+    transform: scale(1.02);
+}
+
+.upload-icon {
+    font-size: 4rem;
+    color: #9ca3af;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.upload-area:hover .upload-icon {
+    color: #3b82f6;
+    transform: translateY(-4px);
+}
+
+.upload-content h3 {
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.upload-content p {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+}
+
+#fileInput {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-requirements {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.file-preview {
+    background: rgba(16, 185, 129, 0.05);
+    border: 2px solid #10b981;
+    border-radius: 16px;
+    padding: 2rem;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.file-icon {
+    font-size: 3rem;
+    color: #10b981;
+}
+
+.file-details {
+    flex: 1;
+}
+
+.file-details h5 {
+    color: #2c3e50;
+    margin-bottom: 0.25rem;
+}
+
+.file-details p {
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.file-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #10b981;
+    font-weight: 500;
+}
+
+.validation-options {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.validation-options h4 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-check-modern {
+    background: #f8faff;
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(59, 130, 246, 0.1);
+    transition: all 0.3s ease;
+}
+
+.form-check-modern:hover {
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.form-check-modern .form-check-label {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.form-check-modern .form-check-label span {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.submit-section {
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.upload-help {
+    margin-top: 1rem;
+}
+
+.progress-section, .results-section {
+    margin-top: 2rem;
+}
+
+.progress-card, .results-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.progress-card h4, .results-card h3 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.result-stat {
+    background: #f8faff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.result-stat.success { border-color: #10b981; background: rgba(16, 185, 129, 0.05); }
+.result-stat.warning { border-color: #f59e0b; background: rgba(245, 158, 11, 0.05); }
+.result-stat.danger { border-color: #ef4444; background: rgba(239, 68, 68, 0.05); }
+.result-stat.info { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.stat-label {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.errors-section {
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.errors-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.error-item {
+    padding: 0.75rem;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    border-left: 4px solid #ef4444;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .upload-questions-modern {
+        padding: 1rem 0;
+    }
+    
+    .upload-header {
+        padding: 1.5rem;
+    }
+    
+    .upload-header .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .upload-area {
+        padding: 2rem 1rem;
+    }
+    
+    .file-info {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const filePreview = document.getElementById('filePreview');
+    const uploadContent = uploadArea.querySelector('.upload-content');
+    const submitBtn = document.getElementById('submitBtn');
+    const uploadForm = document.getElementById('uploadForm');
+    const progressSection = document.getElementById('progressSection');
+    
+    // Drag and drop functionality
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFileSelect(files[0]);
+        }
+    });
+    
+    fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            handleFileSelect(e.target.files[0]);
+        }
+    });
+    
+    function handleFileSelect(file) {
+        if (!file.name.toLowerCase().endsWith('.csv')) {
+            alert('Por favor, selecione apenas arquivos CSV.');
+            return;
+        }
+        
+        if (file.size > 10 * 1024 * 1024) { // 10MB
+            alert('Arquivo muito grande. Tamanho máximo: 10MB.');
+            return;
+        }
+        
+        // Show file preview
+        uploadContent.style.display = 'none';
+        filePreview.style.display = 'block';
+        
+        document.getElementById('fileName').textContent = file.name;
+        document.getElementById('fileSize').textContent = formatFileSize(file.size);
+        
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('btn-secondary');
+        submitBtn.classList.add('btn-primary');
+    }
+    
+    document.getElementById('removeFile').addEventListener('click', function() {
+        fileInput.value = '';
+        uploadContent.style.display = 'block';
+        filePreview.style.display = 'none';
+        submitBtn.disabled = true;
+        submitBtn.classList.remove('btn-primary');
+        submitBtn.classList.add('btn-secondary');
+    });
+    
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Form submission with progress
+    uploadForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!fileInput.files.length) {
+            alert('Por favor, selecione um arquivo primeiro.');
+            return;
+        }
+        
+        // Show progress
+        progressSection.style.display = 'block';
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+        
+        // Simulate progress (replace with actual upload progress)
+        simulateProgress();
+        
+        // Submit form after delay (remove this and use actual form submission)
+        setTimeout(() => {
+            uploadForm.submit();
+        }, 3000);
+    });
+    
+    function simulateProgress() {
+        const progressBar = document.getElementById('progressBar');
+        const progressInfo = document.getElementById('progressInfo');
+        let progress = 0;
+        
+        const interval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress > 100) progress = 100;
+            
+            progressBar.style.width = progress + '%';
+            
+            if (progress < 30) {
+                progressInfo.textContent = 'Validando arquivo...';
+            } else if (progress < 60) {
+                progressInfo.textContent = 'Processando questões...';
+            } else if (progress < 90) {
+                progressInfo.textContent = 'Inserindo no banco de dados...';
+            } else {
+                progressInfo.textContent = 'Finalizando upload...';
+            }
+            
+            if (progress >= 100) {
+                clearInterval(interval);
+                progressInfo.textContent = 'Upload concluído!';
+            }
+        }, 200);
+    }
+});
+</script>
 {% endblock %}

@@ -1,54 +1,69 @@
+// Form.js - Funcionalidades do formulário
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Form.js carregado!'); // Debug
+    const formElements = document.querySelectorAll('.form-control, .form-select');
+    const submitButtons = document.querySelectorAll('button[type="submit"]');
     
-    const gradeSelect = document.getElementById('grade');
-    const topicSelect = document.getElementById('topic');
-    const newTopicInput = document.getElementById('new_topic');
-
-    if (!gradeSelect || !topicSelect) {
-        console.log('Elementos não encontrados:', {
-            grade: !!gradeSelect,
-            topic: !!topicSelect
+    if (formElements.length > 0 && submitButtons.length > 0) {
+        // Configurar validação de formulários
+        formElements.forEach(element => {
+            element.addEventListener('blur', function() {
+                validateField(this);
+            });
         });
-        return;
+        
+        // Configurar submissão de formulários
+        submitButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!validateForm(this.closest('form'))) {
+                    e.preventDefault();
+                }
+            });
+        });
     }
+});
 
-    console.log('Elementos encontrados, iniciando setup...'); // Debug
+function validateField(field) {
+    const value = field.value.trim();
+    const fieldName = field.name;
+    
+    // Remover classes de erro anteriores
+    field.classList.remove('is-invalid');
+    field.classList.remove('is-valid');
+    
+    // Validações específicas por campo
+    if (fieldName === 'email' && value) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+            field.classList.add('is-invalid');
+            return false;
+        }
+    }
+    
+    if (fieldName === 'password' && value) {
+        if (value.length < 6) {
+            field.classList.add('is-invalid');
+            return false;
+        }
+    }
+    
+    if (field.required && !value) {
+        field.classList.add('is-invalid');
+        return false;
+    }
+    
+    field.classList.add('is-valid');
+    return true;
+}
 
-    // Popula os grades (fixos)
-    GRADES.forEach(grade => {
-        const option = document.createElement('option');
-        option.value = grade;
-        option.textContent = grade;
-        gradeSelect.appendChild(option);
-    });
-
-    // Adiciona opção "Outro" no select de tópicos
-    const otherOption = document.createElement('option');
-    otherOption.value = "other";
-    otherOption.textContent = "Outro (especificar)";
-    topicSelect.appendChild(otherOption);
-
-    // Mostra/esconde input para novo tópico
-    topicSelect.addEventListener('change', function() {
-        if (this.value === 'other') {
-            newTopicInput.style.display = 'block';
-            newTopicInput.required = true;
-        } else {
-            newTopicInput.style.display = 'none';
-            newTopicInput.required = false;
+function validateForm(form) {
+    const fields = form.querySelectorAll('.form-control, .form-select');
+    let isValid = true;
+    
+    fields.forEach(field => {
+        if (!validateField(field)) {
+            isValid = false;
         }
     });
-
-    // Mantém a seleção após submit
-    const urlParams = new URLSearchParams(window.location.search);
-    const selectedGrade = urlParams.get('grade');
-    const selectedTopic = urlParams.get('topic');
-
-    if (selectedGrade) {
-        gradeSelect.value = selectedGrade;
-    }
-    if (selectedTopic) {
-        topicSelect.value = selectedTopic;
-    }
-}); 
+    
+    return isValid;
+} 

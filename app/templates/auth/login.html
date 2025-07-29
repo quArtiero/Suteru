@@ -1,36 +1,141 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="auth-container">
-    <div class="auth-card">
-        <div class="auth-logo">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Šutēru Logo" class="auth-logo-image">
-        </div>
-        <h1 class="auth-title">Bem-vindo de volta!</h1>
-        <form method="POST" class="auth-form">
-            <div class="form-group">
-                <div class="input-group">
-                    <span class="input-icon"><i class="fas fa-user"></i></span>
-                    <input type="text" id="username_or_email" name="username_or_email" class="form-control" placeholder="Usuário ou E-mail" required>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="input-group">
-                    <span class="input-icon"><i class="fas fa-lock"></i></span>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Senha" required>
-                </div>
-            </div>
-            <button type="submit" class="auth-submit">
-                <i class="fas fa-sign-in-alt"></i> Entrar
-            </button>
-        </form>
-        <div class="auth-links">
-            <p>Não possui uma conta? <a href="{{ url_for('auth.register') }}" class="auth-link">Registre-se aqui</a></p>
-        </div>
+<div class="auth-modern-container">
+  <!-- Floating Background Elements -->
+  <div class="floating-elements">
+    <div class="floating-shape"></div>
+    <div class="floating-shape"></div>
+    <div class="floating-shape"></div>
+  </div>
+
+  <div class="auth-card-modern">
+    <!-- Auth Header -->
+    <div class="auth-header">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Šutēru" class="auth-logo">
+      <h1 class="auth-title">Bem-vindo de volta!</h1>
+      <p class="auth-subtitle">Entre na sua conta e continue transformando conhecimento em impacto social</p>
     </div>
+
+    <!-- Login Form -->
+    <form method="POST" class="form-modern" id="loginForm" novalidate>
+      
+      <!-- Username or Email Field -->
+      <div class="form-group">
+        <label for="username_or_email" class="form-label">
+          <i class="fas fa-user me-2"></i>Usuário ou Email
+        </label>
+        <div class="input-group">
+          <i class="input-icon fas fa-user"></i>
+          {{ form.username_or_email(class="form-control", placeholder="Nome de usuário ou email", id="username_or_email") }}
+        </div>
+        {% if form.username_or_email.errors %}
+          <div class="invalid-feedback">{{ form.username_or_email.errors[0] }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password" class="form-label">
+          <i class="fas fa-lock me-2"></i>Senha
+        </label>
+        <div class="input-group">
+          <i class="input-icon fas fa-lock"></i>
+          {{ form.password(class="form-control", placeholder="Sua senha secreta", id="password") }}
+        </div>
+        {% if form.password.errors %}
+          <div class="invalid-feedback">{{ form.password.errors[0] }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Remember Me & Forgot Password -->
+      <div class="auth-extras">
+        <div class="form-check">
+          {{ form.remember_me(class="form-check-input") }}
+          <label class="form-check-label" for="remember_me">
+            Lembrar-me
+          </label>
+        </div>
+        <a href="#" class="forgot-password">Esqueci minha senha</a>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="auth-btn auth-btn-primary" id="submitBtn">
+        <i class="fas fa-sign-in-alt me-2"></i>
+        <span id="submitText">Entrar</span>
+        <div class="auth-loading" id="loadingSpinner" style="display: none;">
+          <div class="auth-spinner"></div>
+          <span>Entrando...</span>
+        </div>
+      </button>
+
+      <!-- Alternative Action -->
+      <a href="{{ url_for('quiz.quizzes') }}" class="auth-btn auth-btn-secondary">
+        <i class="fas fa-eye me-2"></i>Ver Quizzes Públicos
+      </a>
+    </form>
+
+    <!-- Links Section -->
+    <div class="auth-links">
+      <p>Não tem uma conta?</p>
+      <a href="{{ url_for('auth.register') }}" class="auth-link">
+        <i class="fas fa-user-plus me-2"></i>Cadastre-se gratuitamente
+      </a>
+    </div>
+  </div>
 </div>
+
+<script>
+// Login form enhancements
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('loginForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    
+    // Form submission with loading state
+    form.addEventListener('submit', function() {
+        submitText.style.display = 'none';
+        loadingSpinner.style.display = 'flex';
+        submitBtn.disabled = true;
+    });
+    
+    // Real-time validation
+    const emailField = document.getElementById('email');
+    const passwordField = document.getElementById('password');
+    
+    emailField.addEventListener('blur', function() {
+        validateEmail(this);
+    });
+    
+    passwordField.addEventListener('blur', function() {
+        validatePassword(this);
+    });
+    
+    function validateEmail(field) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (field.value && !emailRegex.test(field.value)) {
+            field.classList.add('is-invalid');
+            field.classList.remove('is-valid');
+        } else if (field.value) {
+            field.classList.add('is-valid');
+            field.classList.remove('is-invalid');
+        }
+    }
+    
+    function validatePassword(field) {
+        if (field.value && field.value.length < 6) {
+            field.classList.add('is-invalid');
+            field.classList.remove('is-valid');
+        } else if (field.value) {
+            field.classList.add('is-valid');
+            field.classList.remove('is-invalid');
+        }
+    }
+});
+</script>
 {% endblock %}

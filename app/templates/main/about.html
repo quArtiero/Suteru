@@ -1,426 +1,919 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="card shadow-lg">
-                <div class="card-body">
-                    <h1 class="text-center mb-4">Sobre a Šutēru</h1>
+<div class="about-modern-container">
+    <!-- Hero Section -->
+    <div class="about-hero">
+        <div class="hero-background">
+            <div class="floating-elements">
+                <div class="floating-shape"></div>
+                <div class="floating-shape"></div>
+                <div class="floating-shape"></div>
+            </div>
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <i class="fas fa-heart"></i>
+                Sobre a Šutēru
+            </h1>
+            <p class="hero-subtitle">
+                Transformando conhecimento em impacto social, um quiz por vez
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="about-content">
+        <!-- Mission Section -->
+        <section class="mission-section" data-aos="fade-up">
+            <div class="section-container">
+                <div class="mission-card">
+                    <div class="mission-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h2 class="mission-title">Nossa Missão</h2>
+                    <p class="mission-description">
+                        Šutēru é uma edtech social brasileira que nasceu com uma ideia simples e poderosa: <strong>aprender também pode alimentar.</strong>
+                    </p>
+                    <p class="mission-description">
+                        Inspirada no projeto global Freerice, do Programa Mundial de Alimentos da ONU (WFP), a Šutēru transforma o aprendizado em um gesto de solidariedade.
+                    </p>
+                    <p class="mission-description">
+                        A cada resposta correta em nossos quizzes educativos, o usuário acumula grãos de arroz que se convertem em gramas de alimento. Esses grãos são contabilizados e, com o apoio de parceiros institucionais, são convertidos em doações reais de refeições para comunidades em situação de vulnerabilidade.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vision Section -->
+        <section class="vision-section" data-aos="fade-up" data-aos-delay="200">
+            <div class="section-container">
+                <div class="vision-content">
+                    <h2 class="section-title">
+                        <i class="fas fa-lightbulb"></i>
+                        Nossa Visão
+                    </h2>
+                    <p class="vision-text">
+                        <strong>Educação com propósito. Solidariedade com inteligência.</strong>
+                    </p>
+                    <p class="vision-text">
+                        Criamos a Šutēru porque acreditamos que o conhecimento não termina na sala de aula — ele pode se transformar em ação social, engajamento e empatia.
+                    </p>
                     
-                    <div class="row mb-5">
-                        <div class="col-md-12">
-                            <p class="lead">
-                                Šutēru é uma edtech social brasileira que nasceu com uma ideia simples e poderosa: <strong>aprender também pode alimentar.</strong><br>
-                                Inspirada no projeto global Freerice, do Programa Mundial de Alimentos da ONU (WFP), a Šutēru transforma o aprendizado em um gesto de solidariedade.<br>
-                                A cada resposta correta em nossos quizzes educativos, o usuário acumula grãos simbólicos de arroz. Esses pontos são contabilizados e, com o apoio de parceiros institucionais, são convertidos em doações reais de alimentos para comunidades em situação de vulnerabilidade.
+                    <div class="founder-quote">
+                        <div class="quote-content">
+                            <div class="quote-icon">
+                                <i class="fas fa-quote-left"></i>
+                            </div>
+                            <p class="quote-text">
+                                "Comecei a Šutēru porque acredito que o aprendizado, quando tem propósito, pode ir além da sala de aula e tocar vidas de verdade."
                             </p>
-                        </div>
-                    </div>
-
-                    <div class="row mb-5">
-                        <div class="col-md-12">
-                            <h3 class="mb-3">Nossa Visão</h3>
-                            <p class="lead">
-                                Educação com propósito. Solidariedade com inteligência.<br>
-                                Criamos a Šutēru porque acreditamos que o conhecimento não termina na sala de aula — ele pode se transformar em ação social, engajamento e empatia.
-                            </p>
-                            <blockquote class="blockquote text-center mt-4">
-                                <p class="mb-0">“Comecei a Šutēru porque acredito que o aprendizado, quando tem propósito, pode ir além da sala de aula e tocar vidas de verdade.”</p>
-                                <footer class="blockquote-footer">Pedro Quartiero, fundador, 17 anos</footer>
-                            </blockquote>
-                        </div>
-                    </div>
-
-                    <!-- ETAPAS ŠUTĒRU -->
-                    <div class="row mb-5 justify-content-center">
-                        <div class="col-md-4 mb-4">
-                            <div class="etapa-card h-100 text-center p-4">
-                                <div class="etapa-icon mb-3"><i class="fas fa-graduation-cap"></i></div>
-                                <h4 class="etapa-title">Você aprende</h4>
-                                <p class="etapa-text">Responda quizzes alinhados à BNCC, com conteúdo personalizado e acessível.</p>
+                            <div class="quote-author">
+                                <div class="author-avatar">
+                                    <span>PQ</span>
+                                </div>
+                                <div class="author-info">
+                                    <span class="author-name">Pedro Quartiero</span>
+                                    <span class="author-title">Fundador, 17 anos</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <div class="etapa-card h-100 text-center p-4">
-                                <div class="etapa-icon mb-3"><i class="fas fa-seedling"></i></div>
-                                <h4 class="etapa-title">Você acumula</h4>
-                                <p class="etapa-text">Cada acerto rende grãos simbólicos de arroz.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <div class="etapa-card h-100 text-center p-4">
-                                <div class="etapa-icon mb-3"><i class="fas fa-hand-holding-heart"></i></div>
-                                <h4 class="etapa-title">A Šutēru viabiliza</h4>
-                                <p class="etapa-text">Os pontos são convertidos em doações reais por meio de nossos parceiros sociais. ONGs como o Projeto Arrastão realizam a entrega com rastreabilidade.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- POR QUE CONFIAR? -->
-                    <div class="row mb-5 justify-content-center">
-                        <div class="col-12">
-                            <h3 class="mb-4">Por que confiar?</h3>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="confia-card h-100 text-center p-4">
-                                <div class="confia-icon mb-2"><i class="fas fa-eye"></i></div>
-                                <h5 class="confia-title">Transparência</h5>
-                                <p class="confia-text">Cada doação é registrada com parceiros de confiança.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="confia-card h-100 text-center p-4">
-                                <div class="confia-icon mb-2"><i class="fas fa-users"></i></div>
-                                <h5 class="confia-title">Responsabilidade social</h5>
-                                <p class="confia-text">Ninguém doa individualmente; o impacto vem do coletivo, mediado pela Šutēru.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="confia-card h-100 text-center p-4">
-                                <div class="confia-icon mb-2"><i class="fas fa-globe-americas"></i></div>
-                                <h5 class="confia-title">Inspiração global</h5>
-                                <p class="confia-text">Nosso modelo segue boas práticas internacionais, adaptado à realidade brasileira.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mb-5">
-                        <div class="col-md-12">
-                            <h3 class="mb-3">Estamos apenas começando</h3>
-                            <p class="lead">
-                                A Šutēru está sendo lançada agora, e você faz parte dos primeiros passos dessa jornada. Estamos validando nosso impacto, ouvindo a comunidade e aprimorando a experiência continuamente.<br>
-                                Nosso sonho é grande: levar educação com propósito a milhões de estudantes no Brasil e no mundo — começando com um grão por vez.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-12 text-center">
-                            <h3 class="mb-3">Junte-se à Šutēru</h3>
-                            <p class="lead mb-4">
-                                Comece a responder, aprenda no seu ritmo e veja sua evolução ganhar um novo significado.<br>
-                                Na Šutēru, cada acerto conta — para você e para quem precisa.
-                            </p>
-                            {% if 'user_id' not in session %}
-                            <div class="mb-4">
-                                <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg mr-3">Registrar-se</a>
-                                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg mr-3">Login</a>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="row mt-4">
-                        <div class="col-md-12 text-center">
-                            <p class="text-muted">
-                                <a href="{{ url_for('static', filename='docs/Termos de Uso – Šutēru.pdf') }}" download="Termos_de_Uso.pdf" class="text-muted">Termos e Condições</a> | 
-                                <a href="{{ url_for('static', filename='docs/Política de Privacidade – Šutēru.pdf') }}" download="Politica_de_Privacidade.pdf" class="text-muted">Política de Privacidade</a>
-                            </p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="how-it-works-section" data-aos="fade-up" data-aos-delay="400">
+            <div class="section-container">
+                <h2 class="section-title center">
+                    <i class="fas fa-cogs"></i>
+                    Como Funciona
+                </h2>
+                
+                <div class="steps-container">
+                    <div class="step-card" data-aos="zoom-in" data-aos-delay="500">
+                        <div class="step-number">1</div>
+                        <div class="step-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3 class="step-title">Você aprende</h3>
+                        <p class="step-description">
+                            Responda quizzes alinhados à BNCC, com conteúdo personalizado e acessível.
+                        </p>
+                        <div class="step-connector"></div>
+                    </div>
+
+                    <div class="step-card" data-aos="zoom-in" data-aos-delay="600">
+                        <div class="step-number">2</div>
+                        <div class="step-icon">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <h3 class="step-title">Você acumula</h3>
+                        <p class="step-description">
+                            Cada acerto rende grãos de arroz que se transformam em refeições para famílias necessitadas.
+                        </p>
+                        <div class="step-connector"></div>
+                    </div>
+
+                    <div class="step-card" data-aos="zoom-in" data-aos-delay="700">
+                        <div class="step-number">3</div>
+                        <div class="step-icon">
+                            <i class="fas fa-hand-holding-heart"></i>
+                        </div>
+                        <h3 class="step-title">A Šutēru viabiliza</h3>
+                        <p class="step-description">
+                            Os grãos acumulados são convertidos em doações reais por meio de nossos parceiros sociais. ONGs como o Projeto Arrastão realizam a entrega com rastreabilidade total.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trust Section -->
+        <section class="trust-section" data-aos="fade-up" data-aos-delay="600">
+            <div class="section-container">
+                <h2 class="section-title center">
+                    <i class="fas fa-shield-alt"></i>
+                    Por que confiar?
+                </h2>
+                
+                <div class="trust-grid">
+                    <div class="trust-card" data-aos="flip-left" data-aos-delay="700">
+                        <div class="trust-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h3 class="trust-title">Transparência</h3>
+                        <p class="trust-description">
+                            Cada grão doado é registrado com parceiros de confiança.
+                        </p>
+                    </div>
+
+                    <div class="trust-card" data-aos="flip-left" data-aos-delay="800">
+                        <div class="trust-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="trust-title">Responsabilidade social</h3>
+                        <p class="trust-description">
+                            Cada grão conta! O impacto vem do coletivo de estudantes, mediado pela Šutēru.
+                        </p>
+                    </div>
+
+                    <div class="trust-card" data-aos="flip-left" data-aos-delay="900">
+                        <div class="trust-icon">
+                            <i class="fas fa-globe-americas"></i>
+                        </div>
+                        <h3 class="trust-title">Inspiração global</h3>
+                        <p class="trust-description">
+                            Nosso modelo segue boas práticas internacionais, adaptado à realidade brasileira.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Future Section -->
+        <section class="future-section" data-aos="fade-up" data-aos-delay="800">
+            <div class="section-container">
+                <div class="future-card">
+                    <div class="future-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h2 class="future-title">Estamos apenas começando</h2>
+                    <p class="future-description">
+                        A Šutēru está sendo lançada agora, e você faz parte dos primeiros passos dessa jornada. Estamos validando nosso impacto, ouvindo a comunidade e aprimorando a experiência continuamente.
+                    </p>
+                    <p class="future-description">
+                        Nosso sonho é grande: levar educação com propósito a milhões de estudantes no Brasil e no mundo — começando com uma refeição por vez.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section" data-aos="fade-up" data-aos-delay="1000">
+            <div class="section-container">
+                <div class="cta-card">
+                    <h2 class="cta-title">Junte-se à Šutēru</h2>
+                    <p class="cta-description">
+                        Comece a responder, aprenda no seu ritmo e veja sua evolução ganhar um novo significado.<br>
+                        Na Šutēru, cada acerto gera grãos que contam — para você e para quem precisa.
+                    </p>
+                    
+                    {% if 'user_id' not in session %}
+                    <div class="cta-buttons">
+                        <a href="{{ url_for('auth.register') }}" class="btn-cta primary">
+                            <i class="fas fa-user-plus"></i>
+                            Registrar-se
+                        </a>
+                        <a href="{{ url_for('auth.login') }}" class="btn-cta secondary">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Login
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="legal-links">
+                        <a href="{{ url_for('static', filename='docs/Termos de Uso – Šutēru.pdf') }}" download="Termos_de_Uso.pdf" class="legal-link">
+                            Termos e Condições
+                        </a>
+                        <span class="separator">|</span>
+                        <a href="{{ url_for('static', filename='docs/Política de Privacidade – Šutēru.pdf') }}" download="Politica_de_Privacidade.pdf" class="legal-link">
+                            Política de Privacidade
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 </div>
 
 <style>
-.card {
-    border: none;
-    border-radius: 15px;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
+/* Modern About Page Styles */
+.about-modern-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
-.card-body {
-    padding: 3rem;
-}
-
-.text-primary {
-    color: var(--primary-color) !important;
-}
-
-.btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    color: #fff;
-    border-radius: 2rem;
-    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.08);
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 0.75rem 2.2rem;
-}
-
-.btn-primary:hover, .btn-primary:focus {
-    background-color: var(--primary-dark);
-    border-color: var(--primary-dark);
-    color: #fff;
-    box-shadow: 0 4px 16px rgba(13, 110, 253, 0.15);
-    outline: none;
-}
-
-.btn-outline-primary {
-    color: var(--primary-color);
-    background-color: #f4f8ff;
-    border: 2px solid var(--primary-color);
-    border-radius: 2rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.06);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 0.75rem 2.2rem;
-}
-
-.btn-outline-primary:hover, .btn-outline-primary:focus {
-    background-color: var(--primary-color);
-    color: #fff;
-    border-color: var(--primary-color);
-    box-shadow: 0 4px 16px rgba(13, 110, 253, 0.13);
-    outline: none;
-}
-
-.btn {
-    font-size: 1.1rem;
-    min-width: 140px;
-    margin: 0 0.5rem 0.5rem 0;
-    display: inline-flex;
+/* Hero Section */
+.about-hero {
+    position: relative;
+    min-height: 70vh;
+    display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(37, 99, 235, 0.15) 0%, transparent 50%),
+        linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(37, 99, 235, 0.4) 100%),
+        url('{{ url_for("static", filename="images/sobre.jpeg") }}');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    overflow: hidden;
 }
 
-.fas {
-    color: var(--primary-color);
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
 }
 
-.how-it-works li {
-    font-size: 1.1rem;
+.floating-elements {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.floating-shape {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    animation: floatAround 25s infinite ease-in-out;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.floating-shape:nth-child(1) {
+    width: 80px;
+    height: 80px;
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.floating-shape:nth-child(2) {
+    width: 120px;
+    height: 120px;
+    top: 60%;
+    right: 15%;
+    animation-delay: -7s;
+}
+
+.floating-shape:nth-child(3) {
+    width: 60px;
+    height: 60px;
+    top: 30%;
+    right: 30%;
+    animation-delay: -14s;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+    max-width: 800px;
+    padding: var(--space-12) var(--space-6);
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(8px) saturate(120%);
+    border-radius: var(--radius-3xl);
+    box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transform: translateY(20px);
+    opacity: 0;
+    animation: fadeInUp 1.2s ease-out 0.3s forwards;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-content:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes fadeInUp {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.hero-title {
+    font-size: var(--text-5xl);
+    font-weight: 800;
+    margin-bottom: var(--space-4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.hero-title i {
+    color: #fbbf24;
+    animation: pulse 2s infinite;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.hero-subtitle {
+    font-size: var(--text-xl);
+    opacity: 0.95;
+    line-height: 1.6;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Content Sections */
+.about-content {
+    position: relative;
+    z-index: 2;
+}
+
+.section-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-16) var(--space-4);
+}
+
+.section-title {
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-8);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.section-title.center {
+    justify-content: center;
+    text-align: center;
+}
+
+.section-title i {
+    color: var(--primary-500);
+}
+
+/* Mission Section */
+.mission-section {
+    background: white;
+}
+
+.mission-card {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(59, 130, 246, 0.02));
+    border-radius: var(--radius-2xl);
+    padding: var(--space-12);
+    text-align: center;
+    border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.mission-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--space-6);
+    font-size: var(--text-3xl);
+    color: white;
+}
+
+.mission-title {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-6);
+}
+
+.mission-description {
+    font-size: var(--text-lg);
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-4);
+}
+
+/* Vision Section */
+.vision-section {
+    background: var(--gray-50);
+}
+
+.vision-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.vision-text {
+    font-size: var(--text-lg);
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-4);
+}
+
+.founder-quote {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    margin-top: var(--space-8);
+    box-shadow: var(--shadow-lg);
+    border-left: 4px solid var(--primary-500);
+}
+
+.quote-content {
+    position: relative;
+}
+
+.quote-icon {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 40px;
+    height: 40px;
+    background: var(--primary-500);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: var(--text-lg);
+}
+
+.quote-text {
+    font-size: var(--text-lg);
+    font-style: italic;
+    color: var(--text-primary);
+    margin-bottom: var(--space-6);
+    padding-left: var(--space-8);
+    line-height: 1.7;
+}
+
+.quote-author {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding-left: var(--space-8);
+}
+
+.author-avatar {
+    width: 48px;
+    height: 48px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: var(--text-sm);
+}
+
+.author-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.author-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.author-title {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+}
+
+/* How It Works Section */
+.how-it-works-section {
+    background: white;
+}
+
+.steps-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-6);
+    margin-top: var(--space-8);
+}
+
+.step-card {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(59, 130, 246, 0.02));
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    text-align: center;
+    position: relative;
+    border: 2px solid transparent;
+    transition: all var(--transition-base);
+}
+
+.step-card:hover {
+    border-color: var(--primary-200);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.step-number {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 30px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: var(--text-sm);
+}
+
+.step-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--primary-100);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: var(--space-6) auto var(--space-4);
+    font-size: var(--text-2xl);
+    color: var(--primary-600);
+}
+
+.step-title {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-3);
+}
+
+.step-description {
+    color: var(--text-secondary);
     line-height: 1.6;
 }
 
-.how-it-works i {
-    font-size: 1.2rem;
+.step-connector {
+    position: absolute;
+    top: 50%;
+    right: -30px;
+    width: 60px;
+    height: 2px;
+    background: var(--primary-200);
+    transform: translateY(-50%);
 }
 
-.lead {
+.step-card:last-child .step-connector {
+    display: none;
+}
+
+/* Trust Section */
+.trust-section {
+    background: var(--gray-50);
+}
+
+.trust-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-6);
+    margin-top: var(--space-8);
+}
+
+.trust-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-base);
+}
+
+.trust-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.trust-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--primary-100);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--space-4);
+    font-size: var(--text-2xl);
+    color: var(--primary-600);
+}
+
+.trust-title {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-3);
+}
+
+.trust-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Future Section */
+.future-section {
+    background: white;
+}
+
+.future-card {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(59, 130, 246, 0.02));
+    border-radius: var(--radius-2xl);
+    padding: var(--space-12);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.future-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--space-6);
+    font-size: var(--text-3xl);
+    color: white;
+}
+
+.future-title {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-6);
+}
+
+.future-description {
+    font-size: var(--text-lg);
     line-height: 1.8;
-    margin-bottom: 1.5rem;
-    text-align: justify;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-4);
 }
 
-.blockquote {
-    background: #f4f8ff;
-    border-left: 5px solid var(--primary-color);
-    padding: 1.2rem 2rem;
-    margin: 2rem 0 2.5rem 0;
-    border-radius: 1rem;
-    font-size: 1.1rem;
-    font-style: italic;
-    color: #2c3e50;
+/* CTA Section */
+.cta-section {
+    background: var(--gradient-hero);
+    color: white;
 }
 
-.blockquote-footer {
-    margin-top: 0.8rem;
-    font-size: 1rem;
-    color: #6c757d;
+.cta-card {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
-.card-body h3 {
-    margin-top: 2.5rem;
-    margin-bottom: 1.2rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    text-align: left;
-}
-
-.card-body h1 {
-    margin-bottom: 2.5rem;
+.cta-title {
+    font-size: var(--text-3xl);
     font-weight: 800;
-    color: var(--primary-color);
+    margin-bottom: var(--space-6);
 }
 
-.card-body ul.list-unstyled {
-    margin-bottom: 2rem;
-    padding-left: 1.2rem;
+.cta-description {
+    font-size: var(--text-lg);
+    line-height: 1.7;
+    opacity: 0.9;
+    margin-bottom: var(--space-8);
 }
 
-.card-body ul.list-unstyled li {
-    margin-bottom: 1.1rem;
-    padding-left: 0.2rem;
-}
-
-.card-body .text-center.mb-4 {
+.cta-buttons {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    height: 100%;
-    padding: 1.2rem 0.5rem 1.5rem 0.5rem;
-}
-
-.card-body .text-center.mb-4 i.fas {
-    margin-bottom: 1.1rem;
-    font-size: 2.7rem;
-    color: var(--primary-color);
-    transition: transform 0.2s;
-}
-
-.card-body .text-center.mb-4 h4 {
-    margin-bottom: 0.7rem;
-    font-weight: 700;
-    text-align: center;
-}
-
-.card-body .text-center.mb-4 p {
-    text-align: center;
-    font-size: 1.08rem;
-    color: #2c3e50;
-    margin-bottom: 0;
-}
-
-@media (max-width: 768px) {
-    .card-body {
-        padding: 1.2rem;
-    }
-    .btn, .btn-primary, .btn-outline-primary {
-        width: 100%;
-        min-width: unset;
-        font-size: 1rem;
-        padding: 0.75rem 1.2rem;
-    }
-    .lead {
-        font-size: 1.1rem;
-        padding: 0 0.2rem;
-    }
-    .blockquote {
-        padding: 1rem 1rem;
-        font-size: 1rem;
-    }
-    .card-body h1 {
-        font-size: 1.5rem;
-    }
-    .card-body h3 {
-        font-size: 1.1rem;
-    }
-    .card-body .text-center.mb-4 {
-        padding: 0.7rem 0.2rem 1rem 0.2rem;
-    }
-    .card-body .text-center.mb-4 i.fas {
-        font-size: 2rem;
-        margin-bottom: 0.7rem;
-    }
-    .card-body .text-center.mb-4 h4 {
-        font-size: 1.05rem;
-    }
-    .card-body .text-center.mb-4 p {
-        font-size: 0.98rem;
-    }
-}
-
-/* ETAPAS CARDS */
-.etapa-card {
-    background: #fff;
-    border-radius: 1.2rem;
-    box-shadow: 0 4px 18px rgba(13, 110, 253, 0.08);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    transition: box-shadow 0.2s;
-    min-height: 270px;
-}
-.etapa-card:hover {
-    box-shadow: 0 8px 32px rgba(13, 110, 253, 0.15);
-}
-.etapa-icon {
-    background: var(--primary-light);
-    border-radius: 50%;
-    width: 70px;
-    height: 70px;
-    display: flex;
-    align-items: center;
+    gap: var(--space-4);
     justify-content: center;
-    margin-bottom: 1rem;
-}
-.etapa-icon i {
-    font-size: 2.3rem;
-    color: var(--primary-color);
-}
-.etapa-title {
-    font-weight: 700;
-    color: var(--primary-color);
-    margin-bottom: 0.5rem;
-    font-size: 1.18rem;
-}
-.etapa-text {
-    color: #2c3e50;
-    font-size: 1.05rem;
-    margin-bottom: 0;
+    margin-bottom: var(--space-8);
+    flex-wrap: wrap;
 }
 
-/* POR QUE CONFIAR CARDS */
-.confia-card {
-    background: #f4f8ff;
-    border-radius: 1.2rem;
-    box-shadow: 0 2px 10px rgba(13, 110, 253, 0.07);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    min-height: 180px;
-    transition: box-shadow 0.2s;
-}
-.confia-card:hover {
-    box-shadow: 0 6px 24px rgba(13, 110, 253, 0.13);
-}
-.confia-icon {
-    background: #fff;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 0.7rem;
-    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.08);
-}
-.confia-icon i {
-    font-size: 1.5rem;
-    color: var(--primary-color);
-}
-.confia-title {
+.btn-cta {
+    padding: var(--space-4) var(--space-8);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
     font-weight: 600;
-    color: var(--primary-color);
-    margin-bottom: 0.3rem;
-    font-size: 1.08rem;
-}
-.confia-text {
-    color: #2c3e50;
-    font-size: 0.98rem;
-    margin-bottom: 0;
+    font-size: var(--text-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    transition: all var(--transition-base);
+    min-width: 180px;
+    justify-content: center;
 }
 
+.btn-cta.primary {
+    background: white;
+    color: var(--primary-600);
+}
+
+.btn-cta.primary:hover {
+    background: var(--gray-100);
+    color: var(--primary-700);
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-cta.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-cta.secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.legal-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    opacity: 0.7;
+    font-size: var(--text-sm);
+    flex-wrap: wrap;
+}
+
+.legal-link {
+    color: white;
+    text-decoration: none;
+    transition: opacity var(--transition-base);
+}
+
+.legal-link:hover {
+    color: white;
+    text-decoration: underline;
+    opacity: 1;
+}
+
+.separator {
+    opacity: 0.5;
+}
+
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
-    .etapa-card, .confia-card {
-        min-height: unset;
-        padding: 1.2rem 0.5rem;
+    .hero-title {
+        font-size: var(--text-3xl);
+        flex-direction: column;
+        gap: var(--space-2);
     }
-    .etapa-icon {
-        width: 50px;
-        height: 50px;
+    
+    .hero-subtitle {
+        font-size: var(--text-lg);
     }
-    .etapa-icon i {
-        font-size: 1.5rem;
+    
+    .section-container {
+        padding: var(--space-8) var(--space-4);
     }
-    .confia-icon {
-        width: 38px;
-        height: 38px;
+    
+    .section-title {
+        font-size: var(--text-2xl);
+        flex-direction: column;
+        gap: var(--space-2);
+        text-align: center;
     }
-    .confia-icon i {
-        font-size: 1.1rem;
+    
+    .steps-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .step-connector {
+        display: none;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn-cta {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .legal-links {
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+}
+
+/* Animations */
+@keyframes floatAround {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    25% { transform: translateY(-20px) rotate(90deg); }
+    50% { transform: translateY(-10px) rotate(180deg); }
+    75% { transform: translateY(-30px) rotate(270deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+[data-aos="fade-up"] {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 0.8s ease forwards;
+}
+
+[data-aos="zoom-in"] {
+    opacity: 0;
+    transform: scale(0.8);
+    animation: zoomIn 0.6s ease forwards;
+}
+
+[data-aos="flip-left"] {
+    opacity: 0;
+    transform: rotateY(-90deg);
+    animation: flipLeft 0.8s ease forwards;
+}
+
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes zoomIn {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes flipLeft {
+    to {
+        opacity: 1;
+        transform: rotateY(0deg);
     }
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Staggered animations
+    const sections = document.querySelectorAll('[data-aos]');
+    sections.forEach((section, index) => {
+        const delay = section.dataset.aosDelay || (index * 200);
+        section.style.animationDelay = `${delay}ms`;
+    });
+    
+    // Intersection Observer for animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animationPlayState = 'running';
+            }
+        });
+    });
+    
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+});
+</script>
 {% endblock %} 

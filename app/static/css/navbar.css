@@ -1,0 +1,210 @@
+/* ========================================
+   ŠUTĒRU NAVBAR COMPONENT STYLES
+   Modern navigation bar with glassmorphism
+======================================== */
+
+/* Modern Navbar - Global Styles */
+.navbar {
+  /* Reset any legacy styles first */
+  background-color: unset !important;
+  box-shadow: unset !important;
+  padding: unset !important;
+}
+
+/* Force modern navbar styles globally */
+.navbar {
+  background: rgba(59, 130, 246, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2) !important;
+  box-shadow: var(--shadow-lg) !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1000 !important;
+  padding: var(--space-3) 0 !important;
+  transition: all var(--transition-base) !important;
+  min-height: 70px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Navbar Brand */
+.navbar-brand {
+  font-size: var(--text-xl) !important;
+  font-weight: 800 !important;
+  color: white !important;
+  text-decoration: none !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--space-2) !important;
+  transition: all var(--transition-base) !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.navbar-brand:hover {
+  color: rgba(255, 255, 255, 0.9) !important;
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.navbar-brand img {
+  filter: brightness(0) invert(1);
+  transition: all var(--transition-base);
+}
+
+.navbar-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+/* Navigation Links */
+.nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500 !important;
+  padding: var(--space-2) var(--space-4) !important;
+  border-radius: var(--radius-lg) !important;
+  transition: all var(--transition-base) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  text-decoration: none !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--space-1) !important;
+}
+
+.nav-link:hover {
+  color: white !important;
+  background: rgba(255, 255, 255, 0.15);
+  text-decoration: none;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-link.active {
+  color: white !important;
+  background: rgba(255, 255, 255, 0.2);
+  font-weight: 600;
+}
+
+/* Navigation Link Animations */
+.nav-link::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: white;
+  transition: all var(--transition-base);
+  transform: translateX(-50%);
+}
+
+.nav-link:hover::before,
+.nav-link.active::before {
+  width: 80%;
+}
+
+/* Special styling for register button in navbar */
+.btn-register-nav {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-2) var(--space-3) !important;
+  font-size: var(--text-sm) !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+  min-width: auto !important;
+}
+
+.btn-register-nav:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Navbar Container Fix */
+.navbar .container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: nowrap !important;
+  width: 100% !important;
+}
+
+.navbar-nav {
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--space-2) !important;
+  flex-wrap: nowrap !important;
+  margin: 0 !important;
+}
+
+.navbar-nav .nav-item {
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+/* Mobile navbar improvements */
+.navbar-toggler {
+  border: none !important;
+  padding: var(--space-1) !important;
+  border-radius: var(--radius-md) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.navbar-toggler:focus {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
+  outline: none;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Navbar icons */
+.nav-link i {
+  opacity: 0.8;
+  transition: all var(--transition-base);
+}
+
+.nav-link:hover i {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Active page indicator */
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background: white;
+  border-radius: 50%;
+}
+
+/* Navbar scroll effect */
+.navbar.scrolled {
+  background: rgba(59, 130, 246, 0.98) !important;
+  box-shadow: var(--shadow-xl);
+}
+
+/* Mobile responsive navbar */
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    margin-top: var(--space-3);
+    padding: var(--space-3);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(10px);
+  }
+
+  .nav-link {
+    margin: var(--space-1) 0;
+    text-align: center;
+  }
+} 

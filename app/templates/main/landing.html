@@ -5,17 +5,109 @@
 {% endblock %}
 
 {% block content %}
-<section class="hero-section">
-    <div class="hero-content">
-        <div class="logo-container">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Šutēru" class="logo-image">
-        </div>
-        <h1 class="hero-title">Transforme conhecimento em doações de alimentos</h1>
-        <p class="hero-subtitle">Responda quizzes, aprenda e ajude a combater a fome. Cada resposta correta se transforma em alimento para quem precisa.</p>
-        <div class="hero-buttons">
-            <a href="{{ url_for('auth.register') }}" class="btn hero-btn hero-btn-primary">Começar Agora</a>
-            <a href="{{ url_for('auth.login') }}" class="btn hero-btn hero-btn-secondary">Já tenho conta</a>
-        </div>
+<section class="modern-hero">
+  <div class="hero-container">
+    <div class="logo-section">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Šutēru" class="hero-logo">
     </div>
+    
+    <h1 class="hero-main-title">
+      Conhecimento que Transforma Vidas
+    </h1>
+    
+    <p class="hero-description">
+      Cada quiz que você responde se converte em gramas de alimento para famílias em situação de vulnerabilidade. 
+      Aprenda, evolua e faça a diferença no mundo!
+    </p>
+    
+    <div class="hero-actions">
+      {% if 'user_id' in session %}
+        <a href="{{ url_for('quiz.quizzes') }}" class="hero-btn-modern hero-btn-primary">
+          <i class="fas fa-brain me-2"></i>Começar Quiz
+        </a>
+        <a href="{{ url_for('auth.dashboard') }}" class="hero-btn-modern hero-btn-secondary">
+          <i class="fas fa-tachometer-alt me-2"></i>Meu Dashboard
+        </a>
+      {% else %}
+        <a href="{{ url_for('auth.register') }}" class="hero-btn-modern hero-btn-primary">
+          <i class="fas fa-user-plus me-2"></i>Cadastre-se Grátis
+        </a>
+        <a href="{{ url_for('auth.login') }}" class="hero-btn-modern hero-btn-secondary">
+          <i class="fas fa-sign-in-alt me-2"></i>Fazer Login
+        </a>
+      {% endif %}
+    </div>
+
+  </div>
 </section>
+
+<!-- Statistics Showcase Section -->
+<section class="stats-showcase">
+  <div class="stats-container">
+    <div class="stats-header">
+      <h2 class="stats-title">Nosso Impacto</h2>
+      <p class="stats-subtitle">Juntos, estamos transformando conhecimento em alimento e esperança</p>
+    </div>
+    
+    <div class="stats-grid-landing">
+      <div class="stat-card-landing">
+        <div class="stat-icon-landing">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-number-landing">{{ total_users or 0 }}</div>
+        <div class="stat-label-landing">Estudantes Ativos</div>
+        <div class="stat-description-landing">Pessoas comprometidas com o aprendizado e transformação social</div>
+      </div>
+      
+      <div class="stat-card-landing">
+        <div class="stat-icon-landing">
+          <i class="fas fa-brain"></i>
+        </div>
+        <div class="stat-number-landing">{{ total_quizzes or 0 }}</div>
+        <div class="stat-label-landing">Quizzes Respondidos</div>
+        <div class="stat-description-landing">Questões que expandiram horizontes e geraram conhecimento</div>
+      </div>
+      
+      <div class="stat-card-landing highlight-card">
+        <div class="highlight-badge">
+          <i class="fas fa-star"></i>
+          <span>Destaque</span>
+        </div>
+        <div class="stat-icon-landing">
+          <i class="fas fa-utensils"></i>
+        </div>
+        <div class="stat-number-landing">{{ total_meals|round(1) or 0 }}</div>
+        <div class="stat-label-landing">Refeições Doadas</div>
+        <div class="stat-description-landing">Equivale a {{ total_grams|round(1) }}g de alimento para famílias em vulnerabilidade</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="cta-section">
+  <div class="cta-container">
+    <h2 class="cta-title">Pronto para Fazer a Diferença?</h2>
+    <p class="cta-description">
+      Cada pergunta respondida é um passo em direção a um mundo melhor. 
+      Sua jornada de aprendizado começa agora!
+    </p>
+    <div class="cta-buttons">
+      {% if 'user_id' not in session %}
+        <a href="{{ url_for('auth.register') }}" class="hero-btn-modern hero-btn-primary">
+          <i class="fas fa-rocket me-2"></i>Começar Agora
+        </a>
+      {% else %}
+        <a href="{{ url_for('quiz.quizzes') }}" class="hero-btn-modern hero-btn-primary">
+          <i class="fas fa-play me-2"></i>Continuar Aprendendo
+        </a>
+      {% endif %}
+      <a href="{{ url_for('main.about') }}" class="hero-btn-modern hero-btn-secondary">
+        <i class="fas fa-info-circle me-2"></i>Saiba Mais
+      </a>
+    </div>
+  </div>
+</section>
+
+
 {% endblock %} 

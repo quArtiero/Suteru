@@ -1,253 +1,1058 @@
 {% extends "base.html" %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/suggest_question.css') }}">
+<!-- Quill CSS for preview formatting -->
+<style>
+/* Additional Quill formatting for preview */
+.preview-question-box .ql-editor,
+.option-content.ql-editor {
+    font-family: inherit !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+    color: inherit !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+.preview-question-box .ql-editor p,
+.option-content.ql-editor p {
+    margin: 0.3em 0;
+}
+
+.preview-question-box .ql-editor p:first-child,
+.option-content.ql-editor p:first-child {
+    margin-top: 0;
+}
+
+.preview-question-box .ql-editor p:last-child,
+.option-content.ql-editor p:last-child {
+    margin-bottom: 0;
+}
+
+/* Ensure all Quill formatting is preserved */
+.ql-editor strong,
+.preview-question-box strong,
+.option-content strong {
+    font-weight: bold !important;
+}
+
+.ql-editor em,
+.preview-question-box em,
+.option-content em {
+    font-style: italic !important;
+}
+
+.ql-editor u,
+.preview-question-box u,
+.option-content u {
+    text-decoration: underline !important;
+}
+
+.ql-editor s,
+.preview-question-box s,
+.option-content s {
+    text-decoration: line-through !important;
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <h2>Sugerir Nova Questão</h2>
-    <form method="POST">
-        <!-- Campos adicionais -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="grade">Série Escolar</label>
-                    <select class="form-control" id="grade" name="grade" required>
-                        <option value="" disabled selected>Selecione a série</option>
-                        {% for grade in grades %}
-                        <option value="{{ grade }}" {% if grade == selected_grade %}selected{% endif %}>{{ grade }}</option>
-                        {% endfor %}
-                    </select>
+<div class="suggest-question-container">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-icon">
+            <i class="fas fa-lightbulb"></i>
+        </div>
+        <h1 class="hero-title">Contribua com o Conhecimento</h1>
+        <p class="hero-subtitle">
+            Sua pergunta pode ajudar milhares de estudantes e gerar mais doações para quem precisa
+        </p>
+        
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div>
+                    <div class="stat-value">+500</div>
+                    <div class="stat-label">Estudantes beneficiados</div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="topic">Tópico</label>
-                    <select class="form-control" id="topic" name="topic" required>
-                        <option value="" disabled selected>Selecione o tópico</option>
-                        {% for topic in topics %}
-                        <option value="{{ topic }}" {% if topic == selected_topic %}selected{% endif %}>{{ topic }}</option>
-                        {% endfor %}
-                        <option value="novo_tema">Novo Tópico</option>
-                    </select>
-                    <input type="text" class="form-control mt-2" id="new_topic" name="new_topic" 
-                           style="display: none;" placeholder="Digite o novo tópico">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-seedling"></i>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="difficulty">Dificuldade</label>
-                    <select class="form-control" id="difficulty" name="difficulty" required>
-                        <option value="" disabled selected>Selecione a dificuldade</option>
-                        <option value="Fácil">Fácil</option>
-                        <option value="Médio">Médio</option>
-                        <option value="Difícil">Difícil</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="points">Pontos da Questão</label>
-                    <input type="number" class="form-control" id="points" name="points" required min="0" placeholder="Ex: 10">
-                    <small class="form-text text-muted">Pontos ao acertar</small>
+                <div>
+                                <div class="stat-value">+0.42g</div>
+            <div class="stat-label">Alimento doado por questão</div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Editor de Questão -->
-        <div class="form-group mb-4">
-            <label for="question">Pergunta</label>
-            <div id="question-editor"></div>
-            <input type="hidden" name="question">
-        </div>
+    <!-- Main Form -->
+    <div class="main-form-card">
+        <form method="POST" id="suggest-form">
+            <!-- Basic Information Section -->
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <h2 class="section-title">Informações Básicas</h2>
+            </div>
 
-        <div class="form-group mb-4">
-            <label for="correct_answer">Resposta Correta</label>
-            <div id="correct-answer-editor"></div>
-            <input type="hidden" name="correct_answer">
-        </div>
-
-        <div class="form-group mb-4">
-            <label for="option1">Opção 1</label>
-            <div id="option1-editor"></div>
-            <input type="hidden" name="option1">
-        </div>
-
-        <div class="form-group mb-4">
-            <label for="option2">Opção 2</label>
-            <div id="option2-editor"></div>
-            <input type="hidden" name="option2">
-        </div>
-
-        <div class="form-group mb-4">
-            <label for="option3">Opção 3</label>
-            <div id="option3-editor"></div>
-            <input type="hidden" name="option3">
-        </div>
-
-        <div class="form-group mb-4">
-            <label for="option4">Opção 4</label>
-            <div id="option4-editor"></div>
-            <input type="hidden" name="option4">
-        </div>
-
-        <!-- Preview da Questão -->
-        <div class="mt-5 mb-4">
-            <h4 class="text-primary mb-3">Preview da Questão</h4>
-            <div class="card quiz-card">
-                <div class="card-body">
-                    <div class="question-content mb-4">
-                        <div class="ql-snow">
-                            <div class="ql-editor" id="preview-question"></div>
-                        </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="form-label" for="grade">
+                            <i class="fas fa-graduation-cap"></i>
+                            Série Escolar
+                        </label>
+                        <select class="form-control" id="grade" name="grade" required>
+                            <option value="" disabled selected>Selecione</option>
+                            {% for grade in grades %}
+                            <option value="{{ grade }}">{{ grade }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
-
-                    <div class="options-list">
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="radio" disabled>
-                            <label class="form-check-label">
-                                <div class="ql-snow">
-                                    <div class="ql-editor" id="preview-option1"></div>
-                                </div>
-                            </label>
-                        </div>
-
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="radio" disabled>
-                            <label class="form-check-label">
-                                <div class="ql-snow">
-                                    <div class="ql-editor" id="preview-option2"></div>
-                                </div>
-                            </label>
-                        </div>
-
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="radio" disabled>
-                            <label class="form-check-label">
-                                <div class="ql-snow">
-                                    <div class="ql-editor" id="preview-option3"></div>
-                                </div>
-                            </label>
-                        </div>
-
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="radio" disabled>
-                            <label class="form-check-label">
-                                <div class="ql-snow">
-                                    <div class="ql-editor" id="preview-option4"></div>
-                                </div>
-                            </label>
-                        </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="form-label" for="topic">
+                            <i class="fas fa-book"></i>
+                            Matéria
+                        </label>
+                        <select class="form-control" id="topic" name="topic" required>
+                            <option value="" disabled selected>Selecione</option>
+                            {% for topic in topics %}
+                            <option value="{{ topic }}">{{ topic }}</option>
+                            {% endfor %}
+                            <option value="novo_tema">➕ Nova Matéria</option>
+                        </select>
+                        <input type="text" class="form-control mt-2" id="new_topic" name="new_topic" 
+                               style="display: none;" placeholder="Digite a nova matéria">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="form-label" for="difficulty">
+                            <i class="fas fa-signal"></i>
+                            Dificuldade
+                        </label>
+                        <select class="form-control" id="difficulty" name="difficulty" required>
+                            <option value="" disabled selected>Selecione</option>
+                            <option value="Fácil">Fácil</option>
+                            <option value="Médio">Médio</option>
+                            <option value="Difícil">Difícil</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="form-label" for="points">
+                            <i class="fas fa-trophy"></i>
+                            Pontos
+                        </label>
+                        <input type="number" class="form-control" id="points" name="points" 
+                               required min="1" max="100" value="10">
+                        <small class="form-text text-muted mt-1">
+                            <i class="fas fa-info-circle"></i>
+                            1 pergunta = 10 pontos = 0.42g • Meta: 100 perguntas = 1 refeição
+                        </small>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <button type="submit" class="btn btn-primary">Enviar Sugestão</button>
-    </form>
+            <!-- Question Section -->
+            <div class="section-header mt-5">
+                <div class="section-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <h2 class="section-title">Criação da Questão</h2>
+            </div>
+
+            <!-- Question Editor -->
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-pen"></i>
+                    Pergunta
+                </label>
+                <div class="editor-wrapper">
+                    <div id="question-editor" style="min-height: 120px;"></div>
+                </div>
+                <input type="hidden" name="question">
+            </div>
+
+            <!-- Correct Answer -->
+            <div class="form-group">
+                <label class="form-label text-success">
+                    <i class="fas fa-check-circle"></i>
+                    Resposta Correta
+                </label>
+                <div class="editor-wrapper correct-answer-wrapper">
+                    <div class="correct-answer-badge">
+                        <i class="fas fa-check"></i>
+                        CORRETA
+                    </div>
+                    <div id="correct-answer-editor" style="min-height: 120px;"></div>
+
+                </div>
+                <input type="hidden" name="correct_answer">
+            </div>
+
+            <!-- Incorrect Options -->
+            <div class="incorrect-options-section">
+                <div class="options-header">
+                    <label class="form-label text-warning mb-0">
+                        <i class="fas fa-times-circle"></i>
+                        Alternativas Incorretas
+                    </label>
+                    <span class="text-muted">3 alternativas obrigatórias</span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="option-card">
+                            <div class="option-number">1</div>
+                            <div class="editor-wrapper" style="margin-left: 40px;">
+                                <div id="option1-editor" style="min-height: 100px;"></div>
+                            </div>
+                            <input type="hidden" name="option1">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="option-card">
+                            <div class="option-number">2</div>
+                            <div class="editor-wrapper" style="margin-left: 40px;">
+                                <div id="option2-editor" style="min-height: 100px;"></div>
+                            </div>
+                            <input type="hidden" name="option2">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="option-card">
+                            <div class="option-number">3</div>
+                            <div class="editor-wrapper" style="margin-left: 40px;">
+                                <div id="option3-editor" style="min-height: 100px;"></div>
+                            </div>
+                            <input type="hidden" name="option3">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campo hidden para option4 (compatibilidade com BD) -->
+            <input type="hidden" name="option4" value="">
+
+            <!-- Submit Button -->
+            <div class="submit-section">
+                <button type="submit" class="submit-btn" id="submit-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    Enviar Sugestão
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Preview Section (Now at the bottom) -->
+    <div class="preview-section-bottom">
+        <div class="preview-card">
+            <div class="preview-header">
+                <i class="fas fa-desktop"></i>
+                <h3 class="preview-title">Preview do Quiz</h3>
+                <p class="preview-subtitle">Veja como sua questão aparecerá para os alunos</p>
+            </div>
+
+            <div class="preview-content">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="preview-question-box">
+                            <div class="question-label">
+                                <i class="fas fa-question-circle"></i>
+                                PERGUNTA
+                            </div>
+                            <div id="preview-question">
+                                <em>Digite sua pergunta para visualizar...</em>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <div class="options-label">
+                            <i class="fas fa-list"></i>
+                            ALTERNATIVAS
+                        </div>
+                        
+                        <div class="preview-options">
+                            <div class="preview-option" id="preview-option-a">
+                                <div class="option-letter">A</div>
+                                <div class="option-content" id="preview-content-a">
+                                    <em>Aguardando conteúdo...</em>
+                                </div>
+                                <i class="fas fa-check correct-check" style="display: none;"></i>
+                            </div>
+
+                            <div class="preview-option" id="preview-option-b">
+                                <div class="option-letter">B</div>
+                                <div class="option-content" id="preview-content-b">
+                                    <em>Aguardando conteúdo...</em>
+                                </div>
+                                <i class="fas fa-check correct-check" style="display: none;"></i>
+                            </div>
+
+                            <div class="preview-option" id="preview-option-c">
+                                <div class="option-letter">C</div>
+                                <div class="option-content" id="preview-content-c">
+                                    <em>Aguardando conteúdo...</em>
+                                </div>
+                                <i class="fas fa-check correct-check" style="display: none;"></i>
+                            </div>
+
+                            <div class="preview-option" id="preview-option-d">
+                                <div class="option-letter">D</div>
+                                <div class="option-content" id="preview-content-d">
+                                    <em>Aguardando conteúdo...</em>
+                                </div>
+                                <i class="fas fa-check correct-check" style="display: none;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-meta">
+                    <div class="meta-item">
+                        <div class="meta-label">Série:</div>
+                        <div class="meta-value" id="meta-grade">-</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Matéria:</div>
+                        <div class="meta-value" id="meta-topic">-</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Dificuldade:</div>
+                        <div class="meta-value" id="meta-difficulty">-</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Pontos:</div>
+                        <div class="meta-value" id="meta-points">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-// Wait for both DOM and Quill to be ready
-function initializeEditors() {
-    console.log('Initializing editors...');
-    console.log('Quill available:', typeof Quill !== 'undefined');
+// Variáveis globais
+let editors = {};
+
+// Funções de emergência (mantidas para casos especiais)
+
+window.exitTestMode = function() {
+    window.TESTING_MODE = false;
     
-    if (typeof Quill === 'undefined') {
-        console.error('Quill library not loaded');
-        setTimeout(initializeEditors, 100);
+    // Parar proteção da opção A
+    if (window.protectOptionA) {
+        clearInterval(window.protectOptionA);
+        window.protectOptionA = null;
+        console.log('🛡️ Proteção da opção A DESATIVADA');
+    }
+    
+    // Parar observador se estiver ativo
+    if (window.optionAObserver) {
+        window.optionAObserver.disconnect();
+        window.optionAObserver = null;
+        console.log('👀 Observador DESATIVADO');
+    }
+    
+    console.log('🔓 MODO TESTE DESATIVADO - updatePreview reativado');
+    alert('🔓 Modo teste desativado! Proteção e observador desligados.');
+};
+
+window.watchOptionA = function() {
+    const optionA = document.getElementById('preview-option-a');
+    if (!optionA) {
+        alert('❌ Opção A não encontrada!');
         return;
     }
+    
+    console.log('👀 Iniciando observação da opção A...');
+    
+    // Observar mudanças na opção A
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                console.log('🔄 CLASSE da opção A mudou!');
+                console.log('  - Nova classe:', optionA.className);
+                console.log('  - Tem is-correct:', optionA.classList.contains('is-correct'));
+                console.trace('📍 Quem mudou a classe:');
+            }
+            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                console.log('🎨 STYLE da opção A mudou!');
+                console.log('  - Novo style:', optionA.style.cssText);
+                console.trace('📍 Quem mudou o style:');
+            }
+            if (mutation.type === 'childList') {
+                console.log('📝 CONTEÚDO da opção A mudou!');
+                console.trace('📍 Quem mudou o conteúdo:');
+            }
+        });
+    });
+    
+    observer.observe(optionA, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+        attributeFilter: ['class', 'style']
+    });
+    
+    alert('👀 Observador ativado! Agora vou rastrear TUDO que mexe na opção A.');
+    
+    // Guardar referência para poder parar depois
+    window.optionAObserver = observer;
+};
 
-    try {
-        // Check if editor containers exist
-        const editorIds = ['question-editor', 'correct-answer-editor', 'option1-editor', 'option2-editor', 'option3-editor', 'option4-editor'];
-        const missingEditors = editorIds.filter(id => !document.getElementById(id));
+window.testRealLogic = function() {
+    if (!editors.correct_answer) {
+        alert('❌ Editores ainda não estão prontos!');
+        return;
+    }
+    
+    console.log('🧪 === TESTE DA LÓGICA REAL ===');
+    
+    // Adicionar conteúdo de teste aos editores
+    editors.correct_answer.setText('Esta é a resposta correta de teste!');
+    if (editors.option1) editors.option1.setText('Opção incorreta 1');
+    if (editors.option2) editors.option2.setText('Opção incorreta 2'); 
+    if (editors.option3) editors.option3.setText('Opção incorreta 3');
+    
+    console.log('📝 Conteúdo adicionado aos editores Quill');
+    
+    // Ativar modo teste antes de chamar updatePreview
+    window.TESTING_MODE = true;
+    console.log('🔒 Modo teste ativado');
+    
+    // Chamar a função updatePreview ORIGINAL uma vez
+    window.TESTING_MODE = false; // Permitir uma execução
+    console.log('🔄 Chamando updatePreview uma vez...');
+    window.updatePreview();
+    
+    // Reativar proteção
+    window.TESTING_MODE = true;
+    console.log('🔒 Modo teste reativado - updatePreview pausado novamente');
+    
+    alert('🧪 Teste da lógica real executado! Veja se a resposta correta apareceu no preview.');
+};
+
+window.testNormal = function() {
+    // Desativar TODOS os modos de teste
+    window.TESTING_MODE = false;
+    
+    // Parar proteção se estiver ativa
+    if (window.protectOptionA) {
+        clearInterval(window.protectOptionA);
+        window.protectOptionA = null;
+    }
+    
+    // Parar observador se estiver ativo
+    if (window.optionAObserver) {
+        window.optionAObserver.disconnect();
+        window.optionAObserver = null;
+    }
+    
+    // Limpar todas as opções primeiro
+    ['a', 'b', 'c', 'd'].forEach(letter => {
+        const el = document.getElementById(`preview-option-${letter}`);
+        const content = document.getElementById(`preview-content-${letter}`);
+        if (el && content) {
+            el.classList.remove('is-correct');
+            el.style.cssText = '';
+            content.innerHTML = '<em>Aguardando conteúdo...</em>';
+            content.className = 'option-content';
+            
+            const check = el.querySelector('.correct-check');
+            if (check) check.style.display = 'none';
+            
+            const letter_el = el.querySelector('.option-letter');
+            if (letter_el) letter_el.style.cssText = '';
+        }
+    });
+    
+    if (!editors.correct_answer) {
+        alert('❌ Editores ainda não estão prontos!');
+        return;
+    }
+    
+    // Adicionar conteúdo normal aos editores
+    editors.correct_answer.setText('Esta é a resposta correta!');
+    if (editors.option1) editors.option1.setText('Opção incorreta 1');
+    if (editors.option2) editors.option2.setText('Opção incorreta 2'); 
+    if (editors.option3) editors.option3.setText('Opção incorreta 3');
+    
+    // Chamar updatePreview normalmente (sem proteções)
+    setTimeout(() => {
+        window.updatePreview();
+        alert('✨ Teste NORMAL executado! Agora está funcionando como deveria funcionar sempre!');
+    }, 100);
+};
+
+window.debugDetalhado = function() {
+    console.clear(); // Limpar console para logs limpos
+    console.log('🔬 === DEBUG TOTAL INICIADO ===');
+    
+    // Desativar todas as proteções
+    window.TESTING_MODE = false;
+    if (window.protectOptionA) {
+        clearInterval(window.protectOptionA);
+        window.protectOptionA = null;
+    }
+    if (window.optionAObserver) {
+        window.optionAObserver.disconnect();
+        window.optionAObserver = null;
+    }
+    
+    // Verificar se editores existem
+    console.log('🔍 Verificando editores...');
+    console.log('  - editors objeto:', editors);
+    console.log('  - editors.correct_answer:', editors.correct_answer);
+    console.log('  - editors.option1:', editors.option1);
+    console.log('  - editors.option2:', editors.option2);
+    console.log('  - editors.option3:', editors.option3);
+    
+    if (!editors.correct_answer) {
+        alert('❌ Editores não estão prontos! Aguarde o carregamento da página.');
+        return;
+    }
+    
+    // Limpar e adicionar conteúdo de teste
+    console.log('📝 Adicionando conteúdo de teste aos editores...');
+    editors.correct_answer.setText('RESPOSTA CORRETA DE TESTE');
+    if (editors.option1) editors.option1.setText('Opção incorreta 1');
+    if (editors.option2) editors.option2.setText('Opção incorreta 2');
+    if (editors.option3) editors.option3.setText('Opção incorreta 3');
+    
+    console.log('📝 Conteúdo adicionado! Verificando...');
+    console.log('  - Resposta correta texto:', editors.correct_answer.getText());
+    console.log('  - Resposta correta HTML:', editors.correct_answer.root.innerHTML);
+    
+    // Chamar updatePreview com debug ativo
+    console.log('🔄 Chamando updatePreview com debug total...');
+    
+    setTimeout(() => {
+        window.updatePreview();
         
-        if (missingEditors.length > 0) {
-            console.error('Missing editor containers:', missingEditors);
+        console.log('🔬 === DEBUG TOTAL FINALIZADO ===');
+        alert('🔬 Debug Total executado! Veja TODOS os detalhes no console (F12).');
+    }, 200);
+};
+
+window.testeSemListeners = function() {
+    console.clear();
+    console.log('🛑 === TESTE SEM LISTENERS ===');
+    
+    // Desativar TODOS os modos e proteções
+    window.TESTING_MODE = false;
+    if (window.protectOptionA) {
+        clearInterval(window.protectOptionA);
+        window.protectOptionA = null;
+    }
+    if (window.optionAObserver) {
+        window.optionAObserver.disconnect();
+        window.optionAObserver = null;
+    }
+    
+    if (!editors.correct_answer) {
+        alert('❌ Editores não estão prontos!');
+        return;
+    }
+    
+    // REMOVER TODOS os listeners dos editores para evitar loop
+    console.log('🛑 Removendo todos os listeners dos editores...');
+    Object.values(editors).forEach(editor => {
+        editor.off('text-change'); // Remove todos os listeners de text-change
+    });
+    
+    // Limpar preview primeiro
+    ['a', 'b', 'c', 'd'].forEach(letter => {
+        const el = document.getElementById(`preview-option-${letter}`);
+        const content = document.getElementById(`preview-content-${letter}`);
+        if (el && content) {
+            el.classList.remove('is-correct');
+            el.style.cssText = '';
+            content.innerHTML = '<em>Aguardando conteúdo...</em>';
+            content.className = 'option-content';
+            
+            const check = el.querySelector('.correct-check');
+            if (check) check.style.display = 'none';
+            
+            const letter_el = el.querySelector('.option-letter');
+            if (letter_el) letter_el.style.cssText = '';
+        }
+    });
+    
+    // Adicionar conteúdo de teste
+    console.log('📝 Adicionando conteúdo de teste...');
+    editors.correct_answer.setText('🎯 RESPOSTA CORRETA DEFINITIVA!');
+    if (editors.option1) editors.option1.setText('❌ Opção incorreta 1');
+    if (editors.option2) editors.option2.setText('❌ Opção incorreta 2');
+    if (editors.option3) editors.option3.setText('❌ Opção incorreta 3');
+    
+    // Ativar modo teste para bloquear futuras chamadas
+    window.TESTING_MODE = true;
+    console.log('🔒 Modo teste ativado - updatePreview bloqueado para futuras chamadas');
+    
+    // Chamar updatePreview UMA ÚNICA VEZ
+    console.log('🔄 Chamando updatePreview UMA ÚNICA VEZ...');
+    window.TESTING_MODE = false; // Permitir esta execução
+    
+    setTimeout(() => {
+        window.updatePreview();
+        
+        // Reativar bloqueio
+        window.TESTING_MODE = true;
+        console.log('🔒 Bloqueio reativado - updatePreview não pode mais ser chamado');
+        
+        console.log('🛑 === TESTE FINALIZADO ===');
+        alert('🛑 Teste SEM LISTENERS executado! Agora a resposta correta deve estar FIXA!');
+    }, 100);
+};
+
+window.testeNormalCompleto = function() {
+    console.clear();
+    console.log('🎯 === TESTE NORMAL COMPLETO (DEFINITIVO) ===');
+    
+    // Desativar TODOS os modos de teste e proteções
+    window.TESTING_MODE = false;
+    if (window.protectOptionA) {
+        clearInterval(window.protectOptionA);
+        window.protectOptionA = null;
+    }
+    if (window.optionAObserver) {
+        window.optionAObserver.disconnect();
+        window.optionAObserver = null;
+    }
+    
+    if (!editors.correct_answer) {
+        alert('❌ Editores não estão prontos!');
+        return;
+    }
+    
+    // Limpar TODOS os listeners antigos primeiro
+    console.log('🔄 Removendo listeners antigos...');
+    Object.values(editors).forEach(editor => {
+        editor.off('text-change');
+    });
+    
+    // Recrear listeners com a lógica NOVA e ROBUSTA
+    console.log('🔧 Criando listeners robustos...');
+    let updateTimeout;
+    let isUpdating = false;
+    
+    Object.values(editors).forEach(editor => {
+        editor.on('text-change', function(delta, oldDelta, source) {
+            // Ignorar mudanças programáticas para evitar loops
+            if (source === 'api' || isUpdating) {
+                console.log('⏭️ Mudança ignorada (source:', source, ', isUpdating:', isUpdating, ')');
+                return;
+            }
+            
+            console.log('👤 Mudança do usuário detectada');
+            
+            // Cancelar timeout anterior
+            if (updateTimeout) {
+                clearTimeout(updateTimeout);
+            }
+            
+            // Agendar nova execução
+            updateTimeout = setTimeout(() => {
+                isUpdating = true;
+                console.log('🔄 Executando updatePreview...');
+                
+                try {
+                    window.updatePreview();
+                    window.checkFormValidity();
+                    console.log('✅ updatePreview executado com sucesso');
+                } catch (error) {
+                    console.error('❌ Erro no updatePreview:', error);
+                } finally {
+                    isUpdating = false;
+                    console.log('🏁 Flag isUpdating liberada');
+                }
+            }, 500);
+        });
+    });
+    
+    // Limpar preview
+    ['a', 'b', 'c', 'd'].forEach(letter => {
+        const el = document.getElementById(`preview-option-${letter}`);
+        const content = document.getElementById(`preview-content-${letter}`);
+        if (el && content) {
+            el.classList.remove('is-correct');
+            el.style.cssText = '';
+            content.innerHTML = '<em>Aguardando conteúdo...</em>';
+            content.className = 'option-content';
+            
+            const check = el.querySelector('.correct-check');
+            if (check) check.style.display = 'none';
+            
+            const letter_el = el.querySelector('.option-letter');
+            if (letter_el) letter_el.style.cssText = '';
+        }
+    });
+    
+    // Limpar editores
+    Object.values(editors).forEach(editor => {
+        editor.setText('');
+    });
+    
+    console.log('✅ Sistema COMPLETAMENTE RESETADO');
+    console.log('🎯 Agora você pode digitar NORMALMENTE!');
+    console.log('🎯 A resposta correta deve aparecer automaticamente no preview');
+    
+    alert('🎯 Sistema RESETADO com nova lógica anti-loop!\n\nAgora digite normalmente:\n1. Uma pergunta\n2. Uma resposta correta\n3. Três opções incorretas\n\nA resposta correta deve aparecer automaticamente no preview!');
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Inicializando página de sugestão...');
+    
+    // Aguardar Quill carregar
+    function initializeEditors() {
+        if (typeof Quill === 'undefined') {
+            console.log('Aguardando Quill carregar...');
+            setTimeout(initializeEditors, 100);
             return;
         }
 
-        console.log('Creating editor configuration...');
-        const editorConfig = {
+        // console.log('✅ Editores Quill inicializados!');
+
+        // Configuração do Quill
+        const quillConfig = {
             theme: 'snow',
             modules: {
                 toolbar: [
                     ['bold', 'italic', 'underline'],
-                    ['image', 'formula'],
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }]
+                    ['formula'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ['clean']
                 ]
-            },
-            placeholder: 'Digite aqui...'
-        };
-
-        console.log('Initializing editors...');
-        const editors = {
-            question: new Quill('#question-editor', editorConfig),
-            correct_answer: new Quill('#correct-answer-editor', editorConfig),
-            option1: new Quill('#option1-editor', editorConfig),
-            option2: new Quill('#option2-editor', editorConfig),
-            option3: new Quill('#option3-editor', editorConfig),
-            option4: new Quill('#option4-editor', editorConfig)
-        };
-
-        console.log('Setting up preview function...');
-        function updatePreview() {
-            try {
-                document.getElementById('preview-question').innerHTML = editors.question.root.innerHTML;
-                document.getElementById('preview-option1').innerHTML = editors.option1.root.innerHTML;
-                document.getElementById('preview-option2').innerHTML = editors.option2.root.innerHTML;
-                document.getElementById('preview-option3').innerHTML = editors.option3.root.innerHTML;
-                document.getElementById('preview-option4').innerHTML = editors.option4.root.innerHTML;
-
-                document.querySelectorAll('#preview-question .ql-formula, #preview-option1 .ql-formula, #preview-option2 .ql-formula, #preview-option3 .ql-formula, #preview-option4 .ql-formula').forEach(function(formula) {
-                    katex.render(formula.getAttribute('data-value'), formula, {
-                        throwOnError: false
-                    });
-                });
-            } catch (error) {
-                console.error('Error updating preview:', error);
-            }
-        }
-
-        console.log('Setting up event listeners...');
-        Object.values(editors).forEach(editor => {
-            editor.on('text-change', updatePreview);
-        });
-
-        document.querySelector('form').onsubmit = function() {
-            for (let field in editors) {
-                document.querySelector(`input[name=${field}]`).value = editors[field].root.innerHTML;
             }
         };
 
-        // Handle new topic input visibility
-        const topicSelect = document.getElementById('topic');
-        const newTopicInput = document.getElementById('new_topic');
-        
-        if (topicSelect && newTopicInput) {
-            topicSelect.addEventListener('change', function() {
-                newTopicInput.style.display = this.value === 'novo_tema' ? 'block' : 'none';
+        try {
+            // Criar editor de pergunta
+            editors.question = new Quill('#question-editor', {
+                ...quillConfig,
+                placeholder: 'Digite sua pergunta aqui...'
             });
+
+            // Criar editor de resposta correta
+            editors.correct_answer = new Quill('#correct-answer-editor', {
+                ...quillConfig,
+                placeholder: 'Digite a resposta correta...'
+            });
+
+            // Criar editores de opções incorretas
+            editors.option1 = new Quill('#option1-editor', {
+                ...quillConfig,
+                placeholder: 'Primeira alternativa incorreta...'
+            });
+
+            editors.option2 = new Quill('#option2-editor', {
+                ...quillConfig,
+                placeholder: 'Segunda alternativa incorreta...'
+            });
+
+            editors.option3 = new Quill('#option3-editor', {
+                ...quillConfig,
+                placeholder: 'Terceira alternativa incorreta...'
+            });
+
+            // Adicionar listeners para atualização em tempo real (com debounce robusto)
+            let updateTimeout;
+            let isUpdating = false; // Flag para evitar loops
+            
+            Object.values(editors).forEach(editor => {
+                editor.on('text-change', function(delta, oldDelta, source) {
+                    // Ignorar mudanças programáticas (API) para evitar loops
+                    if (source === 'api' || isUpdating || window.TESTING_MODE) {
+                        return;
+                    }
+                    
+                    // Cancelar timeout anterior
+                    if (updateTimeout) {
+                        clearTimeout(updateTimeout);
+                    }
+                    
+                    // Agendar nova execução com debounce
+                    updateTimeout = setTimeout(() => {
+                        isUpdating = true; // Marcar como atualizando
+                        
+                        try {
+                            window.updatePreview();
+                            window.checkFormValidity();
+                        } catch (error) {
+                            console.error('Erro no updatePreview:', error);
+                        } finally {
+                            isUpdating = false; // Liberar flag
+                        }
+                    }, 500); // Delay maior para estabilidade
+                });
+            });
+
+            console.log('✅ Sistema de sugestão de questões carregado!');
+            
+            window.updatePreview();
+            window.checkFormValidity();
+            
+        } catch (error) {
+            console.error('Erro ao inicializar editores:', error);
         }
-
-        console.log('Initial preview update...');
-        updatePreview();
-        console.log('Editor initialization complete!');
-    } catch (error) {
-        console.error('Error initializing Quill editors:', error);
-        console.error('Error stack:', error.stack);
     }
-}
 
-// Try to initialize immediately if Quill is already loaded
-if (typeof Quill !== 'undefined') {
-    console.log('Quill already loaded, initializing immediately...');
-    initializeEditors();
-} else {
-    console.log('Waiting for DOM and Quill to load...');
-    document.addEventListener('DOMContentLoaded', function() {
-        // Add a small delay to ensure Quill is loaded
-        setTimeout(initializeEditors, 100);
+    // Atualizar preview (disponível globalmente)
+    window.updatePreview = function() {
+        // PARAR se estivermos testando
+        if (window.TESTING_MODE) {
+            console.log('⏸️ updatePreview PAUSADO - modo teste ativo');
+            return;
+        }
+        
+        try {
+            // Atualizar pergunta preservando formatação
+            const questionContent = editors.question ? editors.question.root.innerHTML : '';
+            const questionElement = document.getElementById('preview-question');
+            if (questionContent.trim() && questionContent !== '<p><br></p>') {
+                questionElement.innerHTML = questionContent;
+                questionElement.className = 'ql-editor'; // Aplicar classes Quill
+            } else {
+                questionElement.innerHTML = '<em>Digite sua pergunta para visualizar...</em>';
+                questionElement.className = '';
+            }
+
+            // Coletar todas as opções
+            const allOptions = [];
+
+            // Adicionar resposta correta (SEMPRE incluir se tiver conteúdo)
+            if (editors.correct_answer) {
+                const correctContent = editors.correct_answer.root.innerHTML;
+                const correctText = editors.correct_answer.getText().trim();
+                
+                // Verificação simples - apenas se há texto
+                const hasContent = correctText.length > 0;
+                
+                if (hasContent) {
+                    const correctOption = {
+                        content: correctContent,
+                        isCorrect: true
+                    };
+                    allOptions.push(correctOption);
+                }
+            }
+
+            // Adicionar opções incorretas
+            ['option1', 'option2', 'option3'].forEach(key => {
+                if (editors[key]) {
+                    const content = editors[key].root.innerHTML;
+                    if (content && content.trim() && content.trim() !== '<p><br></p>') {
+                        allOptions.push({
+                            content: content,
+                            isCorrect: false
+                        });
+                    }
+                }
+            });
+
+            // Criar array de 4 posições garantidas
+            const previewOptions = new Array(4).fill(null);
+            
+            // Se temos opções, embaralhar e colocar nas primeiras posições
+            if (allOptions.length > 0) {
+                const shuffled = [...allOptions].sort(() => Math.random() - 0.5);
+                for (let i = 0; i < Math.min(shuffled.length, 4); i++) {
+                    previewOptions[i] = shuffled[i];
+                }
+                // console.log(`📊 ${allOptions.length} opções coletadas | Correta: ${allOptions.some(o => o.isCorrect) ? '✅' : '❌'}`);
+            }
+
+            // Atualizar preview das opções (SEMPRE 4 opções visíveis)            
+            ['a', 'b', 'c', 'd'].forEach((letter, index) => {
+                const optionElement = document.getElementById(`preview-option-${letter}`);
+                const contentElement = document.getElementById(`preview-content-${letter}`);
+                
+                // Verificar se os elementos existem
+                if (!optionElement || !contentElement) {
+                    console.error(`❌ Elemento preview-option-${letter} ou preview-content-${letter} não encontrado!`);
+                    return;
+                }
+                
+                const checkIcon = optionElement.querySelector('.correct-check');
+
+                // SEMPRE mostrar a opção, mesmo que vazia
+                optionElement.style.display = 'flex'; // Garantir que está visível
+
+                if (previewOptions[index]) {
+                    // Tem conteúdo
+                    contentElement.innerHTML = previewOptions[index].content;
+                    contentElement.className = 'option-content ql-editor';
+                    
+                    if (previewOptions[index].isCorrect) {
+                        optionElement.classList.add('is-correct');
+                        checkIcon.style.display = 'block';
+                        
+                        // Aplicar estilos diretos (sem animação para não resetar)
+                        optionElement.style.cssText = `
+                            background: linear-gradient(135deg, #28a745, #20c997) !important;
+                            border: 3px solid #28a745 !important;
+                            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4) !important;
+                            transition: none !important;
+                            animation: none !important;
+                            display: flex !important;
+                            visibility: visible !important;
+                            opacity: 1 !important;
+                        `;
+                        
+                        // Estilizar a letra da opção
+                        const optionLetter = optionElement.querySelector('.option-letter');
+                        if (optionLetter) {
+                            optionLetter.style.cssText = `
+                                background: #28a745 !important;
+                                border: 2px solid #20c997 !important;
+                                color: white !important;
+                                font-weight: bold !important;
+                            `;
+                        }
+                        
+                        // console.log(`✅ Resposta correta aplicada na opção ${letter.toUpperCase()}`);
+                        
+                    } else {
+                        optionElement.classList.remove('is-correct');
+                        checkIcon.style.display = 'none';
+                        
+                        // Resetar estilos inline para opções incorretas
+                        optionElement.style.cssText = '';
+                        const optionLetter = optionElement.querySelector('.option-letter');
+                        if (optionLetter) {
+                            optionLetter.style.cssText = '';
+                        }
+                    }
+                } else {
+                    // Sem conteúdo - mostrar placeholder
+                    contentElement.innerHTML = '<em>Aguardando conteúdo...</em>';
+                    contentElement.className = 'option-content';
+                    optionElement.classList.remove('is-correct');
+                    checkIcon.style.display = 'none';
+                }
+            });
+
+            // Atualizar metadata
+            document.getElementById('meta-grade').textContent = 
+                document.getElementById('grade').value || '-';
+            
+            const topicValue = document.getElementById('topic').value;
+            document.getElementById('meta-topic').textContent = 
+                topicValue === 'novo_tema' 
+                    ? document.getElementById('new_topic').value || '-'
+                    : topicValue || '-';
+            
+            document.getElementById('meta-difficulty').textContent = 
+                document.getElementById('difficulty').value || '-';
+            
+            document.getElementById('meta-points').textContent = 
+                document.getElementById('points').value || '-';
+                
+        } catch (error) {
+            console.error('Erro ao atualizar preview:', error);
+        }
+    }
+
+    // Verificar validade do formulário
+    window.checkFormValidity = function() {
+        try {
+            const grade = document.getElementById('grade').value;
+            const topic = document.getElementById('topic').value;
+            const newTopic = document.getElementById('new_topic').value;
+            const difficulty = document.getElementById('difficulty').value;
+            const points = document.getElementById('points').value;
+
+            const hasQuestion = editors.question && editors.question.getText().trim().length > 0;
+            const hasCorrectAnswer = editors.correct_answer && editors.correct_answer.getText().trim().length > 0;
+            const hasOption1 = editors.option1 && editors.option1.getText().trim().length > 0;
+            const hasOption2 = editors.option2 && editors.option2.getText().trim().length > 0;
+            const hasOption3 = editors.option3 && editors.option3.getText().trim().length > 0;
+
+            const topicValid = topic && (topic !== 'novo_tema' || newTopic.trim());
+            const isValid = grade && topicValid && difficulty && points && 
+                           hasQuestion && hasCorrectAnswer && 
+                           hasOption1 && hasOption2 && hasOption3;
+
+            document.getElementById('submit-btn').disabled = !isValid;
+            
+        } catch (error) {
+            console.error('Erro ao verificar validade:', error);
+        }
+    }
+
+    // Gerenciar nova matéria
+    document.getElementById('topic').addEventListener('change', function() {
+        const newTopicInput = document.getElementById('new_topic');
+        newTopicInput.style.display = 
+            this.value === 'novo_tema' ? 'block' : 'none';
+        if (this.value === 'novo_tema') {
+            newTopicInput.focus();
+        }
+        window.updatePreview();
+        window.checkFormValidity();
     });
-}
+
+    // Listeners para outros campos
+    ['grade', 'difficulty', 'points', 'new_topic'].forEach(id => {
+        document.getElementById(id).addEventListener('change', function() {
+            window.updatePreview();
+            window.checkFormValidity();
+        });
+    });
+
+    // Submissão do formulário
+    document.getElementById('suggest-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Atualizar campos hidden
+        document.querySelector('input[name="question"]').value = 
+            editors.question.root.innerHTML;
+        document.querySelector('input[name="correct_answer"]').value = 
+            editors.correct_answer.root.innerHTML;
+        document.querySelector('input[name="option1"]').value = 
+            editors.option1.root.innerHTML;
+        document.querySelector('input[name="option2"]').value = 
+            editors.option2.root.innerHTML;
+        document.querySelector('input[name="option3"]').value = 
+            editors.option3.root.innerHTML;
+
+        // Adicionar estado de loading
+        const btn = document.getElementById('submit-btn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+        btn.disabled = true;
+
+        // Submeter formulário
+        this.submit();
+    });
+
+    // Função simples para testar Quill quando estiver pronto
+    window.testQuillContent = function() {
+        if (editors.correct_answer) {
+            editors.correct_answer.setText('Teste de resposta correta');
+            setTimeout(() => window.updatePreview(), 100);
+        } else {
+            alert('Editores ainda não estão prontos');
+        }
+    };
+
+    // Inicializar
+    initializeEditors();
+});
 </script>
 {% endblock %}

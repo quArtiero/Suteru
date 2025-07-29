@@ -44,7 +44,8 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Navbar */
+/* ⚠️  LEGACY NAVBAR - NOW HANDLED BY modern-design.css ⚠️ */
+/*
 .navbar {
   background-color: var(--header-footer-bg);
   padding: var(--spacing-sm) 0;
@@ -60,6 +61,7 @@ body {
   font-weight: 500;
   padding: var(--spacing-xs) var(--spacing-sm);
 }
+*/
 
 .nav-link {
   color: rgba(255, 255, 255, 0.9);

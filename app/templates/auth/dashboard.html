@@ -5,13 +5,354 @@
 {% endblock %}
 
 {% block content %}
-<h1>Olá, bem-vindo de volta!</h1>
-<div class="stats-container">
-    <div class="stat-card">
-        <h3>Suas Doações</h3>
-        <p>{{ food_donation }} grãos doados</p>
+<div class="dashboard-container">
+  <!-- Header Section -->
+  <div class="dashboard-header">
+    <h1 class="welcome-title">Bem-vindo de volta!</h1>
+    <p class="welcome-subtitle">
+      Continue sua jornada de aprendizado e impacto social. Cada resposta correta faz a diferença!
+    </p>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid-modern">
+    <!-- Points Card -->
+    <div class="stat-card-modern">
+      <div class="stat-header">
+        <div class="stat-icon">
+          <i class="fas fa-star"></i>
+        </div>
+        <div class="stat-content">
+          <h3>Seus Pontos</h3>
+          <p>Pontos acumulados</p>
+        </div>
+      </div>
+      <div class="stat-number">{{ total_points }}</div>
+      <div class="stat-label">pontos conquistados</div>
     </div>
-    <!-- ... other stats ... -->
+
+    <!-- Donations Card -->
+    <div class="stat-card-modern">
+      <div class="stat-header">
+        <div class="stat-icon">
+          <i class="fas fa-seedling"></i>
+        </div>
+        <div class="stat-content">
+          <h3>Grãos Doados</h3>
+          <p>Seu impacto social</p>
+        </div>
+      </div>
+      <div class="stat-number">{{ (total_points * 2)|round(0) }}</div>
+      <div class="stat-label">grãos de arroz</div>
+    </div>
+  </div>
+
+  <!-- Impact Display -->
+  <div class="impact-display">
+    <h2 class="impact-title">Seu Impacto Transformador</h2>
+    <div class="impact-amount">{{ food_donation_grams|round(1) }}g</div>
+    <p class="impact-description">
+      de alimentos serão doados graças ao seu conhecimento!
+    </p>
+    <div style="margin-top: var(--space-4); font-size: var(--text-lg); color: var(--text-color); background-color: var(--primary-50); padding: var(--space-3); border-radius: var(--radius-md); border-left: 4px solid var(--primary-500);">
+      Equivale a <strong>{{ food_donation_meals|round(1) }} refeições</strong> para famílias em vulnerabilidade
+    </div>
+    
+         <!-- Progress Bar para Próxima Refeição -->
+     <div class="meal-progress-container">
+       {% set current_meal_progress = approximate_questions % 100 %}
+       {% set progress_percentage = (current_meal_progress / 100 * 100)|round(1) %}
+       
+       <div class="progress-header">
+         <span class="progress-title">Progresso para próxima refeição</span>
+         <span class="progress-count">{{ current_meal_progress|round(0) }}/100 perguntas</span>
+       </div>
+       
+       <div class="meal-progress-bar">
+         <div class="meal-progress-fill" data-width="{{ progress_percentage }}"></div>
+       </div>
+       
+       <div class="progress-footer">
+         <small>{{ (100 - current_meal_progress)|round(0) }} perguntas restantes</small>
+       </div>
+     </div>
+  </div>
+
+  <!-- Action Section -->
+  <div class="action-section">
+    <h2 class="action-title">Continue Aprendendo</h2>
+    <div class="action-buttons">
+      <a href="{{ url_for('quiz.quizzes') }}" class="action-btn action-btn-primary">
+        <i class="fas fa-brain"></i>
+        Começar Quiz
+      </a>
+      <a href="{{ url_for('main.leaderboard') }}" class="action-btn action-btn-secondary">
+        <i class="fas fa-trophy"></i>
+        Ver Ranking
+      </a>
+      <a href="{{ url_for('auth.achievements') }}" class="action-btn action-btn-secondary">
+        <i class="fas fa-medal"></i>
+        Minhas Conquistas
+      </a>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="recent-activity">
+    <div class="activity-header">
+      <div class="activity-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <h3>Sua Jornada</h3>
+    </div>
+    
+    <p style="color: var(--text-secondary); margin-bottom: var(--space-6);">
+      Você está fazendo uma diferença real! Continue respondendo quizzes para aumentar seu impacto social.
+    </p>
+    
+    <div class="achievement-badges">
+      {% if total_points >= 25 %}
+        <span class="badge">
+          <i class="fas fa-graduation-cap"></i>
+          Sábio Júnior
+        </span>
+      {% endif %}
+      
+      {% if total_points >= 50 %}
+        <span class="badge">
+          <i class="fas fa-shield-alt"></i>
+          Guardião do Conhecimento
+        </span>
+      {% endif %}
+      
+      {% if total_points >= 100 %}
+        <span class="badge">
+          <i class="fas fa-crown"></i>
+          Centurião da Sabedoria
+        </span>
+      {% endif %}
+      
+      {% if total_points >= 250 %}
+        <span class="badge">
+          <i class="fas fa-chess-king"></i>
+          Lorde do Conhecimento
+        </span>
+      {% endif %}
+      
+      {% if total_points >= 500 %}
+        <span class="badge">
+          <i class="fas fa-gem"></i>
+          Senhor Supremo
+        </span>
+      {% endif %}
+      
+      {% if total_points >= 1000 %}
+        <span class="badge">
+          <i class="fas fa-dragon"></i>
+          Imperador Imortal
+        </span>
+      {% endif %}
+      
+      {% if total_points >= 1618 %}
+        <span class="badge">
+          <i class="fas fa-star-of-david"></i>
+          Guardião da Proporção Áurea
+        </span>
+      {% endif %}
+      
+      {% if total_points >= 2500 %}
+        <span class="badge">
+          <i class="fas fa-star-of-life"></i>
+          Lenda Viva
+        </span>
+      {% endif %}
+      
+      {% if total_points >= 3141 %}
+        <span class="badge">
+          <i class="fas fa-circle"></i>
+          Discípulo de Arquimedes
+        </span>
+      {% endif %}
+      
+      {% if approximate_questions >= 5 %}
+        <span class="badge">
+          <i class="fas fa-fire"></i>
+          Chama Inicial
+        </span>
+      {% endif %}
+      
+      {% if approximate_questions >= 10 %}
+        <span class="badge">
+          <i class="fas fa-scroll"></i>
+          Discípulo Dedicado
+        </span>
+      {% endif %}
+      
+      {% if approximate_questions >= 25 %}
+        <span class="badge">
+          <i class="fas fa-medal"></i>
+          Mestre da Primeira Ordem
+        </span>
+      {% endif %}
+      
+      {% if approximate_questions >= 50 %}
+        <span class="badge">
+          <i class="fas fa-magic"></i>
+          Arquimago do Aprendizado
+        </span>
+      {% endif %}
+      
+      {% if approximate_questions >= 100 %}
+        <span class="badge">
+          <i class="fas fa-crown"></i>
+          Imperador das Respostas
+        </span>
+      {% endif %}
+      
+      {% if approximate_questions >= 42 %}
+        <span class="badge">
+          <i class="fas fa-question"></i>
+          Resposta para Tudo
+        </span>
+      {% endif %}
+      
+      {% if food_donation_meals >= 0.5 %}
+        <span class="badge">
+          <i class="fas fa-heart"></i>
+          Coração Altruísta
+        </span>
+      {% endif %}
+      
+      {% if food_donation_meals >= 1 %}
+        <span class="badge">
+          <i class="fas fa-dove"></i>
+          Portador da Esperança
+        </span>
+      {% endif %}
+      
+      {% if food_donation_meals >= 3 %}
+        <span class="badge">
+          <i class="fas fa-angel"></i>
+          Anjo da Misericórdia
+        </span>
+      {% endif %}
+      
+      {% if food_donation_meals >= 5 %}
+        <span class="badge">
+          <i class="fas fa-shield-heart"></i>
+          Guardião dos Famintos
+        </span>
+      {% endif %}
+      
+      {% if food_donation_meals >= 10 %}
+        <span class="badge">
+          <i class="fas fa-sword"></i>
+          Lâmina da Justiça Social
+        </span>
+      {% endif %}
+      
+      {% if food_donation_meals >= 25 %}
+        <span class="badge">
+          <i class="fas fa-mountain"></i>
+          Titã da Compaixão
+        </span>
+      {% endif %}
+      
+      {% if food_donation_meals >= 50 %}
+        <span class="badge">
+          <i class="fas fa-sun"></i>
+          Deus da Generosidade
+        </span>
+      {% endif %}
+      
+      {% if approximate_questions >= 137 %}
+        <span class="badge">
+          <i class="fas fa-atom"></i>
+          Einstein Reencarnado
+        </span>
+      {% endif %}
+      
+      {% if approximate_questions >= 200 %}
+        <span class="badge">
+          <i class="fas fa-eye-slash"></i>
+          Oráculo da Verdade
+        </span>
+      {% endif %}
+      
+      {% if approximate_questions >= 365 %}
+        <span class="badge">
+          <i class="fas fa-calendar-alt"></i>
+          Vigilante Incansável
+        </span>
+      {% endif %}
+      
+      {% if approximate_questions >= 500 %}
+        <span class="badge">
+          <i class="fas fa-yin-yang"></i>
+          Mestre dos Cinco Elementos
+        </span>
+      {% endif %}
+    </div>
+
+    <div style="margin-top: var(--space-8); text-align: center;">
+      <a href="{{ url_for('auth.achievements') }}" class="btn btn-primary" style="margin-right: var(--space-4);">
+        <i class="fas fa-crown" style="margin-right: 8px;"></i>
+        Ver Todas as Conquistas
+      </a>
+      <a href="{{ url_for('quiz.suggest_question') }}" class="btn btn-ghost">
+        <i class="fas fa-lightbulb" style="margin-right: 8px;"></i>
+        Contribuir com Questões
+      </a>
+    </div>
+  </div>
 </div>
-<a href="{{ url_for('quiz.quizzes') }}" class="btn btn-primary btn-lg">Começar um Quiz</a>
+
+<script>
+// Add some interactive features
+document.addEventListener('DOMContentLoaded', function() {
+  // Animate numbers counting up
+  const animateValue = (element, start, end, duration) => {
+    const range = end - start;
+    let current = start;
+    const increment = end > start ? 1 : -1;
+    const stepTime = Math.abs(Math.floor(duration / range));
+    
+    const timer = setInterval(() => {
+      current += increment;
+      element.textContent = current;
+      if (current === end) {
+        clearInterval(timer);
+      }
+    }, stepTime);
+  };
+  
+  // Trigger animations when cards come into view
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const numberElement = entry.target.querySelector('.stat-number');
+        if (numberElement && !numberElement.classList.contains('animated')) {
+          numberElement.classList.add('animated');
+          const finalValue = parseInt(numberElement.textContent);
+          numberElement.textContent = '0';
+          animateValue(numberElement, 0, finalValue, 1500);
+        }
+      }
+    });
+  });
+  
+  document.querySelectorAll('.stat-card-modern').forEach(card => {
+    observer.observe(card);
+  });
+  
+  // Animate progress bar
+  const progressFill = document.querySelector('.meal-progress-fill');
+  if (progressFill) {
+    const width = progressFill.getAttribute('data-width');
+    setTimeout(() => {
+      progressFill.style.width = width + '%';
+    }, 800);
+  }
+});
+</script>
 {% endblock %}

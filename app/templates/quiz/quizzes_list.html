@@ -5,16 +5,371 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1>Escolha seu Tópico</h1>
-    <p>Selecione um tópico para começar seu quiz</p>
+<div class="topics-modern-container">
+    <div class="topics-hero">
+        <h1 class="topics-hero-title">
+            <i class="fas fa-compass"></i>
+            Escolha seu Tópico
+        </h1>
+        <p class="topics-hero-subtitle">
+            Selecione um tópico para começar sua jornada de conhecimento e impacto social
+        </p>
+    </div>
     
-    <div class="topics-grid">
+    <div class="topics-grid-modern">
         {% for topic in topics %}
-        <a href="{{ url_for('quiz.select_grade', topic=topic) }}" class="topic-card">
-            <div class="topic-name">{{ topic }}</div>
+        <a href="{{ url_for('quiz.select_grade', topic=topic) }}" class="topic-card-modern" data-topic="{{ topic }}" data-aos="zoom-in" data-aos-delay="{{ loop.index0 * 150 }}">
+            <div class="topic-card-background"></div>
+            <div class="topic-icon">
+                {% if topic == 'Matemática' %}
+                    <i class="fas fa-calculator"></i>
+                {% elif topic == 'Português' %}
+                    <i class="fas fa-book"></i>
+                {% elif topic == 'História' %}
+                    <i class="fas fa-monument"></i>
+                {% elif topic == 'Geografia' %}
+                    <i class="fas fa-globe"></i>
+                {% elif topic == 'Ciências' %}
+                    <i class="fas fa-flask"></i>
+                {% elif topic == 'Física' %}
+                    <i class="fas fa-atom"></i>
+                {% elif topic == 'Química' %}
+                    <i class="fas fa-vial"></i>
+                {% elif topic == 'Biologia' %}
+                    <i class="fas fa-dna"></i>
+                {% else %}
+                    <i class="fas fa-graduation-cap"></i>
+                {% endif %}
+            </div>
+            <div class="topic-content">
+                <h3 class="topic-name-modern">{{ topic }}</h3>
+                <p class="topic-description">
+                    {% if topic == 'Matemática' %}
+                        Desafie sua lógica e raciocínio
+                    {% elif topic == 'Português' %}
+                        Explore a língua e literatura
+                    {% elif topic == 'História' %}
+                        Viaje através do tempo
+                    {% elif topic == 'Geografia' %}
+                        Descubra nosso mundo
+                    {% elif topic == 'Ciências' %}
+                        Investigue os mistérios naturais
+                    {% elif topic == 'Física' %}
+                        Compreenda as leis do universo
+                    {% elif topic == 'Química' %}
+                        Explore as reações da vida
+                    {% elif topic == 'Biologia' %}
+                        Estude a diversidade da vida
+                    {% else %}
+                        Amplie seus conhecimentos
+                    {% endif %}
+                </p>
+                <div class="topic-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </div>
+            <div class="topic-shine"></div>
         </a>
         {% endfor %}
     </div>
 </div>
+
+<style>
+/* Modern Topics Page Styles */
+.topics-modern-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%);
+    padding: var(--space-8) var(--space-4);
+}
+
+.topics-hero {
+    text-align: center;
+    margin-bottom: var(--space-12);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.topics-hero-title {
+    font-size: var(--text-4xl);
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: var(--space-4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+}
+
+.topics-hero-title i {
+    color: var(--primary-500);
+    animation: rotate 3s linear infinite;
+}
+
+.topics-hero-subtitle {
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+.topics-grid-modern {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-6);
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.topic-card-modern {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-lg);
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-height: 250px;
+    justify-content: space-between;
+}
+
+.topic-card-modern:hover {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: var(--shadow-2xl);
+    border-color: var(--primary-200);
+    color: inherit;
+    text-decoration: none;
+}
+
+.topic-card-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transition: transform var(--transition-base);
+}
+
+.topic-card-modern:hover .topic-card-background {
+    transform: scaleX(1);
+}
+
+.topic-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-6);
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-md);
+}
+
+.topic-card-modern:hover .topic-icon {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: var(--shadow-lg);
+}
+
+.topic-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.topic-name-modern {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-3);
+    transition: color var(--transition-base);
+}
+
+.topic-card-modern:hover .topic-name-modern {
+    color: var(--primary-600);
+}
+
+.topic-description {
+    color: var(--text-secondary);
+    font-size: var(--text-base);
+    line-height: 1.6;
+    margin-bottom: var(--space-6);
+    font-style: italic;
+}
+
+.topic-arrow {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-50);
+    color: var(--primary-600);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-base);
+    margin-top: auto;
+}
+
+.topic-card-modern:hover .topic-arrow {
+    background: var(--primary-600);
+    color: white;
+    transform: translateX(5px);
+}
+
+.topic-shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s;
+}
+
+.topic-card-modern:hover .topic-shine {
+    left: 100%;
+}
+
+/* Subject-specific color themes */
+.topic-card-modern[data-topic="Matemática"]:hover .topic-icon {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.topic-card-modern[data-topic="Português"]:hover .topic-icon {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.topic-card-modern[data-topic="História"]:hover .topic-icon {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.topic-card-modern[data-topic="Geografia"]:hover .topic-icon {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+}
+
+.topic-card-modern[data-topic="Ciências"]:hover .topic-icon {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.topic-card-modern[data-topic="Física"]:hover .topic-icon {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+}
+
+.topic-card-modern[data-topic="Química"]:hover .topic-icon {
+    background: linear-gradient(135deg, #ec4899, #db2777);
+}
+
+.topic-card-modern[data-topic="Biologia"]:hover .topic-icon {
+    background: linear-gradient(135deg, #84cc16, #65a30d);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .topics-grid-modern {
+        grid-template-columns: 1fr;
+        gap: var(--space-4);
+    }
+    
+    .topics-hero-title {
+        font-size: var(--text-2xl);
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+    
+    .topic-card-modern {
+        min-height: 200px;
+        padding: var(--space-6);
+    }
+    
+    .topic-icon {
+        width: 60px;
+        height: 60px;
+        font-size: var(--text-xl);
+    }
+}
+
+/* Animation keyframes */
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+[data-aos="zoom-in"] {
+    opacity: 0;
+    transform: scale(0.8);
+    animation: zoomIn 0.6s ease forwards;
+}
+
+@keyframes zoomIn {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Staggered animation for topic cards
+    const cards = document.querySelectorAll('[data-aos="zoom-in"]');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 150}ms`;
+    });
+    
+    // Add click ripple effect
+    const topicCards = document.querySelectorAll('.topic-card-modern');
+    topicCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            const ripple = document.createElement('div');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                background: rgba(59, 130, 246, 0.3);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: ripple 0.6s ease-out;
+                pointer-events: none;
+            `;
+            
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+});
+
+// CSS for ripple animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes ripple {
+        to {
+            transform: scale(2);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>
 {% endblock %}

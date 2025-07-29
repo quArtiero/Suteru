@@ -6,7 +6,40 @@ from dotenv import load_dotenv
 
 load_dotenv()  # Carrega as variáveis de ambiente do arquivo .env
 
-POINTS_TO_GRAMS = 2  # 1 ponto = 2 grãos
+# Constantes de conversão atualizadas
+GRAMS_PER_GRAIN = 0.021    # 1 grão = 0.021 gramas
+GRAINS_PER_POINT = 2       # 1 ponto = 2 grãos  
+POINTS_PER_QUESTION = 10   # 1 pergunta = 10 pontos (média)
+GRAINS_PER_QUESTION = 20   # 1 pergunta = 20 grãos (10 pontos × 2)
+GRAMS_PER_POINT = 0.042    # 1 ponto = 0.042 gramas (0.021 * 2)
+GRAMS_PER_QUESTION = 0.42  # 1 pergunta = 0.42 gramas (20 × 0.021)
+GRAMS_PER_MEAL = 80        # 1 refeição = 80 gramas
+QUESTIONS_PER_MEAL = 100   # 100 perguntas = 1 refeição (meta mais acessível)
+POINTS_PER_MEAL = 1000     # 1.000 pontos = 1 refeição (100 × 10)
+
+# Constante legacy para compatibilidade
+POINTS_TO_GRAMS = GRAINS_PER_POINT
+
+def points_to_grams(points):
+    """Converte pontos para gramas de alimento"""
+    return points * GRAMS_PER_POINT
+
+def points_to_meals(points):
+    """Converte pontos para número de refeições"""
+    grams = points_to_grams(points)
+    return grams / GRAMS_PER_MEAL
+
+def points_to_grains(points):
+    """Converte pontos para número de grãos de arroz"""
+    return points * GRAINS_PER_POINT
+
+def points_to_questions(points):
+    """Converte pontos para número aproximado de perguntas respondidas"""
+    return points / POINTS_PER_QUESTION
+
+def questions_to_meals(questions):
+    """Converte número de perguntas para refeições"""
+    return questions / QUESTIONS_PER_MEAL
 
 
 class PostgresConnectionFactory:
@@ -123,15 +156,41 @@ def get_user(username, email=None):
         conn.rollback()
 
 
+# Cache simples para otimizar performance
+_cache = {"total_points": None, "last_update": None}
+import time
+
 def get_all_user_points():
     db_error = False
-    data = {"total_points": 0, "total_graos": 0}
+    data = {"total_points": 0, "total_graos": 0, "total_grams": 0, "total_meals": 0}
+    
+    # Cache por 30 segundos para melhorar performance
+    current_time = time.time()
+    if (_cache["total_points"] is not None and 
+        _cache["last_update"] is not None and 
+        current_time - _cache["last_update"] < 30):
+        
+        # Usar dados do cache
+        data["total_points"] = _cache["total_points"]
+        data["total_graos"] = points_to_grains(data["total_points"])
+        data["total_grams"] = points_to_grams(data["total_points"])
+        data["total_meals"] = points_to_meals(data["total_points"])
+        return db_error, data
+    
+    # Buscar dados do banco
     conn = PostgresConnectionFactory.get_connection()
     try:
         with conn.cursor() as c:
             c.execute("SELECT SUM(points) FROM user_points")
             data["total_points"] = c.fetchone()[0] or 0
-            data["total_graos"] = data["total_points"] * POINTS_TO_GRAMS  # 1 ponto = 2 grãos
+            data["total_graos"] = points_to_grains(data["total_points"])  # grãos de arroz
+            data["total_grams"] = points_to_grams(data["total_points"])   # gramas de alimento
+            data["total_meals"] = points_to_meals(data["total_points"])   # refeições
+            
+            # Atualizar cache
+            _cache["total_points"] = data["total_points"]
+            _cache["last_update"] = current_time
+            
     except psycopg2.Error as e:
         print(f"Database connection error: {e}")
         conn.rollback()
@@ -149,12 +208,67 @@ def get_user_points(user_id):
                 (user_id,),
             )
             total_points = c.fetchone()[0] or 0
-            food_donation = total_points * POINTS_TO_GRAMS  # 1 ponto = 2 grãos
-            return total_points, food_donation
+            food_donation_grams = points_to_grams(total_points)
+            food_donation_meals = points_to_meals(total_points)
+            approximate_questions = points_to_questions(total_points)
+            return total_points, food_donation_grams, food_donation_meals, approximate_questions
     except psycopg2.Error as e:
         print(f"Database connection error: {e}")
         conn.rollback()
-        return 0, 0
+        return 0, 0, 0, 0
+
+
+def get_user_correct_questions_by_topic(user_id, topic):
+    """Conta quantas questões corretas o usuário respondeu de um tópico específico"""
+    conn = PostgresConnectionFactory.get_connection()
+    try:
+        with conn.cursor() as c:
+            c.execute(
+                """
+                SELECT COUNT(*) 
+                FROM user_points up 
+                JOIN quizzes q ON up.quiz_id = q.id 
+                WHERE up.user_id = %s AND q.topic = %s AND up.is_correct = 1
+                """,
+                (user_id, topic)
+            )
+            count = c.fetchone()[0] or 0
+            return count
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
+        return 0
+
+
+def get_user_subject_achievements(user_id):
+    """Retorna um dicionário com contagens de questões corretas por matéria para conquistas"""
+    conn = PostgresConnectionFactory.get_connection()
+    try:
+        with conn.cursor() as c:
+            # Busca todas as matérias disponíveis
+            c.execute("SELECT DISTINCT topic FROM quizzes ORDER BY topic")
+            topics = [row[0] for row in c.fetchall()]
+            
+            # Conta questões corretas por tópico
+            achievements = {}
+            for topic in topics:
+                c.execute(
+                    """
+                    SELECT COUNT(*) 
+                    FROM user_points up 
+                    JOIN quizzes q ON up.quiz_id = q.id 
+                    WHERE up.user_id = %s AND q.topic = %s AND up.is_correct = 1
+                    """,
+                    (user_id, topic)
+                )
+                count = c.fetchone()[0] or 0
+                achievements[topic] = count
+            
+            return achievements
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
+        return {}
 
 
 def update_user_role(username, role):
@@ -327,6 +441,7 @@ def get_leaderboard():
                 CAST(SUM(up.points) * 1.0 / 1000 AS DECIMAL(10,2)) as total_kg
                 FROM users u
                 JOIN user_points up ON u.id = up.user_id
+                WHERE u.username != 'pedroquart'
                 GROUP BY u.username
                 ORDER BY total_points DESC
                 LIMIT 10

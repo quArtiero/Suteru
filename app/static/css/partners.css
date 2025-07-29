@@ -1,0 +1,258 @@
+/* Partners Page Styles */
+
+/* Partner Cards */
+.partner-card {
+    background: #fff;
+    border-radius: 1.2rem;
+    box-shadow: 0 4px 18px rgba(13, 110, 253, 0.08);
+    padding: 2rem;
+    transition: box-shadow 0.2s;
+    border: 1px solid #f0f4ff;
+    height: 100%;
+}
+
+.partner-card:hover {
+    box-shadow: 0 8px 32px rgba(13, 110, 253, 0.15);
+    transform: translateY(-2px);
+}
+
+.partner-logo {
+    background: var(--primary-light);
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    transition: transform 0.2s;
+    overflow: hidden;
+    position: relative;
+}
+
+.partner-card:hover .partner-logo {
+    transform: scale(1.05);
+}
+
+.partner-logo i {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+}
+
+/* Partner Logo Images */
+.partner-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    padding: 8px;
+    background: #fff;
+    border-radius: 50%;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.partner-logo-fallback {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+}
+
+.partner-name {
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    text-align: center;
+    font-size: 1.3rem;
+}
+
+.partner-description {
+    color: #2c3e50;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.partner-role {
+    text-align: center;
+}
+
+/* Badges */
+.badge {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    transition: transform 0.2s;
+    margin: 0.2rem;
+}
+
+.badge:hover {
+    transform: scale(1.05);
+}
+
+.badge-primary {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.badge-success {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.badge-info {
+    background-color: #17a2b8;
+    color: #fff;
+}
+
+.badge-secondary {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+/* Partnership Types */
+.partnership-type {
+    background: #f8f9ff;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border-left: 4px solid var(--primary-color);
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+}
+
+.partnership-type:hover {
+    background: #f0f4ff;
+    transform: translateX(5px);
+}
+
+.partnership-type h5 {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.partnership-type h5 i {
+    margin-right: 0.5rem;
+}
+
+.partnership-type p {
+    color: #2c3e50;
+    margin-bottom: 0;
+    font-size: 0.95rem;
+}
+
+/* Transparency Section */
+.transparency-section {
+    background: #f4f8ff;
+    border-radius: 1.2rem;
+    padding: 2rem;
+    margin-top: 1rem;
+}
+
+.transparency-item {
+    padding: 1rem;
+    transition: transform 0.2s;
+}
+
+.transparency-item:hover {
+    transform: translateY(-3px);
+}
+
+.transparency-item i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.transparency-item h5 {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.transparency-item p {
+    color: #2c3e50;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .partner-card {
+        padding: 1.5rem;
+    }
+    
+    .partner-logo {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .partner-logo i {
+        font-size: 2rem;
+    }
+    
+    .partner-logo-img {
+        padding: 6px;
+    }
+    
+    .partner-logo-fallback {
+        font-size: 2rem;
+    }
+    
+    .partner-name {
+        font-size: 1.1rem;
+    }
+    
+    .transparency-section {
+        padding: 1.5rem;
+    }
+    
+    .transparency-item i {
+        font-size: 2rem;
+    }
+    
+    .partnership-type {
+        padding: 1.2rem;
+    }
+}
+
+/* Animation for page load */
+.partner-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.partnership-type {
+    animation: fadeInLeft 0.6s ease-out;
+}
+
+.transparency-item {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+} 

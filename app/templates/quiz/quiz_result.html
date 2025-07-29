@@ -1,15 +1,592 @@
 {% extends 'base.html' %}
+
 {% block content %}
-{% if result == 'correct' %}
-    <div class="alert alert-success" role="alert">
-        <h4 class="alert-heading">Parabéns!</h4>
-        <p>Resposta correta! Você ganhou pontos.</p>
+<div class="quiz-result-modern-container">
+    {% if result == 'correct' %}
+    <!-- Success Result -->
+    <div class="result-card success" data-aos="zoom-in">
+        <div class="celebration-effects">
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+        </div>
+        
+        <div class="result-icon success">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        
+        <h1 class="result-title success">🎉 Parabéns!</h1>
+        <p class="result-message">
+            <strong>Resposta correta!</strong> Você demonstrou conhecimento e contribuiu para nossa missão.
+        </p>
+        
+        <div class="impact-display">
+            <div class="grains-earned">
+                <div class="grain-icon">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="grain-info">
+                    <span class="grain-number" data-count="10">0</span>
+                    <span class="grain-label">grãos conquistados</span>
+                </div>
+            </div>
+            <div class="impact-message">
+                = <strong>20 gramas</strong> de alimento doado!
+            </div>
+        </div>
+        
+        <div class="motivational-message">
+            <i class="fas fa-heart"></i>
+            Seu conhecimento está alimentando esperança
+        </div>
     </div>
-{% else %}
-    <div class="alert alert-danger" role="alert">
-        <h4 class="alert-heading">Que pena!</h4>
-        <p>Resposta incorreta. Tente novamente.</p>
+    
+    {% else %}
+    <!-- Error Result -->  
+    <div class="result-card error" data-aos="fade-in">
+        <div class="result-icon error">
+            <i class="fas fa-times-circle"></i>
+        </div>
+        
+        <h1 class="result-title error">Quase lá!</h1>
+        <p class="result-message">
+            <strong>Resposta incorreta.</strong> Mas não desista! Cada tentativa é um passo no aprendizado.
+        </p>
+        
+        {% if correct_answer %}
+        <div class="correct-answer-display">
+            <h3>💡 Resposta correta:</h3>
+            <p class="correct-answer">{{ correct_answer }}</p>
+        </div>
+        {% endif %}
+        
+        <div class="encouragement-message">
+            <i class="fas fa-star"></i>
+            Continue tentando - você está no caminho certo!
+        </div>
     </div>
-{% endif %}
-<a href="{{ url_for('quiz.quizzes') }}" class="btn btn-primary">Voltar aos Quizzes</a>
+    {% endif %}
+    
+    <!-- Action Buttons -->
+    <div class="action-buttons" data-aos="fade-up" data-aos-delay="300">
+        {% if result == 'correct' %}
+        <a href="{{ url_for('quiz.quizzes') }}" class="action-btn primary">
+            <i class="fas fa-forward"></i>
+            Próximo Quiz
+        </a>
+        <a href="{{ url_for('auth.dashboard') }}" class="action-btn secondary">
+            <i class="fas fa-chart-line"></i>
+            Ver Progresso
+        </a>
+        {% else %}
+        <a href="javascript:history.back()" class="action-btn primary">
+            <i class="fas fa-redo"></i>
+            Tentar Novamente
+        </a>
+        <a href="{{ url_for('quiz.quizzes') }}" class="action-btn secondary">
+            <i class="fas fa-list"></i>
+            Outros Quizzes
+        </a>
+        {% endif %}
+    </div>
+    
+    <!-- Quick Stats -->
+    <div class="quick-stats" data-aos="fade-up" data-aos-delay="500">
+        <div class="stat-item">
+            <div class="stat-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <div class="stat-info">
+                <span class="stat-number">{{ session.get('quiz_streak', 0) }}</span>
+                <span class="stat-label">Sequência</span>
+            </div>
+        </div>
+        
+        <div class="stat-item">
+            <div class="stat-icon">
+                <i class="fas fa-seedling"></i>
+            </div>
+            <div class="stat-info">
+                <span class="stat-number">{{ session.get('total_points', 0) }}</span>
+                <span class="stat-label">Total de Grãos</span>
+            </div>
+        </div>
+        
+        <div class="stat-item">
+            <div class="stat-icon">
+                <i class="fas fa-utensils"></i>
+            </div>
+            <div class="stat-info">
+                <span class="stat-number">{{ (session.get('total_points', 0) * 2)|round|int }}</span>
+                <span class="stat-label">Gramas Doadas</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Modern Quiz Result Styles */
+.quiz-result-modern-container {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8) var(--space-4);
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    position: relative;
+}
+
+/* Result Card */
+.result-card {
+    background: white;
+    border-radius: var(--radius-2xl);
+    padding: var(--space-12);
+    text-align: center;
+    box-shadow: var(--shadow-2xl);
+    max-width: 500px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: var(--space-8);
+}
+
+.result-card.success {
+    border: 3px solid var(--success-200);
+}
+
+.result-card.error {
+    border: 3px solid var(--error-200);
+}
+
+/* Result Icon */
+.result-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--space-6);
+    font-size: var(--text-4xl);
+    color: white;
+    animation: iconPulse 2s ease-in-out infinite;
+}
+
+.result-icon.success {
+    background: linear-gradient(135deg, var(--success-500), var(--success-600));
+}
+
+.result-icon.error {
+    background: linear-gradient(135deg, var(--error-500), var(--error-600));
+}
+
+/* Titles and Messages */
+.result-title {
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    margin-bottom: var(--space-4);
+}
+
+.result-title.success {
+    color: var(--success-600);
+}
+
+.result-title.error {
+    color: var(--error-600);
+}
+
+.result-message {
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: var(--space-8);
+}
+
+/* Impact Display (Success) */
+.impact-display {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.05), rgba(34, 197, 94, 0.02));
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    margin-bottom: var(--space-6);
+    border: 1px solid var(--success-200);
+}
+
+.grains-earned {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+.grain-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--success-500);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: var(--text-2xl);
+    animation: bounce 2s ease-in-out infinite;
+}
+
+.grain-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.grain-number {
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    color: var(--success-600);
+}
+
+.grain-label {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.impact-message {
+    font-size: var(--text-lg);
+    color: var(--success-700);
+    font-weight: 600;
+}
+
+/* Correct Answer Display (Error) */
+.correct-answer-display {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(59, 130, 246, 0.02));
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    margin-bottom: var(--space-6);
+    border: 1px solid var(--primary-200);
+}
+
+.correct-answer-display h3 {
+    color: var(--primary-600);
+    margin-bottom: var(--space-3);
+    font-size: var(--text-lg);
+}
+
+.correct-answer {
+    color: var(--primary-700);
+    font-weight: 600;
+    font-size: var(--text-base);
+}
+
+/* Motivational Messages */
+.motivational-message,
+.encouragement-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    font-size: var(--text-base);
+}
+
+.motivational-message {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--success-700);
+}
+
+.encouragement-message {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning-700);
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.action-btn {
+    padding: var(--space-4) var(--space-6);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--text-base);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    transition: all var(--transition-base);
+    min-width: 160px;
+    justify-content: center;
+}
+
+.action-btn.primary {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.action-btn.primary:hover {
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.action-btn.secondary {
+    background: white;
+    color: var(--primary-600);
+    border: 2px solid var(--primary-200);
+}
+
+.action-btn.secondary:hover {
+    color: var(--primary-700);
+    text-decoration: none;
+    border-color: var(--primary-300);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Quick Stats */
+.quick-stats {
+    display: flex;
+    gap: var(--space-6);
+    background: white;
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2);
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-100);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-600);
+    font-size: var(--text-lg);
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-number {
+    font-size: var(--text-xl);
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Celebration Effects */
+.celebration-effects {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: var(--success-400);
+    animation: confettiFall 3s ease-in-out infinite;
+}
+
+.confetti:nth-child(1) {
+    left: 10%;
+    animation-delay: 0s;
+    background: var(--success-400);
+}
+
+.confetti:nth-child(2) {
+    left: 30%;
+    animation-delay: 0.5s;
+    background: var(--primary-400);
+}
+
+.confetti:nth-child(3) {
+    left: 50%;
+    animation-delay: 1s;
+    background: var(--warning-400);
+}
+
+.confetti:nth-child(4) {
+    left: 70%;
+    animation-delay: 1.5s;
+    background: var(--error-400);
+}
+
+.confetti:nth-child(5) {
+    left: 90%;
+    animation-delay: 2s;
+    background: var(--success-500);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .quiz-result-modern-container {
+        padding: var(--space-4);
+    }
+    
+    .result-card {
+        padding: var(--space-8);
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .action-btn {
+        width: 100%;
+        max-width: 280px;
+    }
+    
+    .quick-stats {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-4);
+    }
+    
+    .stat-item {
+        justify-content: center;
+    }
+}
+
+/* Animations */
+@keyframes iconPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(400px) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+[data-aos="zoom-in"] {
+    opacity: 0;
+    transform: scale(0.8);
+    animation: zoomIn 0.6s ease forwards;
+}
+
+[data-aos="fade-in"] {
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards;
+}
+
+[data-aos="fade-up"] {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 0.6s ease forwards;
+}
+
+@keyframes zoomIn {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate grain counter for success
+    const grainNumber = document.querySelector('.grain-number');
+    if (grainNumber) {
+        const target = parseInt(grainNumber.dataset.count);
+        let current = 0;
+        const increment = target / 30;
+        
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            grainNumber.textContent = Math.floor(current);
+        }, 50);
+    }
+    
+    // Animate stat numbers
+    const statNumbers = document.querySelectorAll('.stat-number');
+    statNumbers.forEach(stat => {
+        const target = parseInt(stat.textContent);
+        let current = 0;
+        const increment = target / 20;
+        
+        setTimeout(() => {
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                stat.textContent = Math.floor(current);
+            }, 80);
+        }, 500);
+    });
+    
+    // Staggered animations
+    const elements = document.querySelectorAll('[data-aos]');
+    elements.forEach((element, index) => {
+        const delay = element.dataset.aosDelay || (index * 100);
+        element.style.animationDelay = `${delay}ms`;
+    });
+});
+</script>
 {% endblock %}

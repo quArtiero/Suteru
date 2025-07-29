@@ -1,0 +1,1190 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/partners.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="partners-modern-container">
+    <!-- Hero Section -->
+    <div class="partners-hero">
+        <div class="hero-background">
+            <div class="floating-elements">
+                <div class="floating-shape"></div>
+                <div class="floating-shape"></div>
+                <div class="floating-shape"></div>
+            </div>
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <i class="fas fa-handshake"></i>
+                Nossos Parceiros
+            </h1>
+            <p class="hero-subtitle">
+                Juntos, transformamos conhecimento em ações que alimentam esperança
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="partners-content">
+        <!-- Mission Section -->
+        <section class="mission-section" data-aos="fade-up">
+            <div class="section-container">
+                <div class="mission-card">
+                    <div class="mission-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h2 class="mission-title">Construindo Juntos</h2>
+                    <p class="mission-description">
+                        A Šutēru não funciona sozinha. Nossa missão de transformar conhecimento em doações de alimentos só é possível graças à colaboração de parceiros comprometidos com o impacto social.
+                    </p>
+                    <p class="mission-description">
+                        Conheça as organizações que fazem parte dessa jornada conosco.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Strategic Partners -->
+        <section class="strategic-partners-section" data-aos="fade-up" data-aos-delay="200">
+            <div class="section-container">
+                <h2 class="section-title">
+                    <i class="fas fa-star"></i>
+                    Parceiros Estratégicos
+                </h2>
+                
+                <div class="strategic-partner-card">
+                    <div class="partner-header">
+                        <img src="{{ url_for('static', filename='images/partners/projeto-arrastao.png') }}" 
+                             alt="Projeto Arrastão" 
+                             class="partner-logo-direct"
+                             onerror="this.style.display='none';">
+                        <div class="partner-info">
+                            <h3 class="partner-name">Projeto Arrastão</h3>
+                            <p class="partner-since">Parceiro desde 2025</p>
+                        </div>
+                    </div>
+                    
+                    <div class="partner-description">
+                        <p>
+                            Fundado em 1968, o Projeto Arrastão é uma organização sem fins lucrativos que faz o acolhimento e dá suporte às famílias da região do Campo Limpo que vivem em situação de vulnerabilidade social.
+                        </p>
+                        <p>
+                            Esse trabalho de promoção humana e de desenvolvimento das comunidades é feito junto com estas famílias e dão origem aos programas que oferecemos nas áreas de educação (incluindo cultura), geração de renda, desenvolvimento comunitário e qualidade de vida.
+                        </p>
+                    </div>
+                    
+                    <div class="partner-roles">
+                        <div class="role-badge primary">
+                            <i class="fas fa-utensils"></i>
+                            Distribuição de Alimentos
+                        </div>
+                        <div class="role-badge success">
+                            <i class="fas fa-home"></i>
+                            Desenvolvimento Comunitário
+                        </div>
+                    </div>
+                    
+                    <div class="partner-actions">
+                        <a href="https://arrastao.org.br/site/" target="_blank" class="partner-link">
+                            <i class="fas fa-external-link-alt"></i>
+                            Conhecer o Projeto Arrastão
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Corporate Partners -->
+        <section class="corporate-partners-section" data-aos="fade-up" data-aos-delay="400">
+            <div class="section-container">
+                <h2 class="section-title">
+                    <i class="fas fa-building"></i>
+                    Parceiros Corporativos
+                </h2>
+                
+                <div class="partners-grid">
+                    <div class="partner-card" data-aos="zoom-in" data-aos-delay="500">
+                        <div class="partner-icon food">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <h3 class="partner-title">Empresas Alimentícias</h3>
+                        <p class="partner-description">
+                            Empresas do setor alimentício que apoiam nossa missão fornecendo alimentos e recursos para viabilizar as doações baseadas nos pontos acumulados pelos usuários.
+                        </p>
+                        <div class="partner-role">
+                            <div class="role-badge warning">
+                                <i class="fas fa-gift"></i>
+                                Fornecimento de Alimentos
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="partner-card" data-aos="zoom-in" data-aos-delay="600">
+                        <div class="partner-icon tech">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <h3 class="partner-title">Empresas de Tecnologia</h3>
+                        <p class="partner-description">
+                            Empresas de tecnologia que apoiam o desenvolvimento da plataforma, fornecendo infraestrutura, ferramentas e expertise para garantir a melhor experiência dos usuários.
+                        </p>
+                        <div class="partner-role">
+                            <div class="role-badge info">
+                                <i class="fas fa-code"></i>
+                                Suporte Tecnológico
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="partner-card" data-aos="zoom-in" data-aos-delay="700">
+                        <div class="partner-icon social">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3 class="partner-title">Empresas de Impacto Social</h3>
+                        <p class="partner-description">
+                            Organizações comprometidas com o impacto social que apoiam nossa missão através de recursos financeiros, mentoria e conexões estratégicas.
+                        </p>
+                        <div class="partner-role">
+                            <div class="role-badge secondary">
+                                <i class="fas fa-handshake"></i>
+                                Apoio Estratégico
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Become Partner -->
+        <section class="become-partner-section" data-aos="fade-up" data-aos-delay="600">
+            <div class="section-container">
+                <h2 class="section-title center">
+                    <i class="fas fa-plus-circle"></i>
+                    Como Se Tornar Parceiro
+                </h2>
+                
+                <div class="partnership-intro">
+                    <p class="intro-text">
+                        Quer fazer parte dessa missão? Existem várias formas de apoiar a Šutēru e multiplicar o impacto social através da educação.
+                    </p>
+                </div>
+                
+                <div class="partnership-types">
+                    <div class="partnership-type" data-aos="flip-up" data-aos-delay="700">
+                        <div class="type-icon">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <h3 class="type-title">Doação de Alimentos</h3>
+                        <p class="type-description">
+                            Empresas do setor alimentício podem doar produtos para distribuição nas comunidades.
+                        </p>
+                    </div>
+
+                    <div class="partnership-type" data-aos="flip-up" data-aos-delay="800">
+                        <div class="type-icon">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <h3 class="type-title">Suporte Tecnológico</h3>
+                        <p class="type-description">
+                            Empresas de tecnologia podem apoiar com infraestrutura e desenvolvimento.
+                        </p>
+                    </div>
+
+                    <div class="partnership-type" data-aos="flip-up" data-aos-delay="900">
+                        <div class="type-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <h3 class="type-title">Apoio Financeiro</h3>
+                        <p class="type-description">
+                            Recursos financeiros para viabilizar as doações e expandir o projeto.
+                        </p>
+                    </div>
+
+                    <div class="partnership-type" data-aos="flip-up" data-aos-delay="1000">
+                        <div class="type-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="type-title">Distribuição</h3>
+                        <p class="type-description">
+                            ONGs podem se tornar parceiras na distribuição de alimentos.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="partnership-cta">
+                    <a href="mailto:administration@suteru.org" class="partnership-btn">
+                        <i class="fas fa-envelope"></i>
+                        Entre em Contato
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Transparency -->
+        <section class="transparency-section" data-aos="fade-up" data-aos-delay="800">
+            <div class="section-container">
+                <h2 class="section-title center">
+                    <i class="fas fa-shield-alt"></i>
+                    Transparência
+                </h2>
+                
+                <div class="transparency-intro">
+                    <p class="intro-text">
+                        Acreditamos na transparência total. Todos os parceiros são divulgados publicamente e as doações são rastreadas desde a origem até a entrega final.
+                    </p>
+                </div>
+                
+                <div class="transparency-items">
+                    <div class="transparency-item" data-aos="fade-left" data-aos-delay="900">
+                        <div class="item-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h3 class="item-title">Rastreabilidade</h3>
+                        <p class="item-description">
+                            Cada doação é registrada e pode ser acompanhada em tempo real.
+                        </p>
+                    </div>
+
+                    <div class="transparency-item" data-aos="fade-left" data-aos-delay="1000">
+                        <div class="item-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3 class="item-title">Relatórios</h3>
+                        <p class="item-description">
+                            Relatórios mensais de impacto são publicados para a comunidade.
+                        </p>
+                    </div>
+
+                    <div class="transparency-item" data-aos="fade-left" data-aos-delay="1100">
+                        <div class="item-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <h3 class="item-title">Parcerias Públicas</h3>
+                        <p class="item-description">
+                            Todos os parceiros são divulgados abertamente em nossa plataforma.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="final-cta-section" data-aos="fade-up" data-aos-delay="1000">
+            <div class="section-container">
+                <div class="cta-card">
+                    <h2 class="cta-title">Faça Parte Dessa Missão</h2>
+                    <p class="cta-description">
+                        Junte-se aos nossos parceiros e ajude a transformar conhecimento em alimento para quem precisa. Juntos, podemos fazer a diferença.
+                    </p>
+                    
+                    <div class="cta-buttons">
+                        <a href="mailto:administration@suteru.org" class="btn-cta primary">
+                            <i class="fas fa-envelope"></i>
+                            Seja um Parceiro
+                        </a>
+                        <a href="{{ url_for('main.about') }}" class="btn-cta secondary">
+                            <i class="fas fa-info-circle"></i>
+                            Saiba Mais
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<style>
+/* Modern Partners Page Styles */
+.partners-modern-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+/* Hero Section */
+.partners-hero {
+    position: relative;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: 
+        radial-gradient(circle at 25% 40%, rgba(37, 99, 235, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 75% 60%, rgba(29, 78, 216, 0.15) 0%, transparent 50%),
+        linear-gradient(135deg, rgba(37, 99, 235, 0.3) 0%, rgba(29, 78, 216, 0.4) 100%),
+        url('{{ url_for("static", filename="images/parceiros.jpeg") }}');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    overflow: hidden;
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+.floating-elements {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.floating-shape {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    animation: floatAround 30s infinite ease-in-out;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.floating-shape:nth-child(1) {
+    width: 100px;
+    height: 100px;
+    top: 15%;
+    left: 15%;
+    animation-delay: 0s;
+}
+
+.floating-shape:nth-child(2) {
+    width: 140px;
+    height: 140px;
+    top: 70%;
+    right: 10%;
+    animation-delay: -8s;
+}
+
+.floating-shape:nth-child(3) {
+    width: 80px;
+    height: 80px;
+    top: 40%;
+    right: 25%;
+    animation-delay: -16s;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+    max-width: 800px;
+    padding: var(--space-12) var(--space-6);
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(8px) saturate(120%);
+    border-radius: var(--radius-3xl);
+    box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transform: translateY(20px);
+    opacity: 0;
+    animation: fadeInUp 1.2s ease-out 0.3s forwards;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-content:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes fadeInUp {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.hero-title {
+    font-size: var(--text-5xl);
+    font-weight: 800;
+    margin-bottom: var(--space-4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.hero-title i {
+    color: #fbbf24;
+    animation: pulse 2s infinite;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.hero-subtitle {
+    font-size: var(--text-xl);
+    opacity: 0.95;
+    line-height: 1.6;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Content Sections */
+.partners-content {
+    position: relative;
+    z-index: 2;
+}
+
+.section-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-16) var(--space-4);
+}
+
+.section-title {
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-8);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.section-title.center {
+    justify-content: center;
+    text-align: center;
+}
+
+.section-title i {
+    color: var(--primary-500);
+}
+
+/* Mission Section */
+.mission-section {
+    background: white;
+}
+
+.mission-card {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(59, 130, 246, 0.02));
+    border-radius: var(--radius-2xl);
+    padding: var(--space-12);
+    text-align: center;
+    border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.mission-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--space-6);
+    font-size: var(--text-3xl);
+    color: white;
+}
+
+.mission-title {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-6);
+}
+
+.mission-description {
+    font-size: var(--text-lg);
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-4);
+}
+
+/* Strategic Partners */
+.strategic-partners-section {
+    background: var(--gray-50);
+}
+
+.strategic-partner-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95));
+    border-radius: var(--radius-3xl);
+    padding: var(--space-12);
+    box-shadow: 
+        0 10px 25px -5px rgba(0, 0, 0, 0.1),
+        0 10px 10px -5px rgba(0, 0, 0, 0.04),
+        0 0 0 1px rgba(59, 130, 246, 0.05);
+    border: 1px solid rgba(59, 130, 246, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.strategic-partner-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #3b82f6, #1e40af, #6366f1);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.strategic-partner-card:hover::before {
+    opacity: 1;
+}
+
+.strategic-partner-card:hover {
+    border-color: rgba(59, 130, 246, 0.2);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.15),
+        0 25px 25px -5px rgba(0, 0, 0, 0.04),
+        0 0 0 1px rgba(59, 130, 246, 0.1);
+}
+
+.partner-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    margin-bottom: var(--space-10);
+    padding-bottom: var(--space-6);
+    border-bottom: 2px solid rgba(59, 130, 246, 0.08);
+    position: relative;
+}
+
+
+
+.partner-logo-fallback {
+    color: var(--gray-500);
+    font-size: var(--text-2xl);
+}
+
+.partner-logo-direct {
+    width: 120px;
+    height: auto;
+    max-height: 80px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.partner-info {
+    flex-grow: 1;
+}
+
+.partner-name {
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: var(--space-3);
+    background: linear-gradient(135deg, var(--primary-600), var(--primary-800));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.partner-since {
+    color: var(--primary-500);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: rgba(59, 130, 246, 0.1);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    display: inline-block;
+}
+
+.partner-description {
+    margin-bottom: var(--space-10);
+    padding: var(--space-6);
+    background: rgba(248, 250, 252, 0.6);
+    border-radius: var(--radius-xl);
+    border-left: 4px solid var(--primary-400);
+}
+
+.partner-description p {
+    font-size: var(--text-lg);
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-5);
+    font-weight: 400;
+}
+
+.partner-description p:last-child {
+    margin-bottom: 0;
+}
+
+.partner-roles {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-10);
+    flex-wrap: wrap;
+}
+
+.role-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid transparent;
+}
+
+.role-badge.primary {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(37, 99, 235, 0.2));
+    color: var(--primary-700);
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.role-badge.primary:hover {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(37, 99, 235, 0.3));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.role-badge.success {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(22, 163, 74, 0.2));
+    color: var(--success-700);
+    border-color: rgba(34, 197, 94, 0.2);
+}
+
+.role-badge.success:hover {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.25), rgba(22, 163, 74, 0.3));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(34, 197, 94, 0.3);
+}
+
+.role-badge.warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning-700);
+}
+
+.role-badge.info {
+    background: rgba(6, 182, 212, 0.1);
+    color: #0891b2;
+}
+
+.role-badge.secondary {
+    background: rgba(107, 114, 128, 0.1);
+    color: var(--gray-700);
+}
+
+.partner-actions {
+    text-align: center;
+}
+
+.partner-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-8);
+    background: linear-gradient(135deg, #3b82f6, #1e40af, #6366f1);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--radius-xl);
+    font-weight: 700;
+    font-size: var(--text-base);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+        0 4px 15px rgba(59, 130, 246, 0.4),
+        0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.partner-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.partner-link:hover::before {
+    left: 100%;
+}
+
+.partner-link:hover {
+    color: white;
+    text-decoration: none;
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 
+        0 8px 25px rgba(59, 130, 246, 0.5),
+        0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Corporate Partners */
+.corporate-partners-section {
+    background: white;
+}
+
+.partners-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--space-6);
+    margin-top: var(--space-8);
+}
+
+.partner-card {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.02), rgba(59, 130, 246, 0.01));
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    text-align: center;
+    border: 2px solid rgba(59, 130, 246, 0.1);
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.partner-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transition: transform var(--transition-base);
+}
+
+.partner-card:hover::before {
+    transform: scaleX(1);
+}
+
+.partner-card:hover {
+    border-color: var(--primary-300);
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+}
+
+.partner-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--space-4);
+    font-size: var(--text-2xl);
+    color: white;
+}
+
+.partner-icon.food {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.partner-icon.tech {
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+}
+
+.partner-icon.social {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.partner-title {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-4);
+}
+
+.partner-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--space-6);
+}
+
+.partner-role {
+    display: flex;
+    justify-content: center;
+}
+
+/* Become Partner Section */
+.become-partner-section {
+    background: var(--gray-50);
+}
+
+.partnership-intro {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto var(--space-12);
+}
+
+.intro-text {
+    font-size: var(--text-lg);
+    line-height: 1.7;
+    color: var(--text-secondary);
+}
+
+.partnership-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-6);
+    margin-bottom: var(--space-12);
+}
+
+.partnership-type {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-base);
+}
+
+.partnership-type:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.type-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--primary-100);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--space-4);
+    font-size: var(--text-xl);
+    color: var(--primary-600);
+}
+
+.type-title {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-3);
+}
+
+.type-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-size: var(--text-base);
+}
+
+.partnership-cta {
+    text-align: center;
+}
+
+.partnership-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-8);
+    background: var(--gradient-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    font-size: var(--text-lg);
+    transition: all var(--transition-base);
+}
+
+.partnership-btn:hover {
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Transparency Section */
+.transparency-section {
+    background: white;
+}
+
+.transparency-intro {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto var(--space-12);
+}
+
+.transparency-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-8);
+}
+
+.transparency-item {
+    text-align: center;
+    padding: var(--space-6);
+}
+
+.item-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--primary-100);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--space-4);
+    font-size: var(--text-2xl);
+    color: var(--primary-600);
+}
+
+.item-title {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-3);
+}
+
+.item-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Final CTA Section */
+.final-cta-section {
+    background: var(--gradient-hero);
+    color: white;
+}
+
+.cta-card {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.cta-title {
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    margin-bottom: var(--space-6);
+}
+
+.cta-description {
+    font-size: var(--text-lg);
+    line-height: 1.7;
+    opacity: 0.9;
+    margin-bottom: var(--space-8);
+}
+
+.cta-buttons {
+    display: flex;
+    gap: var(--space-4);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-cta {
+    padding: var(--space-4) var(--space-8);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--text-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    transition: all var(--transition-base);
+    min-width: 180px;
+    justify-content: center;
+}
+
+.btn-cta.primary {
+    background: white;
+    color: var(--primary-600);
+}
+
+.btn-cta.primary:hover {
+    background: var(--gray-100);
+    color: var(--primary-700);
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-cta.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-cta.secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: var(--text-3xl);
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+    
+    .hero-subtitle {
+        font-size: var(--text-lg);
+    }
+    
+    .section-container {
+        padding: var(--space-8) var(--space-4);
+    }
+    
+    .section-title {
+        font-size: var(--text-2xl);
+        flex-direction: column;
+        gap: var(--space-2);
+        text-align: center;
+    }
+    
+    .strategic-partner-card {
+        padding: var(--space-8);
+        margin: var(--space-4);
+    }
+    
+    .partner-header {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--space-6);
+        padding-bottom: var(--space-4);
+    }
+    
+    .partner-logo-direct {
+        width: 100px;
+        max-height: 70px;
+        margin: 0 auto;
+    }
+    
+    .partner-name {
+        font-size: var(--text-2xl);
+    }
+    
+    .partner-description {
+        padding: var(--space-4);
+    }
+    
+    .partners-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .partnership-types {
+        grid-template-columns: 1fr;
+    }
+    
+    .transparency-items {
+        grid-template-columns: 1fr;
+        gap: var(--space-6);
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn-cta {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+/* Animations */
+@keyframes floatAround {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    25% { transform: translateY(-25px) rotate(90deg); }
+    50% { transform: translateY(-15px) rotate(180deg); }
+    75% { transform: translateY(-35px) rotate(270deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+[data-aos="fade-up"] {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 0.8s ease forwards;
+}
+
+[data-aos="zoom-in"] {
+    opacity: 0;
+    transform: scale(0.8);
+    animation: zoomIn 0.6s ease forwards;
+}
+
+[data-aos="flip-up"] {
+    opacity: 0;
+    transform: rotateX(-90deg);
+    animation: flipUp 0.8s ease forwards;
+}
+
+[data-aos="fade-left"] {
+    opacity: 0;
+    transform: translateX(30px);
+    animation: fadeLeft 0.8s ease forwards;
+}
+
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes zoomIn {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes flipUp {
+    to {
+        opacity: 1;
+        transform: rotateX(0deg);
+    }
+}
+
+@keyframes fadeLeft {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Staggered animations
+    const sections = document.querySelectorAll('[data-aos]');
+    sections.forEach((section, index) => {
+        const delay = section.dataset.aosDelay || (index * 200);
+        section.style.animationDelay = `${delay}ms`;
+    });
+    
+    // Intersection Observer for animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animationPlayState = 'running';
+            }
+        });
+    });
+    
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+    
+    // Partner card hover effects
+    const partnerCards = document.querySelectorAll('.partner-card, .partnership-type');
+    partnerCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+});
+</script>
+{% endblock %} 

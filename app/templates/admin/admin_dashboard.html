@@ -1,34 +1,1052 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="admin-panel">
-    <h1>Painel Administrativo</h1>
-
-    <h2>Gerenciamento de Usuários</h2>
-    <ul>
-        <li><a href="{{ url_for('admin.users') }}">Ver todos os usuários</a></li>
-        <!-- Outros links de gerenciamento de usuários podem ser adicionados aqui -->
-    </ul>
-
-    <h2>Gerenciamento de Quizzes</h2>
-    <ul>
-        <li><a href="{{ url_for('admin.add_quiz') }}">Adicionar novo quiz</a></li>
-        <li><a href="{{ url_for('admin.upload_questions') }}">Upload de Perguntas em Massa</a></li>
-        <li><a href="{{ url_for('admin.review_suggestions') }}">Revisar Sugestões</a></li>
-        <li><a href="{{ url_for('admin.quizzes') }}">Gerenciar Perguntas</a></li>
-    </ul>
-
-    <h2>Quilos doados nos últimos 7 dias</h2>
-    <div class="stats-card">
-        <h3>Doações por Dia</h3>
-        {% for day in graos_per_day %}
-        <p>{{ day[0] }}: {{ day[1] }} grãos</p>
-        {% endfor %}
+<div class="admin-dashboard-modern">
+    <!-- Header da Dashboard -->
+    <div class="dashboard-header mb-5">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="display-4 font-weight-bold text-primary mb-2">
+                    <i class="fas fa-shield-alt"></i> Painel Administrativo
+                </h1>
+                <p class="lead text-muted mb-0">
+                    Gerencie o sistema Šutēru e monitore o impacto social
+                </p>
+            </div>
+            <div class="admin-badge">
+                <i class="fas fa-crown text-warning"></i>
+                <span class="font-weight-bold">Administrador</span>
+            </div>
+        </div>
     </div>
 
-    <h2>Estatísticas Gerais</h2>
-    <ul>
-        <li>Total de usuários: <strong>{{ total_users }}</strong></li>
-        <li>Total de quizzes respondidos: <strong>{{ total_quizzes }}</strong></li>
-    </ul>
+    <!-- Estatísticas Rápidas -->
+    <div class="row mb-5">
+        <div class="col-md-2 mb-4">
+            <div class="stat-card primary">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ total_users }}">0</h3>
+                    <p class="stat-label">Usuários Ativos</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 mb-4">
+            <div class="stat-card success">
+                <div class="stat-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ total_quizzes }}">0</h3>
+                    <p class="stat-label">Quizzes Respondidos</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 mb-4">
+            <div class="stat-card info">
+                <div class="stat-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ total_questions }}">0</h3>
+                    <p class="stat-label">Questões no Banco</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 mb-4">
+            <div class="stat-card warning">
+                <div class="stat-icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ total_meals|round(1) }}">0</h3>
+                    <p class="stat-label">Refeições Doadas</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 mb-4">
+            <div class="stat-card danger">
+                <div class="stat-icon">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ general_accuracy|round(1) }}">0</h3>
+                    <p class="stat-label">Taxa de Acerto (%)</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 mb-4">
+            <div class="stat-card secondary">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ pending_suggestions }}">0</h3>
+                    <p class="stat-label">Sugestões Pendentes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ações Rápidas -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="section-title">
+                <i class="fas fa-bolt text-warning"></i> Ações Rápidas
+            </h2>
+        </div>
+        
+        <div class="col-md-6 col-lg-3 mb-4">
+            <a href="{{ url_for('admin.users') }}" class="action-card users">
+                <div class="action-icon">
+                    <i class="fas fa-users-cog"></i>
+                </div>
+                <h4>Gerenciar Usuários</h4>
+                <p>Visualizar e administrar contas de usuários</p>
+                <div class="action-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-md-6 col-lg-3 mb-4">
+            <a href="{{ url_for('admin.add_quiz') }}" class="action-card quiz">
+                <div class="action-icon">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <h4>Novo Quiz</h4>
+                <p>Criar questões individuais para o sistema</p>
+                <div class="action-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-md-6 col-lg-3 mb-4">
+            <a href="{{ url_for('admin.upload_questions') }}" class="action-card upload">
+                <div class="action-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <h4>Upload em Massa</h4>
+                <p>Importar múltiplas questões via CSV</p>
+                <div class="action-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-md-6 col-lg-3 mb-4">
+            <a href="{{ url_for('admin.review_suggestions') }}" class="action-card review">
+                <div class="action-icon">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <h4>Revisar Sugestões</h4>
+                <p>Aprovar questões enviadas pela comunidade</p>
+                <div class="action-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Novas Seções Informativas -->
+    <div class="row mb-5">
+        <!-- Top Usuários -->
+        <div class="col-lg-6 mb-4">
+            <div class="info-card">
+                <div class="info-header">
+                    <h3>
+                        <i class="fas fa-crown text-warning"></i>
+                        Top 5 Usuários Mais Ativos
+                    </h3>
+                    <p class="text-muted">Usuários com mais questões respondidas</p>
+                </div>
+                
+                <div class="info-content">
+                    {% if top_users %}
+                        <div class="user-ranking">
+                            {% for user in top_users %}
+                            <div class="ranking-item">
+                                <div class="ranking-position">
+                                    {% if loop.index == 1 %}
+                                        <i class="fas fa-crown text-warning"></i>
+                                    {% elif loop.index == 2 %}
+                                        <i class="fas fa-medal text-secondary"></i>
+                                    {% elif loop.index == 3 %}
+                                        <i class="fas fa-award text-warning"></i>
+                                    {% else %}
+                                        <span class="position-number">{{ loop.index }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="ranking-info">
+                                    <h5 class="username">{{ user[0] }}</h5>
+                                    <div class="user-stats">
+                                        <span class="stat">{{ user[1] }} questões</span>
+                                        <span class="stat">{{ user[2] }} pontos</span>
+                                    </div>
+                                </div>
+                                <div class="ranking-progress">
+                                    <div class="progress-small">
+                                        {% set max_questions = top_users[0][1] if top_users else 1 %}
+                                        {% set progress_width = ((user[1] / max_questions) * 100)|round %}
+                                        <div class="progress-fill-small" data-width="{{ progress_width }}"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state-small">
+                            <i class="fas fa-users fa-2x text-muted mb-2"></i>
+                            <p class="text-muted">Nenhum usuário ativo ainda</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Estatísticas por Matéria -->
+        <div class="col-lg-6 mb-4">
+            <div class="info-card">
+                <div class="info-header">
+                    <h3>
+                        <i class="fas fa-graduation-cap text-primary"></i>
+                        Desempenho por Matéria
+                    </h3>
+                    <p class="text-muted">Taxa de acerto e questões respondidas</p>
+                </div>
+                
+                <div class="info-content">
+                    {% if subject_stats %}
+                        <div class="subject-stats">
+                            {% for subject in subject_stats %}
+                            <div class="subject-item">
+                                <div class="subject-header">
+                                    <h5 class="subject-name">{{ subject[0] }}</h5>
+                                    <span class="accuracy-badge" data-accuracy="{{ subject[3] }}">{{ subject[3] }}%</span>
+                                </div>
+                                <div class="subject-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-question-circle"></i>
+                                        <span>{{ subject[1] }} respondidas</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>{{ subject[2] }} corretas</span>
+                                    </div>
+                                </div>
+                                <div class="accuracy-bar">
+                                    <div class="accuracy-fill" data-width="{{ subject[3] }}"></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state-small">
+                            <i class="fas fa-book fa-2x text-muted mb-2"></i>
+                            <p class="text-muted">Nenhuma estatística disponível</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estatísticas Detalhadas -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>
+                        <i class="fas fa-chart-line text-primary"></i>
+                        Impacto dos Últimos 7 Dias
+                    </h3>
+                    <p class="text-muted">Doações de alimento geradas por dia</p>
+                </div>
+                
+                <div class="chart-content">
+                    {% if graos_per_day %}
+                        <div class="daily-stats">
+                            {% set max_value = graos_per_day|map(attribute=1)|list|max if graos_per_day else 1 %}
+                            {% for day in graos_per_day %}
+                            {% set bar_width = ((day[1] / max_value) * 100)|round %}
+                            <div class="daily-stat-item" data-width="{{ bar_width }}">
+                                <div class="day-label">{{ day[0] }}</div>
+                                <div class="day-bar">
+                                    <div class="bar-fill"></div>
+                                </div>
+                                <div class="day-value">
+                                    <strong>{{ day[1]|round(1) }}g</strong> de alimento
+                                    <small>({{ (day[1] / 80)|round(2) }} refeições)</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="chart-summary">
+                            <div class="summary-item">
+                                <i class="fas fa-weight text-success"></i>
+                                <span>Total: <strong>{{ graos_per_day|sum(attribute=1)|round(1) }}g de alimento</strong></span>
+                            </div>
+                            <div class="summary-item">
+                                <i class="fas fa-utensils text-warning"></i>
+                                <span>Equivale a: <strong>{{ ((graos_per_day|sum(attribute=1)) / 80)|round(1) }} refeições</strong></span>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Nenhum dado disponível</h5>
+                            <p class="text-muted">Dados de impacto aparecerão aqui quando houver atividade</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="management-card">
+                <div class="management-header">
+                    <h3>
+                        <i class="fas fa-cogs text-secondary"></i>
+                        Gerenciamento
+                    </h3>
+                </div>
+                
+                <div class="management-actions">
+                    <a href="{{ url_for('admin.quizzes') }}" class="management-item">
+                        <div class="management-icon">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="management-content">
+                            <h5>Gerenciar Questões</h5>
+                            <p>Editar e organizar perguntas existentes</p>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    
+                    <a href="{{ url_for('admin.review_suggestions') }}" class="management-item">
+                        <div class="management-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="management-content">
+                            <h5>Sugestões Pendentes</h5>
+                            <p>Questões aguardando aprovação</p>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    
+                    <div class="management-item">
+                        <div class="management-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="management-content">
+                            <h5>Backup Sistema</h5>
+                            <p>Exportar dados do sistema</p>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    
+                    <div class="management-item">
+                        <div class="management-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="management-content">
+                            <h5>Configurações</h5>
+                            <p>Ajustes do sistema</p>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+.admin-dashboard-modern {
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+    min-height: 100vh;
+}
+
+.dashboard-header {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.admin-badge {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4a 100%);
+    padding: 8px 16px;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+}
+
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--primary-color);
+}
+
+.stat-card.success::before { background: #28a745; }
+.stat-card.warning::before { background: #ffc107; }
+.stat-card.info::before { background: #17a2b8; }
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: rgba(59, 130, 246, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.stat-card.success .stat-icon {
+    background: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.stat-card.warning .stat-icon {
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+
+.stat-card.info .stat-icon {
+    background: rgba(23, 162, 184, 0.1);
+    color: #17a2b8;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.stat-label {
+    color: #7c8db5;
+    font-weight: 500;
+    margin: 0;
+}
+
+.stat-trend {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.action-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+}
+
+.action-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--primary-color);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.action-card.users::before { background: #007bff; }
+.action-card.quiz::before { background: #28a745; }
+.action-card.upload::before { background: #ffc107; }
+.action-card.review::before { background: #dc3545; }
+
+.action-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    text-decoration: none;
+    color: inherit;
+}
+
+.action-card:hover::before {
+    transform: scaleX(1);
+}
+
+.action-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    background: rgba(59, 130, 246, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+.action-card.users .action-icon {
+    background: rgba(0, 123, 255, 0.1);
+    color: #007bff;
+}
+
+.action-card.quiz .action-icon {
+    background: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.action-card.upload .action-icon {
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+
+.action-card.review .action-icon {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.action-card h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.action-card p {
+    color: #7c8db5;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.action-arrow {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    opacity: 0.5;
+    transition: all 0.3s ease;
+}
+
+.action-card:hover .action-arrow {
+    opacity: 1;
+    transform: translateX(4px);
+}
+
+.chart-card, .management-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+    height: 100%;
+}
+
+.chart-header, .management-header {
+    padding: 1.5rem 1.5rem 0;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.chart-header h3, .management-header h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chart-content {
+    padding: 1.5rem;
+}
+
+.daily-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.daily-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.daily-stat-item:last-child {
+    border-bottom: none;
+}
+
+.day-label {
+    min-width: 80px;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.9rem;
+}
+
+.day-bar {
+    flex: 1;
+    height: 8px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+    border-radius: 4px;
+    transition: width 1s ease;
+}
+
+.day-value {
+    min-width: 100px;
+    text-align: right;
+    font-size: 0.9rem;
+}
+
+.day-value strong {
+    color: #2c3e50;
+}
+
+.day-value small {
+    color: #7c8db5;
+    display: block;
+}
+
+.chart-summary {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eef2f7;
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.management-actions {
+    padding: 1.5rem;
+}
+
+.management-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+}
+
+.management-item:hover {
+    background: #f8faff;
+    text-decoration: none;
+    color: inherit;
+}
+
+.management-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(59, 130, 246, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.management-content {
+    flex: 1;
+}
+
+.management-content h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 0.25rem 0;
+}
+
+.management-content p {
+    font-size: 0.85rem;
+    color: #7c8db5;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .admin-dashboard-modern {
+        padding: 1rem 0;
+    }
+    
+    .dashboard-header {
+        padding: 1.5rem;
+    }
+    
+    .dashboard-header .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .admin-badge {
+        align-self: flex-start;
+    }
+    
+    .chart-summary {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .daily-stat-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .day-bar {
+        width: 100%;
+    }
+
+    /* Novos Cards Informativos */
+    .info-card {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95));
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.1);
+        height: 100%;
+    }
+
+    .info-header h3 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-header p {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Top Usuários */
+    .ranking-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        background: rgba(248, 250, 252, 0.6);
+        border-radius: 0.5rem;
+        margin-bottom: 0.75rem;
+        border-left: 3px solid var(--primary-400);
+    }
+
+    .ranking-position {
+        width: 2rem;
+        text-align: center;
+        font-size: 1.2rem;
+    }
+
+    .position-number {
+        font-weight: 700;
+        color: var(--text-secondary);
+    }
+
+    .ranking-info {
+        flex-grow: 1;
+    }
+
+    .username {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: var(--text-primary);
+    }
+
+    .user-stats {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .user-stats .stat {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        background: rgba(59, 130, 246, 0.1);
+        padding: 0.2rem 0.5rem;
+        border-radius: 0.25rem;
+    }
+
+    .ranking-progress {
+        width: 3rem;
+    }
+
+    .progress-small {
+        width: 100%;
+        height: 4px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .progress-fill-small {
+        height: 100%;
+        background: linear-gradient(135deg, #3b82f6, #1e40af);
+        width: 0%;
+        transition: width 1s ease-in-out;
+        border-radius: 2px;
+    }
+
+    /* Estatísticas por Matéria */
+    .subject-item {
+        padding: 1rem;
+        background: rgba(248, 250, 252, 0.6);
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        border-left: 3px solid var(--success-400);
+    }
+
+    .subject-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .subject-name {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+        flex-grow: 1;
+    }
+
+    .accuracy-badge {
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        color: white;
+        background: #22c55e;
+    }
+
+    .accuracy-badge[data-accuracy^="9"],
+    .accuracy-badge[data-accuracy="100"] {
+        background: #22c55e;
+    }
+
+    .accuracy-badge[data-accuracy^="8"] {
+        background: #3b82f6;
+    }
+
+    .accuracy-badge[data-accuracy^="7"] {
+        background: #f59e0b;
+    }
+
+    .accuracy-badge[data-accuracy^="6"],
+    .accuracy-badge[data-accuracy^="5"] {
+        background: #ef4444;
+    }
+
+    .subject-details {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+
+    .detail-item i {
+        font-size: 0.7rem;
+        color: var(--primary-500);
+    }
+
+    .accuracy-bar {
+        width: 100%;
+        height: 4px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 0.5rem;
+    }
+
+    .accuracy-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        width: 0%;
+        transition: width 1s ease-in-out;
+        border-radius: 2px;
+    }
+
+    .empty-state-small {
+        text-align: center;
+        padding: 2rem 1rem;
+    }
+
+    /* Ajustes de layout para os novos cards */
+    .stat-card.secondary {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+        color: white;
+    }
+
+    .stat-card.danger {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animar números dos cards de estatísticas
+    function animateNumbers() {
+        const statNumbers = document.querySelectorAll('.stat-number[data-count]');
+        
+        statNumbers.forEach(element => {
+            const target = parseInt(element.getAttribute('data-count'));
+            const duration = 2000;
+            const increment = target / (duration / 16);
+            let current = 0;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target.toLocaleString();
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current).toLocaleString();
+                }
+            }, 16);
+        });
+    }
+    
+    // Animar barras do gráfico
+    function animateBars() {
+        const bars = document.querySelectorAll('.bar-fill');
+        bars.forEach((bar, index) => {
+            setTimeout(() => {
+                bar.style.width = bar.style.width; // Trigger animation
+            }, index * 200);
+        });
+    }
+    
+    // Executar animações
+    setTimeout(animateNumbers, 500);
+    setTimeout(animateBars, 1000);
+    
+    // Adicionar efeitos de hover nos cards
+    const actionCards = document.querySelectorAll('.action-card');
+    actionCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-4px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+
+    // Set bar widths from data attributes to avoid Jinja2 CSS syntax issues
+    document.querySelectorAll('.daily-stat-item[data-width]').forEach(function(item) {
+        const width = item.getAttribute('data-width');
+        const barFill = item.querySelector('.bar-fill');
+        if (barFill && width) {
+            barFill.style.width = width + '%';
+        }
+    });
+
+    // Animar barras de progresso dos novos cards
+    setTimeout(() => {
+        document.querySelectorAll('.progress-fill-small[data-width]').forEach(function(fill) {
+            const width = fill.getAttribute('data-width');
+            if (width) {
+                fill.style.width = width + '%';
+            }
+        });
+
+        document.querySelectorAll('.accuracy-fill[data-width]').forEach(function(fill) {
+            const width = fill.getAttribute('data-width');
+            if (width) {
+                fill.style.width = width + '%';
+            }
+        });
+    }, 500);
+});
+</script>
 {% endblock %}

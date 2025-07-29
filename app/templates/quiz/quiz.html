@@ -5,93 +5,148 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    {% if correct_answer %}
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <p>Resposta incorreta. A resposta correta era:</p>
-            <div class="ql-snow">
-                <div class="ql-editor">
-                    {{ correct_answer | safe }}
-                </div>
-            </div>
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-        </div>
-    {% endif %}
+<div class="quiz-modern-container">
+  <!-- Progress Bar -->
+  <div class="quiz-progress-bar">
+    <div class="quiz-progress-fill"></div>
+  </div>
 
-    {% if quiz %}
-    <div class="card quiz-card">
-        <div class="card-body">
-            <!-- Questão -->
-            <div class="question-content mb-4">
-                <div class="ql-snow">
-                    <div class="ql-editor">
-                        {{ quiz[1] | safe }}
-                    </div>
-                </div>
-            </div>
+  <!-- Quiz Header -->
+  <div class="quiz-header">
+    <h1 class="quiz-title">Quiz Educativo</h1>
+    <p class="quiz-subtitle">Responda e ajude a doar alimentos para quem precisa</p>
+  </div>
 
-            <!-- Opções - Apenas as 4 alternativas -->
-            <form method="POST">
-                <div class="options-list">
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="radio" name="answer" value="{{ quiz[3] }}" id="option1" required>
-                        <label class="form-check-label" for="option1">
-                            <div class="ql-snow">
-                                <div class="ql-editor">
-                                    {{ quiz[3] | safe }}
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="radio" name="answer" value="{{ quiz[4] }}" id="option2" required>
-                        <label class="form-check-label" for="option2">
-                            <div class="ql-snow">
-                                <div class="ql-editor">
-                                    {{ quiz[4] | safe }}
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="radio" name="answer" value="{{ quiz[5] }}" id="option3" required>
-                        <label class="form-check-label" for="option3">
-                            <div class="ql-snow">
-                                <div class="ql-editor">
-                                    {{ quiz[5] | safe }}
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="radio" name="answer" value="{{ quiz[6] }}" id="option4" required>
-                        <label class="form-check-label" for="option4">
-                            <div class="ql-snow">
-                                <div class="ql-editor">
-                                    {{ quiz[6] | safe }}
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn quiz-submit-btn">Responder</button>
-            </form>
-        </div>
+  <!-- Feedback for incorrect answer -->
+  {% if correct_answer %}
+    <div class="quiz-result-card">
+      <div class="result-icon incorrect">
+        <i class="fas fa-times"></i>
+      </div>
+      <h3 class="result-title incorrect">Resposta Incorreta</h3>
+      <p class="result-description">Não se preocupe! Aprender faz parte do processo.</p>
+      
+      <div class="correct-answer">
+        <div class="correct-answer-label">Resposta Correta:</div>
+        <div class="correct-answer-text">{{ correct_answer }}</div>
+      </div>
     </div>
-    {% endif %}
+  {% endif %}
+
+  <!-- Success feedback -->
+  {% if success_message %}
+    <div class="quiz-result-card">
+      <div class="result-icon correct">
+        <i class="fas fa-check"></i>
+      </div>
+      <h3 class="result-title correct">Parabéns!</h3>
+      <p class="result-description">{{ success_message }}</p>
+    </div>
+  {% endif %}
+
+  <!-- Quiz Question -->
+  {% if question %}
+    <div class="question-card-modern question-appear">
+      <div class="question-header">
+        <div class="question-icon">Q</div>
+        <div class="question-meta">
+          <div class="question-number">Questão {{ current_question or 1 }}</div>
+          <div class="question-topic">{{ question.materia or 'Quiz Educativo' }}</div>
+        </div>
+      </div>
+      
+      <div class="question-text">{{ question.pergunta }}</div>
+      
+      <form method="POST" action="{{ url_for('quiz.quiz_continuous') }}">
+        <input type="hidden" name="question_id" value="{{ question.id }}">
+        
+        <div class="options-list">
+          <label class="option-item">
+            <input type="radio" name="resposta" value="a" style="display: none;">
+            <div class="option-letter">A</div>
+            <div class="option-text">{{ question.alternativa_a }}</div>
+          </label>
+          
+          <label class="option-item">
+            <input type="radio" name="resposta" value="b" style="display: none;">
+            <div class="option-letter">B</div>
+            <div class="option-text">{{ question.alternativa_b }}</div>
+          </label>
+          
+          <label class="option-item">
+            <input type="radio" name="resposta" value="c" style="display: none;">
+            <div class="option-letter">C</div>
+            <div class="option-text">{{ question.alternativa_c }}</div>
+          </label>
+          
+          <label class="option-item">
+            <input type="radio" name="resposta" value="d" style="display: none;">
+            <div class="option-letter">D</div>
+            <div class="option-text">{{ question.alternativa_d }}</div>
+          </label>
+        </div>
+        
+        <div class="quiz-actions">
+          <button type="submit" class="quiz-btn quiz-btn-primary" id="submit-btn" disabled>
+            <i class="fas fa-arrow-right me-2"></i>Responder
+          </button>
+          <a href="{{ url_for('quiz.quizzes') }}" class="quiz-btn quiz-btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Voltar
+          </a>
+        </div>
+      </form>
+    </div>
+  {% else %}
+    <!-- No more questions -->
+    <div class="quiz-result-card">
+      <div class="result-icon correct">
+        <i class="fas fa-trophy"></i>
+      </div>
+      <h3 class="result-title">Quiz Concluído!</h3>
+      <p class="result-description">
+        Parabéns! Você completou este quiz e contribuiu para nossa causa social.
+      </p>
+      
+      <div class="quiz-actions">
+        <a href="{{ url_for('quiz.quizzes') }}" class="quiz-btn quiz-btn-primary">
+          <i class="fas fa-brain me-2"></i>Mais Quizzes
+        </a>
+        <a href="{{ url_for('auth.dashboard') }}" class="quiz-btn quiz-btn-secondary">
+          <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+        </a>
+      </div>
+    </div>
+  {% endif %}
 </div>
 
 <script>
+// Quiz interaction script
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.ql-formula').forEach(function(formula) {
-        katex.render(formula.getAttribute('data-value'), formula, {
-            throwOnError: false
+    const options = document.querySelectorAll('.option-item');
+    const submitBtn = document.getElementById('submit-btn');
+    const radioInputs = document.querySelectorAll('input[type="radio"]');
+    
+    options.forEach((option, index) => {
+        option.addEventListener('click', function() {
+            // Remove selected class from all options
+            options.forEach(opt => opt.classList.remove('selected'));
+            
+            // Add selected class to clicked option
+            this.classList.add('selected');
+            
+            // Check the corresponding radio button
+            radioInputs[index].checked = true;
+            
+            // Enable submit button
+            submitBtn.disabled = false;
         });
     });
+    
+    // Add question appear animation
+    const questionCard = document.querySelector('.question-card-modern');
+    if (questionCard) {
+        questionCard.classList.add('question-appear');
+    }
 });
 </script>
 {% endblock %}

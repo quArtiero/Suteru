@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, send_from_directory
 from app.utils import database
-from app.utils.database import PostgresConnectionFactory, POINTS_TO_GRAMS
+from app.utils.database import PostgresConnectionFactory, GRAMS_PER_POINT, points_to_grams, points_to_meals
 from app.config import Config
 import os
 import csv
@@ -17,7 +17,7 @@ def dashboard():
         if role == "admin":
             graos_per_day = database.execute_fetch(
                 "SELECT date(timestamp) as date, "
-                f"SUM(points) * {POINTS_TO_GRAMS} as graos_doados FROM user_points "
+                f"SUM(points) * {GRAMS_PER_POINT} as grams_doados FROM user_points "
                 "GROUP BY date(timestamp) ORDER BY date(timestamp) "
                 "DESC LIMIT 7"
             )
@@ -30,6 +30,62 @@ def dashboard():
             total_quizzes = database.execute_fetch("SELECT COUNT(*) FROM user_points")
             total_quizzes = total_quizzes[0][0] if total_quizzes else 0
 
+            # Total de questões no banco
+            total_questions = database.execute_fetch("SELECT COUNT(*) FROM quizzes")
+            total_questions = total_questions[0][0] if total_questions else 0
+
+            # Total de pontos acumulados
+            total_points = database.execute_fetch("SELECT SUM(points) FROM user_points")
+            total_points = total_points[0][0] if total_points and total_points[0][0] else 0
+
+            # Total de refeições doadas
+            total_meals = total_points / 1000 if total_points else 0
+
+            # Taxa de acerto geral
+            accuracy_stats = database.execute_fetch(
+                "SELECT "
+                "COUNT(CASE WHEN is_correct = 1 THEN 1 END) as correct, "
+                "COUNT(*) as total FROM user_points"
+            )
+            if accuracy_stats and accuracy_stats[0][1] > 0:
+                general_accuracy = (accuracy_stats[0][0] / accuracy_stats[0][1]) * 100
+            else:
+                general_accuracy = 0
+
+            # Sugestões pendentes
+            pending_suggestions = database.execute_fetch("SELECT COUNT(*) FROM question_suggestions WHERE status = 'pending'")
+            pending_suggestions = pending_suggestions[0][0] if pending_suggestions else 0
+
+            # Top 5 usuários mais ativos (por questões respondidas)
+            top_users = database.execute_fetch(
+                """
+                SELECT u.username, COUNT(up.id) as questions_answered, SUM(up.points) as total_points
+                FROM users u 
+                JOIN user_points up ON u.id = up.user_id 
+                WHERE u.username != 'pedroquart'
+                GROUP BY u.id, u.username 
+                ORDER BY questions_answered DESC 
+                LIMIT 5
+                """
+            )
+
+            # Estatísticas por matéria
+            subject_stats = database.execute_fetch(
+                """
+                SELECT q.topic, 
+                       COUNT(up.id) as total_answered,
+                       COUNT(CASE WHEN up.is_correct = 1 THEN 1 END) as correct_answers,
+                       CASE 
+                          WHEN COUNT(up.id) = 0 THEN 0
+                          ELSE ROUND(COUNT(CASE WHEN up.is_correct = 1 THEN 1 END) * 100.0 / COUNT(up.id), 1)
+                       END as accuracy_rate
+                FROM quizzes q 
+                LEFT JOIN user_points up ON q.id = up.quiz_id 
+                GROUP BY q.topic 
+                ORDER BY total_answered DESC
+                """
+            )
+
             quizzes = database.execute_fetch("SELECT * FROM quizzes")
 
             return render_template(
@@ -37,6 +93,13 @@ def dashboard():
                 graos_per_day=graos_per_day,
                 total_users=total_users,
                 total_quizzes=total_quizzes,
+                total_questions=total_questions,
+                total_points=total_points,
+                total_meals=total_meals,
+                general_accuracy=general_accuracy,
+                pending_suggestions=pending_suggestions,
+                top_users=top_users,
+                subject_stats=subject_stats,
                 quizzes=quizzes,
             )
         else:
@@ -64,7 +127,7 @@ def users():
                 """
                 SELECT u.id, u.username, u.email, u.role, 
                        COALESCE(SUM(up.points), 0) as total_points,
-                       COALESCE(SUM(up.points), 0) * %s as total_graos_doados,
+                       COALESCE(SUM(up.points), 0) * %s as total_grams_doados,
                        CASE 
                           WHEN COUNT(up.id) = 0 THEN 0
                           ELSE ROUND(SUM(CASE WHEN up.is_correct = 1 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(up.id), 0), 2)
@@ -74,7 +137,7 @@ def users():
                 LEFT JOIN user_points up ON u.id = up.user_id
                 GROUP BY u.id, u.username, u.email, u.role, u.register_date
                 ORDER BY """ + sort_column + " " + sort_order,
-                (POINTS_TO_GRAMS,)
+                (GRAMS_PER_POINT,)
             )
             return render_template(
                 "admin/admin_users.html",
@@ -237,6 +300,9 @@ def quizzes():
             print(f"Error in quizzes route: {str(e)}")
             flash("Erro ao carregar questões", "error")
             return redirect(url_for("admin.dashboard"))
+        finally:
+            if 'conn' in locals():
+                conn.close()
     
     flash("Acesso negado.", "danger")
     return redirect(url_for("auth.dashboard"))
@@ -246,12 +312,13 @@ def delete_question(question_id):
     if "user_id" in session and database.get_user_role() == "admin":
         try:
             conn = database.PostgresConnectionFactory.get_connection()
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM quizzes WHERE id = %s", (question_id,))
-            conn.commit()
-            cursor.close()
-            
-            flash("Questão excluída com sucesso!", "success")
+            try:
+                with conn.cursor() as cursor:
+                    cursor.execute("DELETE FROM quizzes WHERE id = %s", (question_id,))
+                    conn.commit()
+                flash("Questão excluída com sucesso!", "success")
+            finally:
+                conn.close()
         except Exception as e:
             print(f"Erro ao excluir questão: {str(e)}")
             flash("Erro ao excluir a questão.", "danger")

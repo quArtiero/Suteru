@@ -18,43 +18,107 @@
     <!-- Quill Editor -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css" rel="stylesheet">
-    <!-- Seu CSS personalizado -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Design System Foundation -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modern-design.css') }}">
+    <!-- Component Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <!-- Legacy Base Styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Page-specific CSS will be loaded via extra_css block -->
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <header>
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--header-footer-bg);">
+        <!-- Modern Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-dark">
             <div class="container">
                 <a class="navbar-brand" href="{{ url_for('main.landing') }}">
-                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Šutēru Logo" height="30" class="d-inline-block align-top">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Šutēru Logo" height="32" class="d-inline-block align-top">
                     <span class="navbar-title">Šutēru</span>
                 </a>
                 <!-- Menu de navegação -->
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     {% if 'user_id' in session %}
                         <ul class="navbar-nav ml-auto">
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.dashboard') }}">Dashboard</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('quiz.quizzes') }}">Quizzes</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.leaderboard') }}">Leaderboard</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('quiz.suggest_question') }}">Sugerir Questões</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.about') }}">Sobre Nós</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('auth.dashboard') }}">
+                                    <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('quiz.quizzes') }}">
+                                    <i class="fas fa-brain me-1"></i>Quizzes
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.leaderboard') }}">
+                                    <i class="fas fa-trophy me-1"></i>Leaderboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('auth.achievements') }}">
+                                    <i class="fas fa-medal me-1"></i>Conquistas
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('quiz.suggest_question') }}">
+                                    <i class="fas fa-lightbulb me-1"></i>Sugerir
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.about') }}">
+                                    <i class="fas fa-info-circle me-1"></i>Sobre
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.partners') }}">
+                                    <i class="fas fa-handshake me-1"></i>Parceiros
+                                </a>
+                            </li>
                             {% if get_user_role() == 'admin' %}
-                                <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.dashboard') }}">Admin</a></li>
-                                <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.review_suggestions') }}">Revisar Sugestões</a></li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+                                        <i class="fas fa-cog me-1"></i>Admin
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('admin.review_suggestions') }}">
+                                        <i class="fas fa-clipboard-check me-1"></i>Revisar
+                                    </a>
+                                </li>
                             {% endif %}
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                                </a>
+                            </li>
                         </ul>
                     {% else %}
                         <ul class="navbar-nav ml-auto">
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.about') }}">Sobre Nós</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Login</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">Registrar-se</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.about') }}">
+                                    <i class="fas fa-info-circle me-1"></i>Sobre Nós
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.partners') }}">
+                                    <i class="fas fa-handshake me-1"></i>Parceiros
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('auth.login') }}">
+                                    <i class="fas fa-sign-in-alt me-1"></i>Login
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link btn-register-nav" href="{{ url_for('auth.register') }}">
+                                    <i class="fas fa-user-plus me-1"></i>Registrar-se
+                                </a>
+                            </li>
                         </ul>
                     {% endif %}
                 </div>
@@ -85,17 +149,33 @@
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/form.js') }}"></script>
+    
+    <!-- Modern Navbar Enhancement Script -->
     <script>
-        // Debug logging
-        window.addEventListener('load', function() {
-            console.log('Window loaded');
-            console.log('Quill available:', typeof Quill !== 'undefined');
-            if (typeof Quill !== 'undefined') {
-                console.log('Quill version:', Quill.version);
+        // Modern navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
             }
         });
+
+        // Active page indicator
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
     </script>
-    <script src="{{ url_for('static', filename='js/form.js') }}"></script>
+    
     {% block extra_js %}{% endblock %}
 </body>
 </html>
