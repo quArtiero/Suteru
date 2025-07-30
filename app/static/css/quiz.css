@@ -187,6 +187,18 @@
   transform: translateX(4px);
 }
 
+.option-item.selected {
+  border-color: var(--primary-500);
+  background: var(--primary-100);
+  box-shadow: var(--shadow-colored);
+  transform: translateX(4px);
+}
+
+.option-item.selected .option-letter {
+  background: var(--primary-500);
+  color: white;
+}
+
 .option-item.correct {
   border-color: var(--success-500);
   background: var(--success-50);

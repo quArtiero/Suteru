@@ -62,25 +62,25 @@
         
         <div class="options-list">
           <label class="option-item">
-            <input type="radio" name="resposta" value="a" style="display: none;">
+            <input type="radio" name="answer" value="a" style="display: none;">
             <div class="option-letter">A</div>
             <div class="option-text">{{ question.alternativa_a }}</div>
           </label>
           
           <label class="option-item">
-            <input type="radio" name="resposta" value="b" style="display: none;">
+            <input type="radio" name="answer" value="b" style="display: none;">
             <div class="option-letter">B</div>
             <div class="option-text">{{ question.alternativa_b }}</div>
           </label>
           
           <label class="option-item">
-            <input type="radio" name="resposta" value="c" style="display: none;">
+            <input type="radio" name="answer" value="c" style="display: none;">
             <div class="option-letter">C</div>
             <div class="option-text">{{ question.alternativa_c }}</div>
           </label>
           
           <label class="option-item">
-            <input type="radio" name="resposta" value="d" style="display: none;">
+            <input type="radio" name="answer" value="d" style="display: none;">
             <div class="option-letter">D</div>
             <div class="option-text">{{ question.alternativa_d }}</div>
           </label>
@@ -122,23 +122,52 @@
 <script>
 // Quiz interaction script
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔍 DEBUG: Script carregado!');
+    
     const options = document.querySelectorAll('.option-item');
     const submitBtn = document.getElementById('submit-btn');
     const radioInputs = document.querySelectorAll('input[type="radio"]');
     
+    console.log('🔍 DEBUG: Elementos encontrados:');
+    console.log('   - Opções (.option-item):', options.length);
+    console.log('   - Botão submit:', submitBtn ? 'ENCONTRADO' : 'NÃO ENCONTRADO');
+    console.log('   - Radio buttons:', radioInputs.length);
+    
+    if (options.length === 0) {
+        console.error('❌ ERRO: Nenhuma opção .option-item encontrada!');
+    }
+    
+    if (!submitBtn) {
+        console.error('❌ ERRO: Botão #submit-btn não encontrado!');
+    }
+    
     options.forEach((option, index) => {
-        option.addEventListener('click', function() {
+        console.log(`🔍 DEBUG: Adicionando listener para opção ${index}`);
+        
+        option.addEventListener('click', function(e) {
+            console.log(`✅ CLIQUE DETECTADO na opção ${index}!`);
+            
             // Remove selected class from all options
-            options.forEach(opt => opt.classList.remove('selected'));
+            options.forEach(opt => {
+                opt.classList.remove('selected');
+                console.log('🧹 Removendo classe selected');
+            });
             
             // Add selected class to clicked option
             this.classList.add('selected');
+            console.log('✨ Adicionando classe selected');
             
             // Check the corresponding radio button
-            radioInputs[index].checked = true;
+            if (radioInputs[index]) {
+                radioInputs[index].checked = true;
+                console.log(`📻 Radio button ${index} marcado`);
+            }
             
             // Enable submit button
-            submitBtn.disabled = false;
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                console.log('🟢 Botão submit habilitado');
+            }
         });
     });
     

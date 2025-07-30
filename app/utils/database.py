@@ -127,10 +127,8 @@ def get_user_role():
         conn = PostgresConnectionFactory.get_connection()
         try:
             with conn.cursor() as c:
-                c = conn.cursor()
                 c.execute("SELECT role FROM users WHERE id = %s", (session["user_id"],))
                 result = c.fetchone()
-
                 role = result[0] if result else None
                 return role
         except psycopg2.Error as e:
@@ -421,14 +419,18 @@ def get_random_quiz(user_id, topic, grade):
 def get_random_quiz_admin(topic, grade):
     """Retorna uma questão aleatória de um determinado tópico e série para admins."""
     conn = PostgresConnectionFactory.get_connection()
-    c = conn.cursor()
-    
-    c.execute(
-        "SELECT * FROM quizzes WHERE topic = %s AND grade = %s ORDER BY RANDOM() LIMIT 1",
-        (topic, grade),
-    )
-    
-    return c.fetchone()  # Retorna qualquer pergunta, sem filtro de usuário
+    try:
+        with conn.cursor() as c:
+            c.execute(
+                "SELECT * FROM quizzes WHERE topic = %s AND grade = %s ORDER BY RANDOM() LIMIT 1",
+                (topic, grade),
+            )
+            quiz = c.fetchone()
+            return quiz  # Retorna qualquer pergunta, sem filtro de usuário
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
+        return None
 
 
 def get_leaderboard():

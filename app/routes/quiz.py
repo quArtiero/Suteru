@@ -64,15 +64,7 @@ def quiz_continuous():
         quiz_id = session.get("current_quiz_id")
         user_answer = request.form["answer"]
 
-        # Extrair apenas o conteúdo da fórmula matemática
-        import re
-        def extract_formula(text):
-            match = re.search(r'data-value="([^"]+)"', text)
-            if match:
-                return match.group(1)
-            return text.strip()
-
-        # Obter a questão e comparar as fórmulas
+        # Obter a questão atual
         conn = PostgresConnectionFactory.get_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM quizzes WHERE id = %s", (quiz_id,))
@@ -80,10 +72,19 @@ def quiz_continuous():
         cursor.close()
 
         if quiz:
-            correct_formula = extract_formula(quiz[2])  # correct_answer
-            user_formula = extract_formula(user_answer)
+            # Mapear a resposta do usuário (a/b/c/d) para o texto da alternativa
+            option_map = {
+                'a': quiz[3],  # option1
+                'b': quiz[4],  # option2  
+                'c': quiz[5],  # option3
+                'd': quiz[6]   # option4
+            }
             
-            is_correct = correct_formula == user_formula
+            user_answer_text = option_map.get(user_answer, "")
+            correct_answer_text = quiz[2]  # correct_answer
+            
+            # Comparar os textos das respostas
+            is_correct = user_answer_text.strip() == correct_answer_text.strip()
             
             if is_correct:
                 # Atualizar pontos do usuário
@@ -105,7 +106,15 @@ def quiz_continuous():
                 )
                 conn.commit()
                 cursor.close()
-                correct_answer = quiz[2]
+                
+                # Encontrar qual letra corresponde à resposta correta
+                correct_letter = ""
+                for letter, option_text in option_map.items():
+                    if option_text.strip() == correct_answer_text.strip():
+                        correct_letter = letter.upper()
+                        break
+                
+                correct_answer = f"{correct_letter}) {correct_answer_text}"
 
             if role == "admin":
                 quiz = database.get_random_quiz_admin(topic, grade)
@@ -114,7 +123,19 @@ def quiz_continuous():
 
             if quiz:
                 session["current_quiz_id"] = quiz[0]
-                return render_template("quiz/quiz.html", quiz=quiz, correct_answer=correct_answer)
+                
+                # Converter tupla do banco para dicionário compatível com o template
+                question_data = {
+                    'id': quiz[0],
+                    'pergunta': quiz[1],
+                    'alternativa_a': quiz[3],
+                    'alternativa_b': quiz[4], 
+                    'alternativa_c': quiz[5],
+                    'alternativa_d': quiz[6],
+                    'materia': quiz[7]
+                }
+                
+                return render_template("quiz/quiz.html", question=question_data, correct_answer=correct_answer)
             else:
                 session.pop("current_quiz_id", None)
                 session.pop("current_topic", None)
@@ -130,7 +151,19 @@ def quiz_continuous():
 
     if quiz:
         session["current_quiz_id"] = quiz[0]
-        return render_template("quiz/quiz.html", quiz=quiz, correct_answer=None)
+        
+        # Converter tupla do banco para dicionário compatível com o template
+        question_data = {
+            'id': quiz[0],
+            'pergunta': quiz[1],
+            'alternativa_a': quiz[3],
+            'alternativa_b': quiz[4], 
+            'alternativa_c': quiz[5],
+            'alternativa_d': quiz[6],
+            'materia': quiz[7]
+        }
+        
+        return render_template("quiz/quiz.html", question=question_data, correct_answer=None)
     else:
         flash("Não há perguntas disponíveis para este tópico e série.", "info")
         return redirect(url_for("auth.dashboard"))
