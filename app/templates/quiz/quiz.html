@@ -122,52 +122,23 @@
 <script>
 // Quiz interaction script
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔍 DEBUG: Script carregado!');
-    
     const options = document.querySelectorAll('.option-item');
     const submitBtn = document.getElementById('submit-btn');
     const radioInputs = document.querySelectorAll('input[type="radio"]');
     
-    console.log('🔍 DEBUG: Elementos encontrados:');
-    console.log('   - Opções (.option-item):', options.length);
-    console.log('   - Botão submit:', submitBtn ? 'ENCONTRADO' : 'NÃO ENCONTRADO');
-    console.log('   - Radio buttons:', radioInputs.length);
-    
-    if (options.length === 0) {
-        console.error('❌ ERRO: Nenhuma opção .option-item encontrada!');
-    }
-    
-    if (!submitBtn) {
-        console.error('❌ ERRO: Botão #submit-btn não encontrado!');
-    }
-    
     options.forEach((option, index) => {
-        console.log(`🔍 DEBUG: Adicionando listener para opção ${index}`);
-        
-        option.addEventListener('click', function(e) {
-            console.log(`✅ CLIQUE DETECTADO na opção ${index}!`);
-            
+        option.addEventListener('click', function() {
             // Remove selected class from all options
-            options.forEach(opt => {
-                opt.classList.remove('selected');
-                console.log('🧹 Removendo classe selected');
-            });
+            options.forEach(opt => opt.classList.remove('selected'));
             
             // Add selected class to clicked option
             this.classList.add('selected');
-            console.log('✨ Adicionando classe selected');
             
             // Check the corresponding radio button
-            if (radioInputs[index]) {
-                radioInputs[index].checked = true;
-                console.log(`📻 Radio button ${index} marcado`);
-            }
+            radioInputs[index].checked = true;
             
             // Enable submit button
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                console.log('🟢 Botão submit habilitado');
-            }
+            submitBtn.disabled = false;
         });
     });
     
