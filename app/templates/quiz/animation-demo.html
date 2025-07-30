@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/quiz.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-animations.css') }}">
+<style>
+.demo-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+.demo-btn {
+    display: inline-block;
+    margin: 1rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    text-decoration: none;
+}
+
+.demo-btn:hover {
+    transform: translateY(-2px);
+    text-decoration: none;
+    color: white;
+}
+
+.demo-success {
+    background: linear-gradient(135deg, #26de81, #20bf6b);
+}
+
+.demo-error {
+    background: linear-gradient(135deg, #ff6b6b, #ee5253);
+}
+
+.demo-streak {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+
+.demo-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.demo-description {
+    color: #666;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="demo-container">
+    <h1 class="demo-title">🎉 Demonstração das Animações Khan Academy</h1>
+    <p class="demo-description">
+        Clique nos botões abaixo para testar as diferentes animações do sistema de quiz!
+    </p>
+    
+    <div class="demo-buttons">
+        <button class="demo-btn demo-success" onclick="triggerSuccessAnimation(10)">
+            ✅ Resposta Correta (+10 pontos)
+        </button>
+        
+        <button class="demo-btn demo-error" onclick="triggerErrorAnimation('A resposta correta é: B) Exemplo')">
+            ❌ Resposta Incorreta
+        </button>
+        
+        <button class="demo-btn demo-success" onclick="triggerMultipleSuccess()">
+            🔥 Sequência de Acertos (Streak)
+        </button>
+        
+        <button class="demo-btn demo-streak" onclick="triggerStreakOnly()">
+            ⭐ Animação de Streak
+        </button>
+        
+        <button class="demo-btn" onclick="clearAllAnimations()">
+            🧹 Limpar Animações
+        </button>
+    </div>
+    
+    <div style="margin-top: 3rem; padding: 2rem; background: #f8f9fa; border-radius: 12px;">
+        <h3>🎯 Funcionalidades das Animações:</h3>
+        <ul style="text-align: left; max-width: 400px; margin: 0 auto;">
+            <li><strong>Confetti colorido</strong> - 50 partículas animadas</li>
+            <li><strong>Modal de sucesso/erro</strong> - Feedback visual</li>
+            <li><strong>Pontos flutuantes</strong> - Animação de ganho</li>
+            <li><strong>Estrelas cintilantes</strong> - Efeito de fundo</li>
+            <li><strong>Animação de streak</strong> - Para sequências</li>
+            <li><strong>Screen shake</strong> - Impacto visual</li>
+            <li><strong>Efeitos de seleção</strong> - Ripple e pulse</li>
+        </ul>
+    </div>
+    
+    <div style="margin-top: 2rem;">
+        <a href="{{ url_for('quiz.quizzes') }}" class="demo-btn">
+            🧠 Voltar aos Quizzes
+        </a>
+    </div>
+</div>
+
+<!-- Exemplo de opções para testar animações de seleção -->
+<div class="quiz-modern-container" style="max-width: 600px;">
+    <div class="question-card-modern">
+        <div class="question-header">
+            <div class="question-icon">Q</div>
+            <div class="question-meta">
+                <div class="question-number">Teste de Animações</div>
+                <div class="question-topic">Demonstração</div>
+            </div>
+        </div>
+        
+        <div class="question-text">Clique nas opções para ver os efeitos de seleção!</div>
+        
+        <div class="options-list">
+            <label class="option-item">
+                <input type="radio" name="demo" value="a" style="display: none;">
+                <div class="option-letter">A</div>
+                <div class="option-text">Opção com efeito ripple</div>
+            </label>
+            
+            <label class="option-item">
+                <input type="radio" name="demo" value="b" style="display: none;">
+                <div class="option-letter">B</div>
+                <div class="option-text">Clique para ver animação</div>
+            </label>
+            
+            <label class="option-item">
+                <input type="radio" name="demo" value="c" style="display: none;">
+                <div class="option-letter">C</div>
+                <div class="option-text">Efeito de pulsação incluído</div>
+            </label>
+            
+            <label class="option-item">
+                <input type="radio" name="demo" value="d" style="display: none;">
+                <div class="option-letter">D</div>
+                <div class="option-text">Interação animada</div>
+            </label>
+        </div>
+        
+        <div class="quiz-actions">
+            <button type="button" class="quiz-btn quiz-btn-primary" onclick="this.classList.add('pressed'); setTimeout(() => this.classList.remove('pressed'), 200)">
+                <i class="fas fa-play me-2"></i>Testar Botão
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Função para triggerar múltiplos sucessos (streak)
+function triggerMultipleSuccess() {
+    triggerSuccessAnimation(10);
+    setTimeout(() => triggerSuccessAnimation(10), 1000);
+    setTimeout(() => triggerSuccessAnimation(10), 2000);
+}
+
+// Função para mostrar apenas streak
+function triggerStreakOnly() {
+    if (quizAnimations) {
+        quizAnimations.streak = 4; // Simular streak
+        quizAnimations.showStreakAnimation();
+    }
+}
+
+// Função para limpar todas as animações
+function clearAllAnimations() {
+    if (quizAnimations) {
+        quizAnimations.resetForNewQuestion();
+    }
+    
+    // Remover qualquer modal existente
+    document.querySelectorAll('.success-feedback-modal, .incorrect-feedback-modal, .streak-animation').forEach(el => {
+        if (el.parentNode) {
+            el.parentNode.removeChild(el);
+        }
+    });
+}
+
+// Setup para opções de demonstração
+document.addEventListener('DOMContentLoaded', function() {
+    // Aguardar o quiz-animations.js carregar
+    setTimeout(() => {
+        const options = document.querySelectorAll('.option-item');
+        options.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected de todas as opções
+                options.forEach(opt => opt.classList.remove('selected'));
+                
+                // Adiciona à opção clicada
+                this.classList.add('selected');
+                
+                // Triggera animação se o sistema estiver carregado
+                if (quizAnimations) {
+                    quizAnimations.animateOptionSelection(this);
+                }
+            });
+        });
+    }, 100);
+});
+</script>
+
+<!-- Quiz Animations Script -->
+<script src="{{ url_for('static', filename='js/quiz-animations.js') }}"></script>
+{% endblock %} 

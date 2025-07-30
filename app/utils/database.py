@@ -14,8 +14,8 @@ GRAINS_PER_QUESTION = 20   # 1 pergunta = 20 grãos (10 pontos × 2)
 GRAMS_PER_POINT = 0.042    # 1 ponto = 0.042 gramas (0.021 * 2)
 GRAMS_PER_QUESTION = 0.42  # 1 pergunta = 0.42 gramas (20 × 0.021)
 GRAMS_PER_MEAL = 80        # 1 refeição = 80 gramas
-QUESTIONS_PER_MEAL = 100   # 100 perguntas = 1 refeição (meta mais acessível)
-POINTS_PER_MEAL = 1000     # 1.000 pontos = 1 refeição (100 × 10)
+QUESTIONS_PER_MEAL = 50    # 50 perguntas = 1 refeição (meta mais acessível)
+POINTS_PER_MEAL = 500      # 500 pontos = 1 refeição (50 × 10)
 
 # Constante legacy para compatibilidade
 POINTS_TO_GRAMS = GRAINS_PER_POINT
@@ -26,8 +26,7 @@ def points_to_grams(points):
 
 def points_to_meals(points):
     """Converte pontos para número de refeições"""
-    grams = points_to_grams(points)
-    return grams / GRAMS_PER_MEAL
+    return points / POINTS_PER_MEAL
 
 def points_to_grains(points):
     """Converte pontos para número de grãos de arroz"""

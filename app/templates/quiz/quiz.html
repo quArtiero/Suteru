@@ -2,6 +2,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/quiz-animations.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -17,31 +18,9 @@
     <p class="quiz-subtitle">Responda e ajude a doar alimentos para quem precisa</p>
   </div>
 
-  <!-- Feedback for incorrect answer -->
+  <!-- Hidden feedback data for animations -->
   {% if correct_answer %}
-    <div class="quiz-result-card">
-      <div class="result-icon incorrect">
-        <i class="fas fa-times"></i>
-      </div>
-      <h3 class="result-title incorrect">Resposta Incorreta</h3>
-      <p class="result-description">Não se preocupe! Aprender faz parte do processo.</p>
-      
-      <div class="correct-answer">
-        <div class="correct-answer-label">Resposta Correta:</div>
-        <div class="correct-answer-text">{{ correct_answer }}</div>
-      </div>
-    </div>
-  {% endif %}
-
-  <!-- Success feedback -->
-  {% if success_message %}
-    <div class="quiz-result-card">
-      <div class="result-icon correct">
-        <i class="fas fa-check"></i>
-      </div>
-      <h3 class="result-title correct">Parabéns!</h3>
-      <p class="result-description">{{ success_message }}</p>
-    </div>
+    <div class="correct-answer-text" style="display: none;">{{ correct_answer }}</div>
   {% endif %}
 
   <!-- Quiz Question -->
@@ -125,9 +104,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const options = document.querySelectorAll('.option-item');
     const submitBtn = document.getElementById('submit-btn');
     const radioInputs = document.querySelectorAll('input[type="radio"]');
+    const form = document.querySelector('form');
+    
+    let isSubmitting = false;
     
     options.forEach((option, index) => {
         option.addEventListener('click', function() {
+            if (isSubmitting) return; // Prevent interaction during submission
+            
             // Remove selected class from all options
             options.forEach(opt => opt.classList.remove('selected'));
             
@@ -142,6 +126,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Prevent multiple form submissions (keep this optimization)
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (isSubmitting) {
+                e.preventDefault();
+                return false;
+            }
+            
+            isSubmitting = true;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processando...';
+            
+            // Reset after 3 seconds as fallback
+            setTimeout(() => {
+                isSubmitting = false;
+            }, 3000);
+        });
+    }
+    
     // Add question appear animation
     const questionCard = document.querySelector('.question-card-modern');
     if (questionCard) {
@@ -149,4 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+<!-- Quiz Animations Script -->
+<script src="{{ url_for('static', filename='js/quiz-animations.js') }}"></script>
 {% endblock %}

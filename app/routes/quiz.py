@@ -217,3 +217,8 @@ def suggest_question():
             flash("Erro ao salvar sua sugestão. Tente novamente!", "danger")
 
     return render_template("quiz/suggest_question.html", topics=topics, grades=grades)
+
+@bp.route("/animation-demo")
+def animation_demo():
+    """Página de demonstração das animações Khan Academy style"""
+    return render_template("quiz/animation-demo.html", title="Demonstração de Animações")

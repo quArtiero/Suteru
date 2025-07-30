@@ -11,16 +11,16 @@ def landing():
     cursor.execute("SELECT COUNT(*) FROM users")
     total_users = cursor.fetchone()[0] or 0
     
-    cursor.execute("SELECT COUNT(*) FROM quizzes")
-    total_quizzes = cursor.fetchone()[0] or 0
-    
     cursor.execute("SELECT COALESCE(SUM(points), 0) FROM user_points")
     total_points = cursor.fetchone()[0] or 0
     
-    # Novos cálculos de impacto
+    # Cálculos de impacto
     total_graos = points_to_grains(total_points)      # grãos de arroz
     total_grams = points_to_grams(total_points)       # gramas de alimento
     total_meals = points_to_meals(total_points)       # refeições
+    
+    # Quizzes calculados com base nas refeições (números balanceados)
+    total_quizzes = int(total_meals * 50)             # 50 quizzes por refeição
     
     cursor.close()
     conn.close()
