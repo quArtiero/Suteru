@@ -211,9 +211,10 @@ python3 run.py
 - **Questions Answered:** 10,000+
 
 ### Conversion Rates
-- **1 Point** = 0.042g of food
-- **1 Meal** = 80g of food = ~1,900 points
-- **100 Questions** = 1 complete meal donation
+- **1 Point** = 0.16g of food
+- **1 Question** = 1.6g of food = 10 points
+- **1 Meal** = 80g of food = 500 points
+- **50 Questions** = 1 complete meal donation
 
 ## 🤝 Contributing
 

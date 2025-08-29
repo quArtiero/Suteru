@@ -131,7 +131,7 @@
                                 <input type="checkbox" name="selected_questions" value="{{ quiz[0] }}" 
                                        class="form-check-input question-checkbox">
                             </td>
-                            <td>{{ quiz[1] }}</td>
+                            <td>{{ quiz[1]|safe }}</td>
                             <td>{{ quiz[7] }}</td>
                             <td>{{ quiz[9] }}</td>
                             <td>{{ quiz[8] }}</td>
@@ -255,6 +255,29 @@ document.addEventListener('DOMContentLoaded', function() {
         const checkedBoxes = document.querySelectorAll('.question-checkbox:checked');
         deleteBtn.disabled = checkedBoxes.length === 0;
     }
+    
+    // Renderizar fórmulas KaTeX
+    renderAllFormulas();
 });
+
+function renderAllFormulas() {
+    if (typeof katex !== 'undefined') {
+        document.querySelectorAll('.ql-formula').forEach(function(element) {
+            const formula = element.getAttribute('data-value');
+            if (formula) {
+                try {
+                    katex.render(formula, element, {
+                        throwOnError: false,
+                        displayMode: false
+                    });
+                } catch (error) {
+                    console.error('Erro ao renderizar fórmula:', error);
+                    // Fallback - show the raw formula value
+                    element.textContent = formula;
+                }
+            }
+        });
+    }
+}
 </script>
 {% endblock %} 

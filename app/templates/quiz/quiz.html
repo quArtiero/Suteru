@@ -20,7 +20,7 @@
 
   <!-- Hidden feedback data for animations -->
   {% if correct_answer %}
-    <div class="correct-answer-text" style="display: none;">{{ correct_answer }}</div>
+    <div class="correct-answer-text" style="display: none;">{{ correct_answer|safe }}</div>
   {% endif %}
 
   <!-- Quiz Question -->
@@ -34,7 +34,7 @@
         </div>
       </div>
       
-      <div class="question-text">{{ question.pergunta }}</div>
+      <div class="question-text">{{ question.pergunta|safe }}</div>
       
       <form method="POST" action="{{ url_for('quiz.quiz_continuous') }}">
         <input type="hidden" name="question_id" value="{{ question.id }}">
@@ -43,25 +43,25 @@
           <label class="option-item">
             <input type="radio" name="answer" value="a" style="display: none;">
             <div class="option-letter">A</div>
-            <div class="option-text">{{ question.alternativa_a }}</div>
+            <div class="option-text">{{ question.alternativa_a|safe }}</div>
           </label>
           
           <label class="option-item">
             <input type="radio" name="answer" value="b" style="display: none;">
             <div class="option-letter">B</div>
-            <div class="option-text">{{ question.alternativa_b }}</div>
+            <div class="option-text">{{ question.alternativa_b|safe }}</div>
           </label>
           
           <label class="option-item">
             <input type="radio" name="answer" value="c" style="display: none;">
             <div class="option-letter">C</div>
-            <div class="option-text">{{ question.alternativa_c }}</div>
+            <div class="option-text">{{ question.alternativa_c|safe }}</div>
           </label>
           
           <label class="option-item">
             <input type="radio" name="answer" value="d" style="display: none;">
             <div class="option-letter">D</div>
-            <div class="option-text">{{ question.alternativa_d }}</div>
+            <div class="option-text">{{ question.alternativa_d|safe }}</div>
           </label>
         </div>
         
@@ -150,7 +150,30 @@ document.addEventListener('DOMContentLoaded', function() {
     if (questionCard) {
         questionCard.classList.add('question-appear');
     }
+    
+    // Renderizar fórmulas KaTeX
+    renderAllFormulas();
 });
+
+function renderAllFormulas() {
+    if (typeof katex !== 'undefined') {
+        document.querySelectorAll('.ql-formula').forEach(function(element) {
+            const formula = element.getAttribute('data-value');
+            if (formula) {
+                try {
+                    katex.render(formula, element, {
+                        throwOnError: false,
+                        displayMode: false
+                    });
+                } catch (error) {
+                    console.error('Erro ao renderizar fórmula:', error);
+                    // Fallback - show the raw formula value
+                    element.textContent = formula;
+                }
+            }
+        });
+    }
+}
 </script>
 
 <!-- Quiz Animations Script -->

@@ -60,12 +60,12 @@
     
          <!-- Progress Bar para Próxima Refeição -->
      <div class="meal-progress-container">
-       {% set current_meal_progress = approximate_questions % 100 %}
-       {% set progress_percentage = (current_meal_progress / 100 * 100)|round(1) %}
+       {% set current_meal_progress = approximate_questions % 50 %}
+       {% set progress_percentage = (current_meal_progress / 50 * 100)|round(1) %}
        
        <div class="progress-header">
          <span class="progress-title">Progresso para próxima refeição</span>
-         <span class="progress-count">{{ current_meal_progress|round(0) }}/100 perguntas</span>
+         <span class="progress-count">{{ current_meal_progress|round|int }}/50 perguntas</span>
        </div>
        
        <div class="meal-progress-bar">
@@ -73,7 +73,7 @@
        </div>
        
        <div class="progress-footer">
-         <small>{{ (100 - current_meal_progress)|round(0) }} perguntas restantes</small>
+         <small>{{ (50 - current_meal_progress)|round|int }} perguntas restantes</small>
        </div>
      </div>
   </div>

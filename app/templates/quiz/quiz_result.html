@@ -58,7 +58,7 @@
         {% if correct_answer %}
         <div class="correct-answer-display">
             <h3>💡 Resposta correta:</h3>
-            <p class="correct-answer">{{ correct_answer }}</p>
+            <p class="correct-answer">{{ correct_answer|safe }}</p>
         </div>
         {% endif %}
         
@@ -587,6 +587,29 @@ document.addEventListener('DOMContentLoaded', function() {
         const delay = element.dataset.aosDelay || (index * 100);
         element.style.animationDelay = `${delay}ms`;
     });
+    
+    // Renderizar fórmulas KaTeX
+    renderAllFormulas();
 });
+
+function renderAllFormulas() {
+    if (typeof katex !== 'undefined') {
+        document.querySelectorAll('.ql-formula').forEach(function(element) {
+            const formula = element.getAttribute('data-value');
+            if (formula) {
+                try {
+                    katex.render(formula, element, {
+                        throwOnError: false,
+                        displayMode: false
+                    });
+                } catch (error) {
+                    console.error('Erro ao renderizar fórmula:', error);
+                    // Fallback - show the raw formula value
+                    element.textContent = formula;
+                }
+            }
+        });
+    }
+}
 </script>
 {% endblock %}

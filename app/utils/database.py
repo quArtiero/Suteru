@@ -6,15 +6,15 @@ from dotenv import load_dotenv
 
 load_dotenv()  # Carrega as variáveis de ambiente do arquivo .env
 
-# Constantes de conversão atualizadas
+# Constantes de conversão atualizadas - CORRETAS
 GRAMS_PER_GRAIN = 0.021    # 1 grão = 0.021 gramas
 GRAINS_PER_POINT = 2       # 1 ponto = 2 grãos  
 POINTS_PER_QUESTION = 10   # 1 pergunta = 10 pontos (média)
-GRAINS_PER_QUESTION = 20   # 1 pergunta = 20 grãos (10 pontos × 2)
-GRAMS_PER_POINT = 0.042    # 1 ponto = 0.042 gramas (0.021 * 2)
-GRAMS_PER_QUESTION = 0.42  # 1 pergunta = 0.42 gramas (20 × 0.021)
+GRAINS_PER_QUESTION = 76   # 1 pergunta = 76 grãos (1.6g ÷ 0.021)
+GRAMS_PER_POINT = 0.16     # 1 ponto = 0.16 gramas (1.6g ÷ 10 pontos)
+GRAMS_PER_QUESTION = 1.6   # 1 pergunta = 1.6 gramas (80g ÷ 50 perguntas)
 GRAMS_PER_MEAL = 80        # 1 refeição = 80 gramas
-QUESTIONS_PER_MEAL = 50    # 50 perguntas = 1 refeição (meta mais acessível)
+QUESTIONS_PER_MEAL = 50    # 50 perguntas = 1 refeição
 POINTS_PER_MEAL = 500      # 500 pontos = 1 refeição (50 × 10)
 
 # Constante legacy para compatibilidade
