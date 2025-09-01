@@ -42,19 +42,26 @@ def partners():
 
 @bp.route('/leaderboard')
 def leaderboard():
+    # TEMPORARILY BLOCKED: Leaderboard page access disabled
+    # Users can only see their percentage on dashboard
+    from flask import abort
+    abort(404)  # Return 404 to hide the existence of this page
+    
+    # Original code preserved for restoration:
+    """
     conn = PostgresConnectionFactory.get_connection()
     leaderboard = []
     
     try:
         with conn.cursor() as cursor:
-            cursor.execute("""
+            cursor.execute(\"\"\"
                 SELECT u.username, COALESCE(SUM(up.points), 0) as total_points 
                 FROM users u 
                 LEFT JOIN user_points up ON u.id = up.user_id 
                 WHERE u.username != 'pedroquart'
                 GROUP BY u.id, u.username 
                 ORDER BY total_points DESC
-            """)
+            \"\"\")
             
             leaderboard = [
                 {
@@ -72,3 +79,4 @@ def leaderboard():
         leaderboard = []
     
     return render_template('main/leaderboard.html', leaderboard=leaderboard)
+    """

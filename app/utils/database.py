@@ -455,6 +455,52 @@ def get_leaderboard():
         conn.rollback()
 
 
+def get_user_leaderboard_position(user_id):
+    """Get user's percentage position in the leaderboard (you are in top X%)"""
+    conn = PostgresConnectionFactory.get_connection()
+    try:
+        with conn.cursor() as c:
+            # First check if user exists and is not admin
+            c.execute("SELECT username FROM users WHERE id = %s AND username != 'pedroquart'", (user_id,))
+            user_check = c.fetchone()
+            
+            if not user_check:
+                return {"position": None, "total_points": 0, "percentage": None}
+            
+            c.execute(
+                """
+                WITH ranked_users AS (
+                    SELECT u.id, u.username, COALESCE(SUM(up.points), 0) as total_points,
+                           ROW_NUMBER() OVER (ORDER BY COALESCE(SUM(up.points), 0) DESC) as position,
+                           COUNT(*) OVER() as total_users
+                    FROM users u
+                    LEFT JOIN user_points up ON u.id = up.user_id
+                    WHERE u.username != 'pedroquart'  -- Exclude admin users
+                    GROUP BY u.id, u.username
+                )
+                SELECT position, total_points, total_users,
+                       GREATEST(1, ROUND((position * 100.0 / GREATEST(total_users, 1)), 0)) as percentage
+                FROM ranked_users
+                WHERE id = %s
+                """,
+                (user_id,)
+            )
+            result = c.fetchone()
+            if result and result[0] is not None:
+                percentage = max(1, min(100, int(result[3])))  # Ensure percentage is between 1-100
+                return {
+                    "position": result[0], 
+                    "total_points": result[1],
+                    "total_users": result[2],
+                    "percentage": percentage  # Top X% (minimum 1%, maximum 100%)
+                }
+            return {"position": None, "total_points": 0, "percentage": None}
+    except psycopg2.Error as e:
+        print(f"Database connection error: {e}")
+        conn.rollback()
+        return {"position": None, "total_points": 0, "percentage": None}
+
+
 def create_suggestion(request):
     question = request.form["question"]
     correct_answer = request.form["correct_answer"]

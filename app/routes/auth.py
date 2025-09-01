@@ -71,12 +71,17 @@ def logout():
 def dashboard():
     if "user_id" in session:
         total_points, food_donation_grams, food_donation_meals, approximate_questions = database.get_user_points(session["user_id"])
+        
+        # Get user's leaderboard position (temporarily replacing full leaderboard view)
+        user_position = database.get_user_leaderboard_position(session["user_id"])
+        
         return render_template(
             "auth/dashboard.html", 
             total_points=total_points, 
             food_donation_grams=food_donation_grams,
             food_donation_meals=food_donation_meals,
-            approximate_questions=approximate_questions
+            approximate_questions=approximate_questions,
+            user_position=user_position  # Add position for dashboard display
         )
     else:
         return redirect(url_for("auth.login"))

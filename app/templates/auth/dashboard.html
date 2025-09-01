@@ -45,6 +45,33 @@
       <div class="stat-number">{{ (total_points * 2)|round(0) }}</div>
       <div class="stat-label">grãos de arroz</div>
     </div>
+
+    <!-- User Percentage Card (replacing full leaderboard access) -->
+    <div class="stat-card-modern">
+      <div class="stat-header">
+        <div class="stat-icon">
+          <i class="fas fa-percentage"></i>
+        </div>
+        <div class="stat-content">
+          <h3>Seu Ranking</h3>
+          <p>Performance geral</p>
+        </div>
+      </div>
+      <div class="stat-number">
+        {% if user_position and user_position.percentage is not none %}
+          Top {{ user_position.percentage }}%
+        {% else %}
+          Novo
+        {% endif %}
+      </div>
+      <div class="stat-label">
+        {% if user_position and user_position.percentage is not none %}
+          dos usuários
+        {% else %}
+          usuário
+        {% endif %}
+      </div>
+    </div>
   </div>
 
   <!-- Impact Display -->
@@ -85,10 +112,6 @@
       <a href="{{ url_for('quiz.quizzes') }}" class="action-btn action-btn-primary">
         <i class="fas fa-brain"></i>
         Começar Quiz
-      </a>
-      <a href="{{ url_for('main.leaderboard') }}" class="action-btn action-btn-secondary">
-        <i class="fas fa-trophy"></i>
-        Ver Ranking
       </a>
       <a href="{{ url_for('auth.achievements') }}" class="action-btn action-btn-secondary">
         <i class="fas fa-medal"></i>
@@ -310,21 +333,7 @@
 <script>
 // Add some interactive features
 document.addEventListener('DOMContentLoaded', function() {
-  // Animate numbers counting up
-  const animateValue = (element, start, end, duration) => {
-    const range = end - start;
-    let current = start;
-    const increment = end > start ? 1 : -1;
-    const stepTime = Math.abs(Math.floor(duration / range));
-    
-    const timer = setInterval(() => {
-      current += increment;
-      element.textContent = current;
-      if (current === end) {
-        clearInterval(timer);
-      }
-    }, stepTime);
-  };
+  // Improved animation logic for different content types
   
   // Trigger animations when cards come into view
   const observer = new IntersectionObserver((entries) => {
@@ -333,9 +342,48 @@ document.addEventListener('DOMContentLoaded', function() {
         const numberElement = entry.target.querySelector('.stat-number');
         if (numberElement && !numberElement.classList.contains('animated')) {
           numberElement.classList.add('animated');
-          const finalValue = parseInt(numberElement.textContent);
-          numberElement.textContent = '0';
-          animateValue(numberElement, 0, finalValue, 1500);
+          const originalText = numberElement.textContent.trim();
+          
+          // Handle different types of content
+          if (originalText.includes('Top') && originalText.includes('%')) {
+            // For percentage values like "Top 15%"
+            const percentMatch = originalText.match(/(\d+)%/);
+            if (percentMatch) {
+              const percentValue = parseInt(percentMatch[1]);
+              if (percentValue > 0) {
+                // Animate percentage counting up
+                let currentPercent = 0;
+                const increment = Math.max(1, Math.ceil(percentValue / 50));
+                const timer = setInterval(() => {
+                  currentPercent += increment;
+                  if (currentPercent >= percentValue) {
+                    currentPercent = percentValue;
+                    clearInterval(timer);
+                  }
+                  numberElement.textContent = 'Top ' + currentPercent + '%';
+                }, 30);
+              }
+            }
+          } else if (originalText === 'Novo') {
+            // Don't animate "Novo usuário" text - keep as is
+            return;
+          } else {
+            // For regular numbers
+            const finalValue = parseInt(originalText.replace(/[^\d]/g, ''));
+            if (!isNaN(finalValue) && finalValue > 0) {
+              // Animate regular numbers counting up
+              let currentNum = 0;
+              const increment = Math.max(1, Math.ceil(finalValue / 100));
+              const timer = setInterval(() => {
+                currentNum += increment;
+                if (currentNum >= finalValue) {
+                  currentNum = finalValue;
+                  clearInterval(timer);
+                }
+                numberElement.textContent = currentNum.toLocaleString();
+              }, 20);
+            }
+          }
         }
       }
     });
