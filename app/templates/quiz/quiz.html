@@ -34,7 +34,9 @@
         </div>
       </div>
       
-      <div class="question-text">{{ question.pergunta|safe }}</div>
+      <div class="question-content">
+        <div class="question-text">{{ question.pergunta|safe }}</div>
+      </div>
       
       <form method="POST" action="{{ url_for('quiz.quiz_continuous') }}">
         <input type="hidden" name="question_id" value="{{ question.id }}">

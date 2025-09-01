@@ -1,4 +1,4 @@
-from app.utils.database import PostgresConnectionFactory, get_user_role, get_user_points, get_user, create_new_user, get_grades_for_topic, get_random_quiz, get_random_quiz_admin, get_specific_quiz, get_topics, execute_fetch, execute_commit
+from app.utils.database import PostgresConnectionFactory, get_user_role, get_user_points, get_user, create_new_user, get_grades_for_topic, get_random_quiz, get_random_quiz_admin, get_specific_quiz, get_topics, execute_fetch, execute_commit, can_bypass_review, is_admin, is_colaborador
 
 __all__ = [
     'PostgresConnectionFactory',
@@ -12,5 +12,8 @@ __all__ = [
     'get_specific_quiz',
     'get_topics',
     'execute_fetch',
-    'execute_commit'
+    'execute_commit',
+    'can_bypass_review',
+    'is_admin',
+    'is_colaborador'
 ]

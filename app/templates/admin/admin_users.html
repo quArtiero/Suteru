@@ -121,6 +121,10 @@
                         <span class="badge badge-admin">
                             <i class="fas fa-crown"></i> Admin
                         </span>
+                    {% elif user[3] == 'colaborador' %}
+                        <span class="badge badge-colaborador">
+                            <i class="fas fa-star"></i> Colaborador
+                        </span>
                     {% else %}
                         <span class="badge badge-user">
                             <i class="fas fa-user"></i> Usuário
@@ -177,18 +181,34 @@
             <!-- Ações -->
             <div class="user-actions">
                 <div class="action-buttons">
-                    {% if user[3] != 'admin' %}
-                    <form action="{{ url_for('admin.promote_user', user_id=user[0]) }}" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-sm btn-success" title="Promover a Administrador">
-                            <i class="fas fa-arrow-up"></i> Promover
-                        </button>
-                    </form>
-                    {% else %}
-                    <form action="{{ url_for('admin.demote_user', user_id=user[0]) }}" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-sm btn-warning" title="Remover privilégios de Admin">
-                            <i class="fas fa-arrow-down"></i> Demover
-                        </button>
-                    </form>
+                    {% if user[3] == 'user' %}
+                        <form action="{{ url_for('admin.promote_colaborador', user_id=user[0]) }}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-primary" title="Promover a Colaborador">
+                                <i class="fas fa-star"></i> Colaborador
+                            </button>
+                        </form>
+                        <form action="{{ url_for('admin.promote_user', user_id=user[0]) }}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-success" title="Promover a Administrador">
+                                <i class="fas fa-crown"></i> Admin
+                            </button>
+                        </form>
+                    {% elif user[3] == 'colaborador' %}
+                        <form action="{{ url_for('admin.promote_user', user_id=user[0]) }}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-success" title="Promover a Administrador">
+                                <i class="fas fa-crown"></i> Admin
+                            </button>
+                        </form>
+                        <form action="{{ url_for('admin.demote_user', user_id=user[0]) }}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-warning" title="Remover para Usuário">
+                                <i class="fas fa-arrow-down"></i> Usuário
+                            </button>
+                        </form>
+                    {% elif user[3] == 'admin' %}
+                        <form action="{{ url_for('admin.demote_user', user_id=user[0]) }}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-warning" title="Remover privilégios de Admin">
+                                <i class="fas fa-arrow-down"></i> Demover
+                            </button>
+                        </form>
                     {% endif %}
                     
                     <button class="btn btn-sm btn-info" onclick="viewUserDetails('{{ user[0] }}')" title="Ver Detalhes">
@@ -430,6 +450,15 @@
 
 .badge-admin {
     background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badge-colaborador {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
     color: white;
     padding: 0.25rem 0.75rem;
     border-radius: 20px;

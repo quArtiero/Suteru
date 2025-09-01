@@ -136,6 +136,22 @@ def get_user_role():
     return None
 
 
+def can_bypass_review():
+    """Check if user can bypass question review (admin or colaborador)"""
+    role = get_user_role()
+    return role in ["admin", "colaborador"]
+
+
+def is_admin():
+    """Check if user is admin"""
+    return get_user_role() == "admin"
+
+
+def is_colaborador():
+    """Check if user is colaborador"""
+    return get_user_role() == "colaborador"
+
+
 def get_user(username, email=None):
     conn = conn = PostgresConnectionFactory.get_connection()
     try:

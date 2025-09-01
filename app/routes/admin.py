@@ -166,6 +166,21 @@ def promote_user(user_id):
     flash("Acesso negado.", "danger")
     return redirect(url_for("auth.dashboard"))
 
+
+@bp.route("/admin/users/promote_colaborador/<int:user_id>", methods=["POST"])
+def promote_colaborador(user_id):
+    if "user_id" in session and database.get_user_role() == "admin":
+        database.execute_commit(
+            """UPDATE users 
+               SET role = 'colaborador' 
+               WHERE id = %s""",
+            (user_id,)
+        )
+        flash("Usuário promovido para colaborador com sucesso!", "success")
+        return redirect(url_for("admin.users"))
+    flash("Acesso negado.", "danger")
+    return redirect(url_for("auth.dashboard"))
+
 @bp.route("/admin/users/demote/<int:user_id>", methods=["POST"])
 def demote_user(user_id):
     if "user_id" in session and database.get_user_role() == "admin":

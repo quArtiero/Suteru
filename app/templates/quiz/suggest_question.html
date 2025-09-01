@@ -89,6 +89,59 @@
     color: var(--text-secondary);
 }
 
+/* Admin Badge Styling */
+.admin-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: var(--shadow-md);
+    margin-left: 1rem;
+    animation: pulse 2s infinite;
+}
+
+.admin-badge i {
+    font-size: 1.1em;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Colaborador Badge Styling */
+.colaborador-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: var(--shadow-md);
+    margin-left: 1rem;
+    animation: pulse 2s infinite;
+}
+
+.colaborador-badge i {
+    font-size: 1.1em;
+}
+
 /* Ensure all Quill formatting is preserved */
 .ql-editor strong,
 .preview-question-box strong,
@@ -158,8 +211,31 @@
                 <div class="section-icon">
                     <i class="fas fa-list-ol"></i>
                 </div>
-                <h2 class="section-title">Configuração da Questão</h2>
-                <p class="section-subtitle">Preencha as informações passo a passo</p>
+                <h2 class="section-title">
+                    Configuração da Questão
+                    {% if is_admin %}
+                    <span class="admin-badge">
+                        <i class="fas fa-crown"></i>
+                        ADMIN - Submissão Direta
+                    </span>
+                    {% elif is_colaborador %}
+                    <span class="colaborador-badge">
+                        <i class="fas fa-star"></i>
+                        COLABORADOR - Submissão Direta
+                    </span>
+                    {% endif %}
+                </h2>
+                <p class="section-subtitle">
+                    {% if can_bypass %}
+                        {% if is_admin %}
+                        Como administrador, suas questões são adicionadas diretamente ao banco de dados
+                        {% else %}
+                        Como colaborador, suas questões são adicionadas diretamente ao banco de dados
+                        {% endif %}
+                    {% else %}
+                    Preencha as informações passo a passo - sua questão será revisada por um administrador
+                    {% endif %}
+                </p>
             </div>
             
             <!-- Step 1: Choose Subject -->
@@ -336,7 +412,11 @@
             <div class="submit-section">
                 <button type="submit" class="submit-btn btn-secondary" id="submit-btn" disabled>
                     <i class="fas fa-lock"></i>
-                    Complete todos os campos
+                    {% if can_bypass %}
+                    Complete todos os campos para adicionar
+                    {% else %}
+                    Complete todos os campos para sugerir
+                    {% endif %}
                 </button>
             </div>
         </form>
@@ -1113,13 +1193,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Visual feedback on button
                 if (isValid) {
+                    {% if can_bypass %}
+                        {% if is_admin %}
+                        submitBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Adicionar Questão Diretamente';
+                        {% else %}
+                        submitBtn.innerHTML = '<i class="fas fa-star"></i> Adicionar como Colaborador';
+                        {% endif %}
+                    {% else %}
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Questão';
+                    {% endif %}
                     submitBtn.classList.remove('btn-secondary');
                     submitBtn.classList.add('btn-success');
-                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Questão';
                 } else {
+                    {% if can_bypass %}
+                    submitBtn.innerHTML = '<i class="fas fa-lock"></i> Complete todos os campos para adicionar';
+                    {% else %}
+                    submitBtn.innerHTML = '<i class="fas fa-lock"></i> Complete todos os campos';
+                    {% endif %}
                     submitBtn.classList.remove('btn-success');
                     submitBtn.classList.add('btn-secondary');
-                    submitBtn.innerHTML = '<i class="fas fa-lock"></i> Complete todos os campos';
                 }
             }
             
@@ -1223,7 +1315,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Adicionar estado de loading
         const btn = document.getElementById('submit-btn');
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+        {% if can_bypass %}
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adicionando questão...';
+        {% else %}
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando sugestão...';
+        {% endif %}
         btn.disabled = true;
 
         // Submeter formulário

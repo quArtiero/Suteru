@@ -321,6 +321,12 @@ def suggest_question():
         flash("Você precisa estar logado para sugerir uma questão.", "warning")
         return redirect(url_for("auth.login"))
 
+    # Check bypass privileges (admin or colaborador)
+    can_bypass = database.can_bypass_review()
+    user_role = database.get_user_role()
+    is_admin = user_role == "admin"
+    is_colaborador = user_role == "colaborador"
+
     conn = PostgresConnectionFactory.get_connection()
     c = conn.cursor()
     
@@ -354,7 +360,7 @@ def suggest_question():
                     grade = sat_level  # Use SAT level as grade
                 else:
                     flash("Por favor, selecione seção e nível SAT.", "danger")
-                    return render_template("quiz/suggest_question.html", topics=topics, grades=grades)
+                    return render_template("quiz/suggest_question.html", topics=topics, grades=grades, can_bypass=can_bypass, is_admin=is_admin, is_colaborador=is_colaborador)
             else:
                 grade = request.form.get("grade")
                 
@@ -365,25 +371,45 @@ def suggest_question():
             # Simplified validation (difficulty and points have defaults)
             if not all([question, correct_answer, option1, option2, option3, topic, grade]):
                 flash("Todos os campos são obrigatórios!", "danger")
-                return render_template("quiz/suggest_question.html", topics=topics, grades=grades)
+                return render_template("quiz/suggest_question.html", topics=topics, grades=grades, can_bypass=can_bypass, is_admin=is_admin, is_colaborador=is_colaborador)
 
-            c.execute(
-                """
-                INSERT INTO suggested_questions 
-                (user_id, question, correct_answer, option1, option2, option3, option4, topic, grade, points, difficulty, status) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'pendente')
-                """,
-                (session["user_id"], question, correct_answer, option1, option2, option3, "", topic, grade, points, difficulty)
-            )
-            conn.commit()
-            flash("Sua sugestão foi enviada para revisão!", "success")
-            return redirect(url_for("auth.dashboard"))
+            # BYPASS REVIEW - Add directly to quizzes table (admin or colaborador)
+            if can_bypass:
+                c.execute(
+                    """
+                    INSERT INTO quizzes 
+                    (question, correct_answer, option1, option2, option3, option4, topic, grade, points) 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """,
+                    (question, correct_answer, option1, option2, option3, "", topic, grade, int(points))
+                )
+                conn.commit()
+                if is_admin:
+                    flash("✅ Questão adicionada diretamente ao banco de dados!", "success") 
+                    return redirect(url_for("admin.quizzes"))
+                else:  # is_colaborador
+                    flash("✅ Questão adicionada diretamente como colaborador!", "success")
+                    return redirect(url_for("auth.dashboard"))
+            else:
+                # REGULAR USER - Add to suggestions for review
+                c.execute(
+                    """
+                    INSERT INTO suggested_questions 
+                    (user_id, question, correct_answer, option1, option2, option3, option4, topic, grade, points, difficulty, status) 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'pendente')
+                    """,
+                    (session["user_id"], question, correct_answer, option1, option2, option3, "", topic, grade, points, difficulty)
+                )
+                conn.commit()
+                flash("Sua sugestão foi enviada para revisão!", "success")
+                return redirect(url_for("auth.dashboard"))
+                
         except Exception as e:
             conn.rollback()
             print("Erro ao inserir no banco:", e)
-            flash("Erro ao salvar sua sugestão. Tente novamente!", "danger")
+            flash("Erro ao salvar sua questão. Tente novamente!", "danger")
 
-    return render_template("quiz/suggest_question.html", topics=topics, grades=grades)
+    return render_template("quiz/suggest_question.html", topics=topics, grades=grades, can_bypass=can_bypass, is_admin=is_admin, is_colaborador=is_colaborador)
 
 @bp.route("/animation-demo")
 def animation_demo():
