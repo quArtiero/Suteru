@@ -322,7 +322,7 @@ def add_quiz_db(request):
     option1 = request.form["option1"]
     option2 = request.form["option2"]
     option3 = request.form["option3"]
-    option4 = request.form["option4"]
+    option4 = request.form.get("option4", "")  # Optional, default to empty
     try:
         points = int(request.form["points"])
     except (KeyError, ValueError):
@@ -507,7 +507,7 @@ def create_suggestion(request):
     option1 = request.form["option1"]
     option2 = request.form["option2"]
     option3 = request.form["option3"]
-    option4 = request.form["option4"]
+    option4 = request.form.get("option4", "")  # Optional, default to empty
     points = request.form["points"]
     topic = request.form["topic"]
     grade = request.form["grade"]

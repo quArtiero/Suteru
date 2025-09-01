@@ -76,7 +76,7 @@
         </div>
 
         <div class="form-group mb-4">
-            <label for="option4">Opção 4</label>
+            <label for="option4">Opção 4 <span class="text-muted">(Opcional - para questões normais)</span></label>
             <div id="option4-editor"></div>
             <input type="hidden" name="option4">
         </div>
@@ -184,7 +184,7 @@ function initializeEditors() {
             option1: new Quill('#option1-editor', editorConfig),
             option2: new Quill('#option2-editor', editorConfig),
             option3: new Quill('#option3-editor', editorConfig),
-            option4: new Quill('#option4-editor', editorConfig)
+            option4: new Quill('#option4-editor', editorConfig)  // Optional for SAT
         };
 
         console.log('Setting up preview function...');
@@ -213,7 +213,12 @@ function initializeEditors() {
 
         document.querySelector('form').onsubmit = function() {
             for (let field in editors) {
-                document.querySelector(`input[name=${field}]`).value = editors[field].root.innerHTML;
+                const inputElement = document.querySelector(`input[name=${field}]`);
+                if (inputElement && editors[field]) {
+                    // For option4, allow empty content (SAT questions)
+                    const content = editors[field].root.innerHTML;
+                    inputElement.value = (field === 'option4' && content.trim() === '<p><br></p>') ? '' : content;
+                }
             }
         };
 

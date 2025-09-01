@@ -1,0 +1,5 @@
+[33mbc6eaa9[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m feat: temporarily hide leaderboard and show user percentage
+[33mb7a380c[m Update templates and database utilities
+[33m3e64824[m feat: Implement Khan Academy-style quiz animations and optimize landing page
+[33m0718942[m Clean: Remove temporary debug logs from quiz JavaScript
+[33m5567518[m Fix: Resolve quiz display and selection issues for admin users

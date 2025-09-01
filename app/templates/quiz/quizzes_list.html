@@ -16,8 +16,44 @@
         </p>
     </div>
     
+    <!-- SAT Highlight Section -->
+    {% if 'SAT' in topics %}
+    <div class="sat-highlight-section">
+        <h2 class="sat-section-title">
+            <i class="fas fa-star"></i>
+            Preparação SAT
+            <span class="sat-badge">DESTAQUE</span>
+        </h2>
+        <div class="sat-card-container">
+            <div class="sat-main-card" data-aos="zoom-in">
+                <div class="sat-icon">
+                    <i class="fas fa-university"></i>
+                </div>
+                <div class="sat-content">
+                    <h3 class="sat-title">SAT - College Board</h3>
+                    <p class="sat-description">
+                        Prepare-se para o exame SAT com questões organizadas por seção e nível
+                    </p>
+                    <div class="sat-sections">
+                        <a href="{{ url_for('quiz.sat_section', section='english') }}" class="sat-section-btn">
+                            <i class="fas fa-book-open"></i>
+                            <span>English Reading & Writing</span>
+                        </a>
+                        <a href="{{ url_for('quiz.sat_section', section='math') }}" class="sat-section-btn">
+                            <i class="fas fa-calculator"></i>
+                            <span>Math</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Regular Topics -->
     <div class="topics-grid-modern">
         {% for topic in topics %}
+        {% if topic != 'SAT' %}
         <a href="{{ url_for('quiz.select_grade', topic=topic) }}" class="topic-card-modern" data-topic="{{ topic }}" data-aos="zoom-in" data-aos-delay="{{ loop.index0 * 150 }}">
             <div class="topic-card-background"></div>
             <div class="topic-icon">
@@ -70,6 +106,7 @@
             </div>
             <div class="topic-shine"></div>
         </a>
+        {% endif %}
         {% endfor %}
     </div>
 </div>
@@ -298,6 +335,148 @@
         height: 60px;
         font-size: var(--text-xl);
     }
+}
+
+/* SAT Highlight Section Styles */
+.sat-highlight-section {
+    margin-bottom: var(--space-12);
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sat-section-title {
+    text-align: center;
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: var(--space-8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+}
+
+.sat-section-title i {
+    color: #FFD700;
+    animation: sparkle 2s ease-in-out infinite alternate;
+}
+
+.sat-badge {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: white;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: var(--shadow-md);
+    animation: pulse 2s infinite;
+}
+
+.sat-card-container {
+    display: flex;
+    justify-content: center;
+}
+
+.sat-main-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-8);
+    color: white;
+    position: relative;
+    overflow: hidden;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: var(--shadow-2xl);
+    transition: all var(--transition-base);
+    border: 3px solid rgba(255, 215, 0, 0.3);
+}
+
+.sat-main-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 50px rgba(102, 126, 234, 0.4);
+}
+
+.sat-icon {
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFD700;
+    font-size: var(--text-4xl);
+    margin: 0 auto var(--space-6) auto;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    transition: all var(--transition-base);
+}
+
+.sat-main-card:hover .sat-icon {
+    transform: scale(1.1) rotate(-5deg);
+}
+
+.sat-content {
+    text-align: center;
+}
+
+.sat-title {
+    font-size: var(--text-2xl);
+    font-weight: 800;
+    margin-bottom: var(--space-4);
+}
+
+.sat-description {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-8);
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+.sat-sections {
+    display: flex;
+    gap: var(--space-4);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.sat-section-btn {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4) var(--space-6);
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 600;
+    transition: all var(--transition-base);
+    min-width: 180px;
+    justify-content: center;
+}
+
+.sat-section-btn:hover {
+    background: rgba(255, 215, 0, 0.2);
+    border-color: rgba(255, 215, 0, 0.5);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes sparkle {
+    0% { transform: scale(1) rotate(0deg); }
+    100% { transform: scale(1.1) rotate(5deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
 }
 
 /* Animation keyframes */

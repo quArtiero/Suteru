@@ -31,6 +31,64 @@
     margin-bottom: 0;
 }
 
+/* Progressive Steps Styling */
+.step-section {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    margin-bottom: var(--space-4);
+    box-shadow: var(--shadow-sm);
+    border: 2px solid transparent;
+    transition: all var(--transition-base);
+    opacity: 0.6;
+}
+
+.step-section.active {
+    opacity: 1;
+    border-color: var(--primary-200);
+    box-shadow: var(--shadow-lg);
+    background: linear-gradient(135deg, #f8faff 0%, #ffffff 100%);
+}
+
+.step-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.step-number {
+    width: 32px;
+    height: 32px;
+    background: var(--gradient-primary);
+    color: white;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: var(--text-sm);
+    box-shadow: var(--shadow-sm);
+}
+
+.step-title {
+    margin: 0;
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.step-section:not(.active) .step-number {
+    background: var(--gray-300);
+    color: var(--gray-600);
+}
+
+.step-section:not(.active) .step-title {
+    color: var(--text-secondary);
+}
+
 /* Ensure all Quill formatting is preserved */
 .ql-editor strong,
 .preview-question-box strong,
@@ -95,75 +153,101 @@
     <!-- Main Form -->
     <div class="main-form-card">
         <form method="POST" id="suggest-form">
-            <!-- Basic Information Section -->
+            <!-- Progressive Form Steps -->
             <div class="section-header">
                 <div class="section-icon">
-                    <i class="fas fa-info-circle"></i>
+                    <i class="fas fa-list-ol"></i>
                 </div>
-                <h2 class="section-title">Informações Básicas</h2>
+                <h2 class="section-title">Configuração da Questão</h2>
+                <p class="section-subtitle">Preencha as informações passo a passo</p>
+            </div>
+            
+            <!-- Step 1: Choose Subject -->
+            <div class="step-section active" id="step-1">
+                <div class="step-header">
+                    <span class="step-number">1</span>
+                    <h4 class="step-title">Escolha a Matéria</h4>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="topic">
+                        <i class="fas fa-book"></i>
+                        Matéria
+                    </label>
+                    <select class="form-control" id="topic" name="topic" required>
+                        <option value="" disabled selected>Selecione a matéria</option>
+                        {% for topic in topics %}
+                        <option value="{{ topic }}">{{ topic }}</option>
+                        {% endfor %}
+                        <option value="novo_tema">➕ Nova Matéria</option>
+                    </select>
+                    <input type="text" class="form-control mt-2" id="new_topic" name="new_topic" 
+                           style="display: none;" placeholder="Digite a nova matéria">
+                </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label class="form-label" for="grade">
-                            <i class="fas fa-graduation-cap"></i>
-                            Série Escolar
-                        </label>
-                        <select class="form-control" id="grade" name="grade" required>
-                            <option value="" disabled selected>Selecione</option>
-                            {% for grade in grades %}
-                            <option value="{{ grade }}">{{ grade }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+            <!-- Step 2a: SAT Configuration -->
+            <div class="step-section" id="step-2a" style="display: none;">
+                <div class="step-header">
+                    <span class="step-number">2</span>
+                    <h4 class="step-title">Configuração SAT</h4>
                 </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label class="form-label" for="topic">
-                            <i class="fas fa-book"></i>
-                            Matéria
-                        </label>
-                        <select class="form-control" id="topic" name="topic" required>
-                            <option value="" disabled selected>Selecione</option>
-                            {% for topic in topics %}
-                            <option value="{{ topic }}">{{ topic }}</option>
-                            {% endfor %}
-                            <option value="novo_tema">➕ Nova Matéria</option>
-                        </select>
-                        <input type="text" class="form-control mt-2" id="new_topic" name="new_topic" 
-                               style="display: none;" placeholder="Digite a nova matéria">
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="sat_section">
+                                <i class="fas fa-university"></i>
+                                Seção SAT
+                            </label>
+                            <select class="form-control" id="sat_section" name="sat_section">
+                                <option value="" disabled selected>Selecione a seção</option>
+                                <option value="english">📚 English Reading & Writing</option>
+                                <option value="math">🔢 Math</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label class="form-label" for="difficulty">
-                            <i class="fas fa-signal"></i>
-                            Dificuldade
-                        </label>
-                        <select class="form-control" id="difficulty" name="difficulty" required>
-                            <option value="" disabled selected>Selecione</option>
-                            <option value="Fácil">Fácil</option>
-                            <option value="Médio">Médio</option>
-                            <option value="Difícil">Difícil</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label class="form-label" for="points">
-                            <i class="fas fa-trophy"></i>
-                            Pontos
-                        </label>
-                        <input type="number" class="form-control" id="points" name="points" 
-                               required min="1" max="100" value="10">
-                        <small class="form-text text-muted mt-1">
-                            <i class="fas fa-info-circle"></i>
-                            1 pergunta = 10 pontos = 1.6g • Meta: 50 perguntas = 1 refeição
-                        </small>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="sat_level">
+                                <i class="fas fa-star"></i>
+                                Nível
+                            </label>
+                            <select class="form-control" id="sat_level" name="sat_level">
+                                <option value="" disabled selected>Selecione o nível</option>
+                                <option value="Level 1">⭐ Level 1 - Iniciante</option>
+                                <option value="Level 2">⭐⭐ Level 2 - Intermediário</option>
+                                <option value="Level 3">⭐⭐⭐ Level 3 - Avançado</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Step 2b: Regular Grade Selection -->
+            <div class="step-section" id="step-2b" style="display: none;">
+                <div class="step-header">
+                    <span class="step-number">2</span>
+                    <h4 class="step-title">Escolha a Série</h4>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="grade">
+                        <i class="fas fa-graduation-cap"></i>
+                        Série Escolar
+                    </label>
+                    <select class="form-control" id="grade" name="grade">
+                        <option value="" disabled selected>Selecione a série</option>
+                        {% for grade in grades %}
+                        <option value="{{ grade }}">{{ grade }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Hidden default values -->
+            <input type="hidden" name="difficulty" value="medio">
+            <input type="hidden" name="points" value="10">
 
             <!-- Question Section -->
             <div class="section-header mt-5">
@@ -250,9 +334,9 @@
 
             <!-- Submit Button -->
             <div class="submit-section">
-                <button type="submit" class="submit-btn" id="submit-btn">
-                    <i class="fas fa-paper-plane"></i>
-                    Enviar Sugestão
+                <button type="submit" class="submit-btn btn-secondary" id="submit-btn" disabled>
+                    <i class="fas fa-lock"></i>
+                    Complete todos os campos
                 </button>
             </div>
         </form>
@@ -805,8 +889,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             console.log('✅ Sistema de sugestão de questões carregado!');
             
-            window.updatePreview();
-            window.checkFormValidity();
+            // Force initial validation after page load
+            setTimeout(() => {
+                window.updatePreview();
+                window.checkFormValidity();
+            }, 500);
             
         } catch (error) {
             console.error('Erro ao inicializar editores:', error);
@@ -948,35 +1035,66 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
-            // Atualizar metadata
-            document.getElementById('meta-grade').textContent = 
-                document.getElementById('grade').value || '-';
-            
+            // Atualizar metadata (simplified)
             const topicValue = document.getElementById('topic').value;
-            document.getElementById('meta-topic').textContent = 
-                topicValue === 'novo_tema' 
+            const metaTopic = document.getElementById('meta-topic');
+            if (metaTopic) {
+                metaTopic.textContent = topicValue === 'novo_tema' 
                     ? document.getElementById('new_topic').value || '-'
                     : topicValue || '-';
+            }
             
-            document.getElementById('meta-difficulty').textContent = 
-                document.getElementById('difficulty').value || '-';
+            // For grade, check which type
+            const metaGrade = document.getElementById('meta-grade');
+            if (metaGrade) {
+                if (topicValue === 'SAT') {
+                    const satSection = document.getElementById('sat_section');
+                    const satLevel = document.getElementById('sat_level');
+                    const sectionText = satSection ? satSection.value || '-' : '-';
+                    const levelText = satLevel ? satLevel.value || '-' : '-';
+                    metaGrade.textContent = `${sectionText} ${levelText}`;
+                } else {
+                    const gradeField = document.getElementById('grade');
+                    metaGrade.textContent = gradeField ? gradeField.value || '-' : '-';
+                }
+            }
             
-            document.getElementById('meta-points').textContent = 
-                document.getElementById('points').value || '-';
+            // Set defaults for difficulty and points
+            const metaDifficulty = document.getElementById('meta-difficulty');
+            if (metaDifficulty) metaDifficulty.textContent = 'Médio';
+            
+            const metaPoints = document.getElementById('meta-points');
+            if (metaPoints) metaPoints.textContent = '10';
                 
         } catch (error) {
             console.error('Erro ao atualizar preview:', error);
         }
     }
 
-    // Verificar validade do formulário
+    // Verificar validade do formulário progressivo
     window.checkFormValidity = function() {
         try {
-            const grade = document.getElementById('grade').value;
             const topic = document.getElementById('topic').value;
             const newTopic = document.getElementById('new_topic').value;
-            const difficulty = document.getElementById('difficulty').value;
-            const points = document.getElementById('points').value;
+            // Skip difficulty and points since they're hidden defaults now
+
+            // Debug validation  
+            let topicValid = false;
+            let gradeValid = false;
+            
+            if (topic === 'SAT') {
+                const satSection = document.getElementById('sat_section').value;
+                const satLevel = document.getElementById('sat_level').value;
+                topicValid = satSection && satLevel;
+                gradeValid = true; // SAT doesn't need regular grade
+            } else if (topic === 'novo_tema') {
+                topicValid = newTopic.trim();
+                gradeValid = document.getElementById('grade').value;
+            } else if (topic) {
+                topicValid = true;
+                const grade = document.getElementById('grade').value;
+                gradeValid = grade;
+            }
 
             const hasQuestion = editors.question && editors.question.getText().trim().length > 0;
             const hasCorrectAnswer = editors.correct_answer && editors.correct_answer.getText().trim().length > 0;
@@ -984,36 +1102,107 @@ document.addEventListener('DOMContentLoaded', function() {
             const hasOption2 = editors.option2 && editors.option2.getText().trim().length > 0;
             const hasOption3 = editors.option3 && editors.option3.getText().trim().length > 0;
 
-            const topicValid = topic && (topic !== 'novo_tema' || newTopic.trim());
-            const isValid = grade && topicValid && difficulty && points && 
+            // Simplified validation - no difficulty/points required
+            const isValid = topicValid && gradeValid && 
                            hasQuestion && hasCorrectAnswer && 
                            hasOption1 && hasOption2 && hasOption3;
 
-            document.getElementById('submit-btn').disabled = !isValid;
+            const submitBtn = document.getElementById('submit-btn');
+            if (submitBtn) {
+                submitBtn.disabled = !isValid;
+                
+                // Visual feedback on button
+                if (isValid) {
+                    submitBtn.classList.remove('btn-secondary');
+                    submitBtn.classList.add('btn-success');
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Questão';
+                } else {
+                    submitBtn.classList.remove('btn-success');
+                    submitBtn.classList.add('btn-secondary');
+                    submitBtn.innerHTML = '<i class="fas fa-lock"></i> Complete todos os campos';
+                }
+            }
             
         } catch (error) {
             console.error('Erro ao verificar validade:', error);
         }
     }
 
-    // Gerenciar nova matéria
+    // Progressive Step Management
     document.getElementById('topic').addEventListener('change', function() {
         const newTopicInput = document.getElementById('new_topic');
-        newTopicInput.style.display = 
-            this.value === 'novo_tema' ? 'block' : 'none';
+        const step2a = document.getElementById('step-2a'); // SAT options
+        const step2b = document.getElementById('step-2b'); // Grade selection
+        
+        // Reset all steps except step 1
+        [step2a, step2b].forEach(step => {
+            if (step) {
+                step.style.display = 'none';
+                step.classList.remove('active');
+            }
+        });
+        
+        // Handle new subject input
+        newTopicInput.style.display = this.value === 'novo_tema' ? 'block' : 'none';
         if (this.value === 'novo_tema') {
             newTopicInput.focus();
+            // For new topic, show grade selection
+            if (step2b) {
+                step2b.style.display = 'block';
+                step2b.classList.add('active');
+            }
+        } else if (this.value === 'SAT') {
+            // SAT flow: show SAT configuration only
+            if (step2a) {
+                step2a.style.display = 'block';
+                step2a.classList.add('active');
+            }
+            const satSection = document.getElementById('sat_section');
+            const satLevel = document.getElementById('sat_level');
+            const gradeField = document.getElementById('grade');
+            
+            if (satSection) satSection.required = true;
+            if (satLevel) satLevel.required = true;
+            if (gradeField) gradeField.required = false;
+        } else if (this.value && this.value !== '') {
+            // Regular subject flow: show grade selection only
+            if (step2b) {
+                step2b.style.display = 'block';
+                step2b.classList.add('active');
+            }
+            const gradeField = document.getElementById('grade');
+            const satSection = document.getElementById('sat_section');
+            const satLevel = document.getElementById('sat_level');
+            
+            if (gradeField) gradeField.required = true;
+            if (satSection) satSection.required = false;
+            if (satLevel) satLevel.required = false;
         }
+        
         window.updatePreview();
         window.checkFormValidity();
     });
 
-    // Listeners para outros campos
-    ['grade', 'difficulty', 'points', 'new_topic'].forEach(id => {
-        document.getElementById(id).addEventListener('change', function() {
-            window.updatePreview();
-            window.checkFormValidity();
-        });
+    // SAT configuration completed - just update validation
+    ['sat_section', 'sat_level'].forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('change', function() {
+                window.updatePreview();
+                window.checkFormValidity();
+            });
+        }
+    });
+
+    // Listeners para outros campos (incluindo SAT)
+    ['grade', 'new_topic', 'sat_section', 'sat_level'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('change', function() {
+                window.updatePreview();
+                window.checkFormValidity();
+            });
+        }
     });
 
     // Submissão do formulário

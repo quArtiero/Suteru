@@ -273,7 +273,8 @@ def quizzes():
 
                 # Get unique topics for filter dropdown
                 cursor.execute("SELECT DISTINCT topic FROM quizzes ORDER BY topic")
-                topics = [row[0] for row in cursor.fetchall()]
+                db_topics = [row[0] for row in cursor.fetchall()]
+                topics = ['SAT'] + db_topics
             finally:
                 cursor.close()
                 conn.close()
@@ -351,8 +352,13 @@ def edit_question(question_id):
             grade = request.form.get("grade")
             points = request.form.get("points")
 
-            if not all([question, correct_answer, option1, option2, option3, option4, topic, grade, points]):
-                flash("Todos os campos são obrigatórios!", "danger")
+            # Option4 is optional for SAT questions
+            required_fields = [question, correct_answer, option1, option2, option3, topic, grade, points]
+            if not topic.startswith("SAT"):
+                required_fields.append(option4)  # Only required for non-SAT questions
+                
+            if not all(required_fields):
+                flash("Todos os campos obrigatórios devem ser preenchidos!", "danger")
                 return redirect(url_for("admin.edit_question", question_id=question_id))
 
             c.execute(
@@ -363,7 +369,7 @@ def edit_question(question_id):
                     grade = %s, points = %s
                 WHERE id = %s
                 """,
-                (question, correct_answer, option1, option2, option3, option4, topic, grade, points, question_id)
+                (question, correct_answer, option1, option2, option3, option4 or "", topic, grade, points, question_id)
             )
             conn.commit()
             flash("Pergunta atualizada com sucesso!", "success")
@@ -493,19 +499,19 @@ def approve_suggestion(suggestion_id):
         # Primeiro, busca os dados da sugestão
         cursor.execute("""
             SELECT question, correct_answer, option1, option2, option3, option4, 
-                   topic, grade, points 
+                   topic, grade, points, difficulty 
             FROM suggested_questions 
             WHERE id = %s
         """, (suggestion_id,))
         suggestion = cursor.fetchone()
         
         if suggestion:
-            # Insere na tabela quizzes (ignorando o campo difficulty)
+            # Insere na tabela quizzes (only first 9 fields, option4 can be empty)
             cursor.execute("""
                 INSERT INTO quizzes 
                 (question, correct_answer, option1, option2, option3, option4, topic, grade, points)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, suggestion)
+            """, suggestion[:9])  # First 9 fields only
             
             # Atualiza o status da sugestão
             cursor.execute("""
@@ -577,8 +583,13 @@ def add_quiz():
             grade = request.form.get("grade")
             points = request.form.get("points")
 
-            if not all([question, correct_answer, option1, option2, option3, option4, topic, grade, points]):
-                flash("Todos os campos são obrigatórios!", "danger")
+            # Option4 is optional for SAT questions  
+            required_fields = [question, correct_answer, option1, option2, option3, topic, grade, points]
+            if not topic.startswith("SAT"):
+                required_fields.append(option4)
+                
+            if not all(required_fields):
+                flash("Todos os campos obrigatórios devem ser preenchidos!", "danger")
                 return redirect(url_for("admin.add_quiz"))
 
             c.execute(
@@ -586,7 +597,7 @@ def add_quiz():
                 INSERT INTO quizzes (question, correct_answer, option1, option2, option3, option4, topic, grade, points)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """,
-                (question, correct_answer, option1, option2, option3, option4, topic, grade, points)
+                (question, correct_answer, option1, option2, option3, option4 or "", topic, grade, points)
             )
             conn.commit()
             flash("Pergunta adicionada com sucesso!", "success")
@@ -596,7 +607,10 @@ def add_quiz():
             flash(f"Erro ao adicionar a pergunta: {e}", "danger")
 
     c.execute("SELECT DISTINCT topic FROM quizzes ORDER BY topic")
-    topics = [topic[0] for topic in c.fetchall()]
+    db_topics = [topic[0] for topic in c.fetchall()]
+    
+    # Add SAT to admin topics
+    topics = ['SAT'] + db_topics
     grades = ["6º ano", "7º ano", "8º ano", "9º ano", "1º ano EM", "2º ano EM", "3º ano EM"]
 
     return render_template("admin/add_quiz.html", topics=topics, grades=grades)

@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from app.utils import database
 from app.utils.database import PostgresConnectionFactory
+import random
 
 bp = Blueprint('quiz', __name__)
 
@@ -10,12 +11,53 @@ def quizzes():
     cursor = conn.cursor()
     
     cursor.execute("SELECT DISTINCT topic FROM quizzes ORDER BY topic")
-    topics = [topic[0] for topic in cursor.fetchall()]
+    db_topics = [topic[0] for topic in cursor.fetchall()]
+    
+    # Add SAT as special topic at the beginning
+    topics = ['SAT'] + db_topics
     
     cursor.close()
     conn.close()
     
     return render_template('quiz/quizzes_list.html', topics=topics)
+
+@bp.route('/sat/<section>')
+def sat_section(section):
+    """Route para seções SAT (english ou math)"""
+    if section not in ['english', 'math']:
+        flash("Seção SAT inválida.", "danger")
+        return redirect(url_for('quiz.quizzes'))
+    
+    # Níveis SAT simples
+    levels = ['Level 1', 'Level 2', 'Level 3']
+    section_title = 'English Reading & Writing' if section == 'english' else 'Math'
+    
+    return render_template('quiz/sat_levels.html', 
+                         section=section, 
+                         section_title=section_title, 
+                         levels=levels)
+
+@bp.route('/sat/<section>/<level>')
+def sat_quiz(section, level):
+    """Route para iniciar quiz SAT específico"""
+    if section not in ['english', 'math'] or level not in ['Level 1', 'Level 2', 'Level 3']:
+        flash("Seção ou nível SAT inválido.", "danger")
+        return redirect(url_for('quiz.quizzes'))
+    
+    # Check if user is logged in
+    if "user_id" not in session:
+        flash("Você precisa estar logado para fazer quiz.", "warning")
+        return redirect(url_for("auth.login"))
+    
+    # Set up session for SAT quiz
+    section_name = 'English' if section == 'english' else 'Math'
+    session['current_topic'] = f'SAT {section_name}'
+    session['current_grade'] = level
+    session['sat_section'] = section
+    session['sat_level'] = level
+    
+    # Redirect to the continuous quiz system
+    return redirect(url_for('quiz.quiz_continuous'))
 
 @bp.route('/select_difficulty/<topic>')
 def select_difficulty(topic):
@@ -72,13 +114,23 @@ def quiz_continuous():
         cursor.close()
 
         if quiz:
-            # Mapear a resposta do usuário (a/b/c/d) para o texto da alternativa
-            option_map = {
-                'a': quiz[3],  # option1
-                'b': quiz[4],  # option2  
-                'c': quiz[5],  # option3
-                'd': quiz[6]   # option4
-            }
+            # Use stored options from session for consistency (SAT questions)
+            stored_options = session.get('current_quiz_options', {})
+            
+            if stored_options:
+                # Use exact mapping shown to user
+                option_map = stored_options
+            else:
+                # Fallback: dynamic mapping for older questions
+                option_map = {}
+                if quiz[3] and quiz[3].strip():  # option1
+                    option_map['a'] = quiz[3]
+                if quiz[4] and quiz[4].strip():  # option2
+                    option_map['b'] = quiz[4]
+                if quiz[5] and quiz[5].strip():  # option3
+                    option_map['c'] = quiz[5]
+                if quiz[6] and quiz[6].strip():  # option4 (only if not empty)
+                    option_map['d'] = quiz[6]
             
             user_answer_text = option_map.get(user_answer, "")
             correct_answer_text = quiz[2]  # correct_answer
@@ -98,6 +150,7 @@ def quiz_continuous():
                 
                 flash("Resposta correta! Pontos adicionados.", "success")
                 correct_answer = None
+                rational = None  # No rational needed when user is correct
             else:
                 cursor = conn.cursor()
                 cursor.execute(
@@ -115,6 +168,18 @@ def quiz_continuous():
                         break
                 
                 correct_answer = f"{correct_letter}) {correct_answer_text}"
+                
+                # Add rational for SAT questions when user gets it wrong
+                rational = None
+                if topic and topic.startswith('SAT'):
+                    rational = f"""
+                    <p><strong>📚 Explicação SAT:</strong></p>
+                    <p>Esta questão requer análise cuidadosa do texto apresentado.</p>
+                    <p><strong>✅ A resposta correta é:</strong> {correct_answer_text}</p>
+                    <p><strong>💡 Estratégia:</strong> Releia o texto e identifique as palavras-chave que fundamentam a resposta correta.</p>
+                    <p><strong>📖 Dica SAT:</strong> Sempre baseie sua resposta em evidências específicas do texto.</p>
+                    <p><em>Continue praticando para melhorar sua pontuação no SAT! 🎯</em></p>
+                    """
 
             if role == "admin":
                 quiz = database.get_random_quiz_admin(topic, grade)
@@ -124,18 +189,59 @@ def quiz_continuous():
             if quiz:
                 session["current_quiz_id"] = quiz[0]
                 
-                # Converter tupla do banco para dicionário compatível com o template
-                question_data = {
-                    'id': quiz[0],
-                    'pergunta': quiz[1],
-                    'alternativa_a': quiz[3],
-                    'alternativa_b': quiz[4], 
-                    'alternativa_c': quiz[5],
-                    'alternativa_d': quiz[6],
-                    'materia': quiz[7]
-                }
+                # Smart option arrangement for SAT vs regular questions (POST method)
+                if topic and topic.startswith('SAT'):
+                    # For SAT: Mix correct answer with incorrect options
+                    correct_answer_db = quiz[2]
+                    incorrect_options = [quiz[3], quiz[4], quiz[5], quiz[6]]
+                    valid_incorrect = [opt for opt in incorrect_options if opt and opt.strip()]
+                    
+                    # Create shuffled options list
+                    all_options = [correct_answer_db] + valid_incorrect
+                    random.shuffle(all_options)
+                    
+                    # Ensure we have 4 positions
+                    while len(all_options) < 4:
+                        all_options.append('')
+                    
+                    question_data = {
+                        'id': quiz[0],
+                        'pergunta': quiz[1],
+                        'alternativa_a': all_options[0],
+                        'alternativa_b': all_options[1],
+                        'alternativa_c': all_options[2],
+                        'alternativa_d': all_options[3],
+                        'materia': quiz[7]
+                    }
+                    
+                    # Store the option mapping for consistency
+                    session['current_quiz_options'] = {
+                        'a': all_options[0],
+                        'b': all_options[1],
+                        'c': all_options[2],
+                        'd': all_options[3]
+                    }
+                else:
+                    # Regular questions: use original structure
+                    question_data = {
+                        'id': quiz[0],
+                        'pergunta': quiz[1],
+                        'alternativa_a': quiz[3],
+                        'alternativa_b': quiz[4], 
+                        'alternativa_c': quiz[5],
+                        'alternativa_d': quiz[6],
+                        'materia': quiz[7]
+                    }
+                    
+                    # Store regular options mapping
+                    session['current_quiz_options'] = {
+                        'a': quiz[3],
+                        'b': quiz[4],
+                        'c': quiz[5],
+                        'd': quiz[6]
+                    }
                 
-                return render_template("quiz/quiz.html", question=question_data, correct_answer=correct_answer)
+                return render_template("quiz/quiz.html", question=question_data, correct_answer=correct_answer, rational=rational)
             else:
                 session.pop("current_quiz_id", None)
                 session.pop("current_topic", None)
@@ -152,16 +258,57 @@ def quiz_continuous():
     if quiz:
         session["current_quiz_id"] = quiz[0]
         
-        # Converter tupla do banco para dicionário compatível com o template
-        question_data = {
-            'id': quiz[0],
-            'pergunta': quiz[1],
-            'alternativa_a': quiz[3],
-            'alternativa_b': quiz[4], 
-            'alternativa_c': quiz[5],
-            'alternativa_d': quiz[6],
-            'materia': quiz[7]
-        }
+        # Smart option arrangement for SAT vs regular questions
+        if topic and topic.startswith('SAT'):
+            # For SAT: Mix correct answer with incorrect options
+            correct_answer = quiz[2]
+            incorrect_options = [quiz[3], quiz[4], quiz[5], quiz[6]]
+            valid_incorrect = [opt for opt in incorrect_options if opt and opt.strip()]
+            
+            # Create shuffled options list
+            all_options = [correct_answer] + valid_incorrect
+            random.shuffle(all_options)
+            
+            # Ensure we have 4 positions (pad with empty if needed)
+            while len(all_options) < 4:
+                all_options.append('')
+            
+            question_data = {
+                'id': quiz[0],
+                'pergunta': quiz[1],
+                'alternativa_a': all_options[0],
+                'alternativa_b': all_options[1],
+                'alternativa_c': all_options[2],
+                'alternativa_d': all_options[3],
+                'materia': quiz[7]
+            }
+            
+            # Store the option mapping for answer validation
+            session['current_quiz_options'] = {
+                'a': all_options[0],
+                'b': all_options[1],
+                'c': all_options[2],
+                'd': all_options[3]
+            }
+        else:
+            # Regular questions: use original structure
+            question_data = {
+                'id': quiz[0],
+                'pergunta': quiz[1],
+                'alternativa_a': quiz[3],
+                'alternativa_b': quiz[4], 
+                'alternativa_c': quiz[5],
+                'alternativa_d': quiz[6],
+                'materia': quiz[7]
+            }
+            
+            # Store regular options mapping
+            session['current_quiz_options'] = {
+                'a': quiz[3],
+                'b': quiz[4],
+                'c': quiz[5],
+                'd': quiz[6]
+            }
         
         return render_template("quiz/quiz.html", question=question_data, correct_answer=None)
     else:
@@ -178,7 +325,10 @@ def suggest_question():
     c = conn.cursor()
     
     c.execute("SELECT DISTINCT topic FROM quizzes")
-    topics = [row[0] for row in c.fetchall()]
+    db_topics = [row[0] for row in c.fetchall()]
+    
+    # Add SAT to suggestion form topics
+    topics = ['SAT'] + db_topics
     grades = ["6º ano", "7º ano", "8º ano", "9º ano", "1º ano EM", "2º ano EM", "3º ano EM"]
 
     if request.method == "POST":
@@ -193,10 +343,27 @@ def suggest_question():
             topic = request.form.get("topic")
             if topic == "novo_tema":
                 topic = request.form.get("new_topic")
-            grade = request.form.get("grade")
-            difficulty = request.form.get("difficulty")
+                grade = request.form.get("grade")
+            elif topic == "SAT":
+                # For SAT, combine section and level into topic
+                sat_section = request.form.get("sat_section")
+                sat_level = request.form.get("sat_level")
+                if sat_section and sat_level:
+                    section_name = 'English' if sat_section == 'english' else 'Math'
+                    topic = f"SAT {section_name}"
+                    grade = sat_level  # Use SAT level as grade
+                else:
+                    flash("Por favor, selecione seção e nível SAT.", "danger")
+                    return render_template("quiz/suggest_question.html", topics=topics, grades=grades)
+            else:
+                grade = request.form.get("grade")
+                
+            # Default values for simplified UX
+            difficulty = request.form.get("difficulty", "medio")  # Default to medium
+            points = request.form.get("points", "10")  # Default to 10 points
 
-            if not all([question, correct_answer, option1, option2, option3, option4, points, topic, grade, difficulty]):
+            # Simplified validation (difficulty and points have defaults)
+            if not all([question, correct_answer, option1, option2, option3, topic, grade]):
                 flash("Todos os campos são obrigatórios!", "danger")
                 return render_template("quiz/suggest_question.html", topics=topics, grades=grades)
 
@@ -206,7 +373,7 @@ def suggest_question():
                 (user_id, question, correct_answer, option1, option2, option3, option4, topic, grade, points, difficulty, status) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'pendente')
                 """,
-                (session["user_id"], question, correct_answer, option1, option2, option3, option4, topic, grade, points, difficulty)
+                (session["user_id"], question, correct_answer, option1, option2, option3, "", topic, grade, points, difficulty)
             )
             conn.commit()
             flash("Sua sugestão foi enviada para revisão!", "success")

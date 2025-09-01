@@ -86,8 +86,27 @@
                                     <i class="fas fa-list-ol"></i> Alternativas:
                                 </h6>
                                 <div class="options-grid">
+                                    <!-- Show correct answer first -->
+                                    <div class="option-item mb-2 correct-option">
+                                        <div class="d-flex align-items-start">
+                                            <span class="option-letter mr-2">✓</span>
+                                            <div class="option-content flex-grow-1">
+                                                <div class="ql-snow">
+                                                    <div class="ql-editor" style="padding: 8px; border: none; min-height: auto;">
+                                                        {{ suggestion[3]|safe }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <span class="badge badge-success ml-2">
+                                                <i class="fas fa-check"></i> Correta
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Show incorrect options (only non-empty ones) -->
                                     {% for option in [suggestion[4], suggestion[5], suggestion[6], suggestion[7]] %}
-                                    <div class="option-item mb-2 {% if option == suggestion[3] %}correct-option{% endif %}">
+                                    {% if option and option.strip() %}
+                                    <div class="option-item mb-2">
                                         <div class="d-flex align-items-start">
                                             <span class="option-letter mr-2">{{ ['A', 'B', 'C', 'D'][loop.index0] }})</span>
                                             <div class="option-content flex-grow-1">
@@ -97,13 +116,9 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            {% if option == suggestion[3] %}
-                                            <span class="badge badge-success ml-2">
-                                                <i class="fas fa-check"></i> Correta
-                                            </span>
-                                            {% endif %}
                                         </div>
                                     </div>
+                                    {% endif %}
                                     {% endfor %}
                                 </div>
                             </div>
@@ -132,18 +147,31 @@
                                 </div>
 
                                 <div class="options-preview">
-                                    {% for option in [suggestion[4], suggestion[5], suggestion[6], suggestion[7]] %}
+                                    <!-- Combine correct + incorrect options and shuffle for realistic preview -->
+                                    {% set all_options = [
+                                        {'content': suggestion[3], 'is_correct': True},
+                                        {'content': suggestion[4], 'is_correct': False},
+                                        {'content': suggestion[5], 'is_correct': False},
+                                        {'content': suggestion[6], 'is_correct': False}
+                                    ] %}
+                                    {% if suggestion[7] and suggestion[7].strip() %}
+                                        {% set _ = all_options.append({'content': suggestion[7], 'is_correct': False}) %}
+                                    {% endif %}
+                                    
+                                    {% for option in all_options %}
+                                    {% if option.content and option.content.strip() %}
                                     <div class="form-check mb-3 p-3 border rounded option-preview-item">
                                         <input class="form-check-input" type="radio" disabled>
                                         <div class="form-check-label">
-                                            <strong>{{ ['A', 'B', 'C', 'D'][loop.index0] }})</strong>
+                                            <strong>{{ ['A', 'B', 'C', 'D', 'E'][loop.index0] }})</strong>
                                             <div class="ql-snow mt-2">
                                                 <div class="ql-editor" style="padding: 0; border: none;">
-                                                    {{ option|safe }}
+                                                    {{ option.content|safe }}
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    {% endif %}
                                     {% endfor %}
                                 </div>
                             </div>
