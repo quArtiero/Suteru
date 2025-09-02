@@ -372,7 +372,20 @@ def edit_question(question_id):
             topic = request.form.get("topic")
             if topic == "novo_tema":
                 topic = request.form.get("new_topic")
-            grade = request.form.get("grade")
+                grade = request.form.get("grade")
+            elif topic == "SAT":
+                # For SAT, combine section and level into topic (IGUAL À SUGGEST_QUESTION)
+                sat_section = request.form.get("sat_section")
+                sat_level = request.form.get("sat_level")
+                if sat_section and sat_level:
+                    section_name = 'English' if sat_section == 'english' else 'Math'
+                    topic = f"SAT {section_name}"
+                    grade = sat_level  # Use SAT level as grade
+                else:
+                    flash("Por favor, selecione seção e nível SAT.", "danger")
+                    return redirect(url_for("admin.edit_question", question_id=question_id))
+            else:
+                grade = request.form.get("grade")
             points = request.form.get("points")
 
             # Option4 is optional for SAT questions
@@ -636,8 +649,9 @@ def add_quiz():
     c.execute("SELECT DISTINCT topic FROM quizzes ORDER BY topic")
     db_topics = [topic[0] for topic in c.fetchall()]
     
-    # Add SAT to admin topics
-    topics = ['SAT'] + db_topics
+    # Add SAT to admin topics, but REMOVE existing SAT variants
+    filtered_topics = [topic for topic in db_topics if not topic.startswith('SAT')]
+    topics = ['SAT'] + filtered_topics
     grades = ["6º ano", "7º ano", "8º ano", "9º ano", "1º ano EM", "2º ano EM", "3º ano EM"]
 
     return render_template("admin/add_quiz.html", topics=topics, grades=grades)

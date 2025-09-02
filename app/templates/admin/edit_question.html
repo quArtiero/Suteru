@@ -1,253 +1,388 @@
 {% extends "base.html" %}
 
-{% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/add_quiz.css') }}">
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/suggest_question.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>Editar Questão</h2>
-    <form method="POST">
-        <!-- Campos adicionais -->
-        <div class="row mb-4">
-            <div class="col-md-6">
+<div class="suggest-question-container">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-icon">
+            <i class="fas fa-edit"></i>
+        </div>
+        <h1 class="hero-title">Editar Questão #{{ quiz[0] }}</h1>
+        <p class="hero-subtitle">Edite esta questão mantendo a mesma lógica da página de sugerir</p>
+    </div>
+
+    <!-- Main Form -->
+    <div class="main-form-card">
+        <form method="POST" id="edit-form">
+            <!-- Step 1: Choose Subject -->
+            <div class="step-section active">
+                <div class="step-header">
+                    <span class="step-number">1</span>
+                    <h4 class="step-title">Escolha a Matéria</h4>
+                </div>
+                
                 <div class="form-group">
-                    <label for="topic">Tópico</label>
+                    <label class="form-label" for="topic">
+                        <i class="fas fa-book"></i>
+                        Matéria
+                    </label>
                     <select class="form-control" id="topic" name="topic" required>
-                        <option value="" disabled selected>Selecione o tópico</option>
+                        <option value="" disabled>Selecione a matéria</option>
+                        <option value="SAT" {% if quiz[8].startswith('SAT') or 'SAT' in quiz[7] %}selected{% endif %}>SAT</option>
                         {% for topic in topics %}
-                        <option value="{{ topic }}" {% if topic == quiz[8] %}selected{% endif %}>{{ topic }}</option>
+                        {% if not topic.startswith('SAT') %}
+                        <option value="{{ topic }}" {% if topic == quiz[8] and 'SAT' not in quiz[7] %}selected{% endif %}>{{ topic }}</option>
+                        {% endif %}
                         {% endfor %}
-                        <option value="novo_tema">Novo Tópico</option>
+                        <option value="novo_tema">➕ Nova Matéria</option>
                     </select>
                     <input type="text" class="form-control mt-2" id="new_topic" name="new_topic" 
-                           style="display: none;" placeholder="Digite o novo tópico">
+                           style="display: none;" placeholder="Digite a nova matéria">
                 </div>
             </div>
-            <div class="col-md-4">
+
+            <!-- Step 2a: SAT Configuration -->
+            <div class="step-section" id="step-2a" style="display: none;">
+                <div class="step-header">
+                    <span class="step-number">2</span>
+                    <h4 class="step-title">Configuração SAT</h4>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="sat_section">
+                                <i class="fas fa-university"></i>
+                                Seção SAT
+                            </label>
+                            <select class="form-control" id="sat_section" name="sat_section">
+                                <option value="" disabled>Selecione a seção</option>
+                                <option value="english">📚 English Reading & Writing</option>
+                                <option value="math">🔢 Math</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="sat_level">
+                                <i class="fas fa-star"></i>
+                                Nível
+                            </label>
+                            <select class="form-control" id="sat_level" name="sat_level">
+                                <option value="" disabled>Selecione o nível</option>
+                                <option value="Level 1">⭐ Level 1 - Iniciante</option>
+                                <option value="Level 2">⭐⭐ Level 2 - Intermediário</option>
+                                <option value="Level 3">⭐⭐⭐ Level 3 - Avançado</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2b: Regular Grade Selection -->
+            <div class="step-section" id="step-2b" style="display: none;">
+                <div class="step-header">
+                    <span class="step-number">2</span>
+                    <h4 class="step-title">Escolha a Série</h4>
+                </div>
+                
                 <div class="form-group">
-                    <label for="grade">Série Escolar</label>
-                    <select class="form-control" id="grade" name="grade" required>
-                        <option value="" disabled selected>Selecione a série</option>
+                    <label class="form-label" for="grade">
+                        <i class="fas fa-graduation-cap"></i>
+                        Série Escolar
+                    </label>
+                    <select class="form-control" id="grade" name="grade">
+                        <option value="" disabled>Selecione a série</option>
                         {% for grade in grades %}
                         <option value="{{ grade }}" {% if grade == quiz[7] %}selected{% endif %}>{{ grade }}</option>
                         {% endfor %}
                     </select>
                 </div>
             </div>
-        </div>
 
-        <!-- Editor de Questão -->
-        <div class="form-group mb-4">
-            <label for="question">Pergunta</label>
-            <div id="question-editor"></div>
-            <input type="hidden" name="question">
-        </div>
+            <!-- Campos hidden -->
+            <input type="hidden" name="difficulty" value="medio">
+            <input type="hidden" name="points" value="{{ quiz[9] }}">
 
-        <div class="form-group mb-4">
-            <label for="correct_answer">Resposta Correta</label>
-            <div id="correct-answer-editor"></div>
-            <input type="hidden" name="correct_answer">
-        </div>
+            <!-- Question Section -->
+            <div class="section-header mt-5">
+                <div class="section-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <h2 class="section-title">Conteúdo da Questão</h2>
+            </div>
 
-        <div class="form-group mb-4">
-            <label for="option1">Opção 1</label>
-            <div id="option1-editor"></div>
-            <input type="hidden" name="option1">
-        </div>
+            <!-- Question Editor -->
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-pen"></i>
+                    Pergunta
+                </label>
+                <div class="editor-wrapper">
+                    <div id="question-editor" style="min-height: 120px;"></div>
+                </div>
+                <input type="hidden" name="question">
+            </div>
 
-        <div class="form-group mb-4">
-            <label for="option2">Opção 2</label>
-            <div id="option2-editor"></div>
-            <input type="hidden" name="option2">
-        </div>
+            <!-- Correct Answer -->
+            <div class="form-group">
+                <label class="form-label text-success">
+                    <i class="fas fa-check-circle"></i>
+                    Resposta Correta
+                </label>
+                <div class="editor-wrapper correct-answer-wrapper">
+                    <div class="correct-answer-badge">
+                        <i class="fas fa-check"></i>
+                        CORRETA
+                    </div>
+                    <div id="correct-answer-editor" style="min-height: 120px;"></div>
+                </div>
+                <input type="hidden" name="correct_answer">
+            </div>
 
-        <div class="form-group mb-4">
-            <label for="option3">Opção 3</label>
-            <div id="option3-editor"></div>
-            <input type="hidden" name="option3">
-        </div>
+            <!-- Incorrect Options -->
+            <div class="incorrect-options-section">
+                <div class="options-header">
+                    <label class="form-label text-warning mb-0">
+                        <i class="fas fa-times-circle"></i>
+                        Alternativas Incorretas
+                    </label>
+                    <span class="text-muted">3 alternativas obrigatórias</span>
+                </div>
 
-        <div class="form-group mb-4">
-            <label for="option4">Opção 4 <span class="text-muted">(Opcional - deixe vazio para questões SAT)</span></label>
-            <div id="option4-editor"></div>
-            <input type="hidden" name="option4">
-        </div>
-
-        <div class="form-group mb-4">
-            <label for="points">Pontos:</label>
-            <input type="number" class="form-control" id="points" name="points" value="{{ quiz[9] }}" required min="0">
-        </div>
-
-        <!-- Preview da Questão -->
-        <div class="mt-5 mb-4">
-            <h4 class="text-primary mb-3">Preview da Questão</h4>
-            <div class="card quiz-card">
-                <div class="card-body">
-                    <div class="question-content mb-4">
-                        <div class="ql-snow">
-                            <div class="ql-editor" id="preview-question"></div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="option-card">
+                            <div class="option-number">1</div>
+                            <div class="editor-wrapper" style="margin-left: 40px;">
+                                <div id="option1-editor" style="min-height: 100px;"></div>
+                            </div>
+                            <input type="hidden" name="option1">
                         </div>
                     </div>
 
-                    <div class="options-list">
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="radio" disabled>
-                            <label class="form-check-label">
-                                <div class="ql-snow">
-                                    <div class="ql-editor" id="preview-option1"></div>
-                                </div>
-                            </label>
+                    <div class="col-md-4">
+                        <div class="option-card">
+                            <div class="option-number">2</div>
+                            <div class="editor-wrapper" style="margin-left: 40px;">
+                                <div id="option2-editor" style="min-height: 100px;"></div>
+                            </div>
+                            <input type="hidden" name="option2">
                         </div>
+                    </div>
 
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="radio" disabled>
-                            <label class="form-check-label">
-                                <div class="ql-snow">
-                                    <div class="ql-editor" id="preview-option2"></div>
-                                </div>
-                            </label>
-                        </div>
-
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="radio" disabled>
-                            <label class="form-check-label">
-                                <div class="ql-snow">
-                                    <div class="ql-editor" id="preview-option3"></div>
-                                </div>
-                            </label>
-                        </div>
-
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="radio" disabled>
-                            <label class="form-check-label">
-                                <div class="ql-snow">
-                                    <div class="ql-editor" id="preview-option4"></div>
-                                </div>
-                            </label>
+                    <div class="col-md-4">
+                        <div class="option-card">
+                            <div class="option-number">3</div>
+                            <div class="editor-wrapper" style="margin-left: 40px;">
+                                <div id="option3-editor" style="min-height: 100px;"></div>
+                            </div>
+                            <input type="hidden" name="option3">
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <button type="submit" class="btn btn-primary">Atualizar Questão</button>
-    </form>
+            <!-- Campo hidden para option4 -->
+            <input type="hidden" name="option4" value="{{ quiz[6] if quiz[6] else '' }}">
+
+            <!-- Submit Button -->
+            <div class="submit-section">
+                <button type="submit" class="submit-btn btn-success" id="submit-btn">
+                    <i class="fas fa-save"></i>
+                    Atualizar Questão
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>
-// Wait for both DOM and Quill to be ready
-function initializeEditors() {
-    console.log('Initializing editors...');
-    console.log('Quill available:', typeof Quill !== 'undefined');
-    
-    if (typeof Quill === 'undefined') {
-        console.error('Quill library not loaded');
-        setTimeout(initializeEditors, 100);
-        return;
-    }
+// EXATAMENTE IGUAL À SUGGEST_QUESTION
+let editors = {};
 
-    try {
-        // Check if editor containers exist
-        const editorIds = ['question-editor', 'correct-answer-editor', 'option1-editor', 'option2-editor', 'option3-editor', 'option4-editor'];
-        const missingEditors = editorIds.filter(id => !document.getElementById(id));
-        
-        if (missingEditors.length > 0) {
-            console.error('Missing editor containers:', missingEditors);
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Inicializando página de edição...');
+    
+    function initializeEditors() {
+        if (typeof Quill === 'undefined') {
+            setTimeout(initializeEditors, 100);
             return;
         }
 
-        console.log('Creating editor configuration...');
-        const editorConfig = {
+        const quillConfig = {
             theme: 'snow',
             modules: {
                 toolbar: [
                     ['bold', 'italic', 'underline'],
-                    ['image', 'formula'],
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }]
+                    ['formula'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ['clean']
                 ]
-            },
-            placeholder: 'Digite aqui...'
-        };
-
-        console.log('Initializing editors...');
-        const editors = {
-            question: new Quill('#question-editor', editorConfig),
-            correct_answer: new Quill('#correct-answer-editor', editorConfig),
-            option1: new Quill('#option1-editor', editorConfig),
-            option2: new Quill('#option2-editor', editorConfig),
-            option3: new Quill('#option3-editor', editorConfig),
-            option4: new Quill('#option4-editor', editorConfig)
-        };
-
-        // Pre-fill editors with existing content
-        console.log('Pre-filling editors with existing content...');
-        editors.question.root.innerHTML = '{{ quiz[1]|safe }}';
-        editors.correct_answer.root.innerHTML = '{{ quiz[2]|safe }}';
-        editors.option1.root.innerHTML = '{{ quiz[3]|safe }}';
-        editors.option2.root.innerHTML = '{{ quiz[4]|safe }}';
-        editors.option3.root.innerHTML = '{{ quiz[5]|safe }}';
-        editors.option4.root.innerHTML = '{{ quiz[6]|safe }}';
-
-        console.log('Setting up preview function...');
-        function updatePreview() {
-            try {
-                document.getElementById('preview-question').innerHTML = editors.question.root.innerHTML;
-                document.getElementById('preview-option1').innerHTML = editors.option1.root.innerHTML;
-                document.getElementById('preview-option2').innerHTML = editors.option2.root.innerHTML;
-                document.getElementById('preview-option3').innerHTML = editors.option3.root.innerHTML;
-                document.getElementById('preview-option4').innerHTML = editors.option4.root.innerHTML;
-
-                document.querySelectorAll('#preview-question .ql-formula, #preview-option1 .ql-formula, #preview-option2 .ql-formula, #preview-option3 .ql-formula, #preview-option4 .ql-formula').forEach(function(formula) {
-                    katex.render(formula.getAttribute('data-value'), formula, {
-                        throwOnError: false
-                    });
-                });
-            } catch (error) {
-                console.error('Error updating preview:', error);
-            }
-        }
-
-        console.log('Setting up event listeners...');
-        Object.values(editors).forEach(editor => {
-            editor.on('text-change', updatePreview);
-        });
-
-        document.querySelector('form').onsubmit = function() {
-            for (let field in editors) {
-                document.querySelector(`input[name=${field}]`).value = editors[field].root.innerHTML;
             }
         };
 
-        // Handle new topic input visibility
-        const topicSelect = document.getElementById('topic');
-        const newTopicInput = document.getElementById('new_topic');
-        
-        if (topicSelect && newTopicInput) {
-            topicSelect.addEventListener('change', function() {
-                newTopicInput.style.display = this.value === 'novo_tema' ? 'block' : 'none';
+        try {
+            editors.question = new Quill('#question-editor', {
+                ...quillConfig,
+                placeholder: 'Digite sua pergunta aqui...'
             });
+
+            editors.correct_answer = new Quill('#correct-answer-editor', {
+                ...quillConfig,
+                placeholder: 'Digite a resposta correta...'
+            });
+
+            editors.option1 = new Quill('#option1-editor', {
+                ...quillConfig,
+                placeholder: 'Primeira alternativa incorreta...'
+            });
+
+            editors.option2 = new Quill('#option2-editor', {
+                ...quillConfig,
+                placeholder: 'Segunda alternativa incorreta...'
+            });
+
+            editors.option3 = new Quill('#option3-editor', {
+                ...quillConfig,
+                placeholder: 'Terceira alternativa incorreta...'
+            });
+
+            // Pré-preencher com dados existentes
+            setTimeout(() => {
+                editors.question.root.innerHTML = `{{ quiz[1]|safe }}`;
+                editors.correct_answer.root.innerHTML = `{{ quiz[2]|safe }}`;
+                editors.option1.root.innerHTML = `{{ quiz[3]|safe }}`;
+                editors.option2.root.innerHTML = `{{ quiz[4]|safe }}`;
+                editors.option3.root.innerHTML = `{{ quiz[5]|safe }}`;
+                
+                console.log('✅ Dados carregados!');
+            }, 200);
+
+            console.log('✅ Editores inicializados!');
+            
+        } catch (error) {
+            console.error('Erro:', error);
         }
-
-        console.log('Initial preview update...');
-        updatePreview();
-        console.log('Editor initialization complete!');
-    } catch (error) {
-        console.error('Error initializing Quill editors:', error);
-        console.error('Error stack:', error.stack);
     }
-}
 
-// Try to initialize immediately if Quill is already loaded
-if (typeof Quill !== 'undefined') {
-    console.log('Quill already loaded, initializing immediately...');
-    initializeEditors();
-} else {
-    console.log('Waiting for DOM and Quill to load...');
-    document.addEventListener('DOMContentLoaded', function() {
-        // Add a small delay to ensure Quill is loaded
-        setTimeout(initializeEditors, 100);
+    // Progressive Step Management (IGUAL À SUGGEST_QUESTION)
+    document.getElementById('topic').addEventListener('change', function() {
+        const newTopicInput = document.getElementById('new_topic');
+        const step2a = document.getElementById('step-2a'); // SAT options
+        const step2b = document.getElementById('step-2b'); // Grade selection
+        
+        // Reset steps
+        [step2a, step2b].forEach(step => {
+            if (step) {
+                step.style.display = 'none';
+                step.classList.remove('active');
+            }
+        });
+        
+        // Handle logic
+        newTopicInput.style.display = this.value === 'novo_tema' ? 'block' : 'none';
+        if (this.value === 'novo_tema') {
+            newTopicInput.focus();
+            if (step2b) {
+                step2b.style.display = 'block';
+                step2b.classList.add('active');
+            }
+        } else if (this.value === 'SAT') {
+            if (step2a) {
+                step2a.style.display = 'block';
+                step2a.classList.add('active');
+            }
+        } else if (this.value && this.value !== '') {
+            if (step2b) {
+                step2b.style.display = 'block';
+                step2b.classList.add('active');
+            }
+        }
     });
-}
+
+    // INTERFACE INTELIGENTE: Detecta formatos SAT existentes SEM mexer no banco
+    const currentTopic = '{{ quiz[8] }}';
+    const currentGrade = '{{ quiz[7] }}';
+    
+    console.log('🔍 Analisando questão:', { currentTopic, currentGrade });
+    
+    // Detectar se é questão SAT (múltiplos formatos)
+    const isSATQuestion = currentTopic.includes('SAT') || currentGrade.includes('SAT') || currentTopic.includes('Level');
+    
+    if (isSATQuestion) {
+        console.log('✅ Questão SAT detectada - adaptando interface...');
+        
+        // FORÇAR seleção de "SAT" no dropdown (esconder os formatos antigos)
+        document.getElementById('topic').value = 'SAT';
+        
+        // Trigger change event para mostrar campos SAT
+        document.getElementById('topic').dispatchEvent(new Event('change'));
+        
+        // Configurar campos SAT baseado nos dados existentes
+        setTimeout(() => {
+            // Detectar seção (English ou Math)
+            if (currentTopic.includes('English') || currentGrade.includes('English')) {
+                document.getElementById('sat_section').value = 'english';
+                console.log('📚 Seção detectada: English');
+            } else if (currentTopic.includes('Math') || currentGrade.includes('Math')) {
+                document.getElementById('sat_section').value = 'math';
+                console.log('🔢 Seção detectada: Math');
+            }
+            
+            // Detectar nível (Level 1/2/3)
+            if (currentTopic.includes('Level 1') || currentGrade.includes('Level 1')) {
+                document.getElementById('sat_level').value = 'Level 1';
+                console.log('⭐ Nível detectado: Level 1');
+            } else if (currentTopic.includes('Level 2') || currentGrade.includes('Level 2')) {
+                document.getElementById('sat_level').value = 'Level 2';
+                console.log('⭐⭐ Nível detectado: Level 2');
+            } else if (currentTopic.includes('Level 3') || currentGrade.includes('Level 3')) {
+                document.getElementById('sat_level').value = 'Level 3';
+                console.log('⭐⭐⭐ Nível detectado: Level 3');
+            }
+            
+            console.log('✅ Interface SAT configurada automaticamente!');
+        }, 100);
+        
+    } else {
+        console.log('📚 Questão regular - usando interface padrão');
+        // Questão regular - mostrar série
+        document.getElementById('step-2b').style.display = 'block';
+        document.getElementById('step-2b').classList.add('active');
+    }
+
+    // Submissão do formulário
+    document.getElementById('edit-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Atualizar campos hidden
+        document.querySelector('input[name="question"]').value = 
+            editors.question.root.innerHTML;
+        document.querySelector('input[name="correct_answer"]').value = 
+            editors.correct_answer.root.innerHTML;
+        document.querySelector('input[name="option1"]').value = 
+            editors.option1.root.innerHTML;
+        document.querySelector('input[name="option2"]').value = 
+            editors.option2.root.innerHTML;
+        document.querySelector('input[name="option3"]').value = 
+            editors.option3.root.innerHTML;
+
+        // Feedback visual
+        const btn = document.getElementById('submit-btn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+        btn.disabled = true;
+
+        // Submeter formulário
+        this.submit();
+    });
+
+    // Inicializar
+    initializeEditors();
+});
 </script>
 {% endblock %}

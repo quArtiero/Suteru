@@ -88,11 +88,16 @@ def get_topics():
         c = conn.cursor()
         with conn.cursor() as c:
             c.execute("SELECT DISTINCT topic FROM quizzes")
-            topics = [row[0] for row in c.fetchall()]
+            db_topics = [row[0] for row in c.fetchall()]
+            
+        # Filter out SAT variants and add SAT as unified option
+        filtered_topics = [topic for topic in db_topics if not topic.startswith('SAT')]
+        topics = ['SAT'] + filtered_topics
         return topics
     except psycopg2.Error as e:
         print(f"Database connection error: {e}")
         conn.rollback()
+        return []
 
 
 def get_grades_for_topic(topic):

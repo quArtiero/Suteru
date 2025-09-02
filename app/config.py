@@ -6,7 +6,7 @@ load_dotenv()  # Load environment variables from .env file
 class Config:
     # Configurações de segurança
     SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(24).hex()
-    DEBUG = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    DEBUG = True  # FORÇADO para desenvolvimento
     
     # Configurações do banco de dados
     SQLALCHEMY_DATABASE_URI = os.environ.get('internal_db_url', 'sqlite:///dev.db')

@@ -116,8 +116,9 @@ def quizzes():
     cursor.execute("SELECT DISTINCT topic FROM quizzes ORDER BY topic")
     db_topics = [topic[0] for topic in cursor.fetchall()]
     
-    # Add SAT as special topic at the beginning
-    topics = ['SAT'] + db_topics
+    # Add SAT as special topic at the beginning, but REMOVE existing SAT variants
+    filtered_topics = [topic for topic in db_topics if not topic.startswith('SAT')]
+    topics = ['SAT'] + filtered_topics
     
     cursor.close()
     conn.close()
@@ -440,8 +441,9 @@ def suggest_question():
     c.execute("SELECT DISTINCT topic FROM quizzes")
     db_topics = [row[0] for row in c.fetchall()]
     
-    # Add SAT to suggestion form topics
-    topics = ['SAT'] + db_topics
+    # Add SAT to suggestion form topics, but REMOVE existing SAT variants
+    filtered_topics = [topic for topic in db_topics if not topic.startswith('SAT')]
+    topics = ['SAT'] + filtered_topics
     grades = ["6º ano", "7º ano", "8º ano", "9º ano", "1º ano EM", "2º ano EM", "3º ano EM"]
 
     if request.method == "POST":
