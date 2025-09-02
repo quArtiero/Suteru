@@ -5,6 +5,14 @@ from app.config import Config
 import os
 import csv
 
+# Import image handling function from quiz routes
+try:
+    from app.routes.quiz import move_suggestion_image_to_quiz
+except ImportError:
+    # Fallback if import fails
+    def move_suggestion_image_to_quiz(suggestion_id, quiz_id):
+        pass
+
 bp = Blueprint('admin', __name__)
 
 def allowed_file(filename):
@@ -525,8 +533,12 @@ def approve_suggestion(suggestion_id):
             cursor.execute("""
                 INSERT INTO quizzes 
                 (question, correct_answer, option1, option2, option3, option4, topic, grade, points)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id
             """, suggestion[:9])  # First 9 fields only
+            quiz_id = cursor.fetchone()[0]
+            
+            # Move suggestion image to quiz if exists  
+            move_suggestion_image_to_quiz(suggestion_id, quiz_id)
             
             # Atualiza o status da sugestão
             cursor.execute("""

@@ -35,6 +35,16 @@
       </div>
       
       <div class="question-content">
+        <!-- Question Image if exists - ABOVE question text -->
+        {% if question_image %}
+        <div class="question-image-container">
+          <img src="{{ url_for('static', filename='uploads/' + question_image) }}" 
+               alt="Imagem da questão" 
+               class="question-image"
+               loading="lazy">
+        </div>
+        {% endif %}
+        
         <div class="question-text">{{ question.pergunta|safe }}</div>
       </div>
       

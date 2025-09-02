@@ -1,0 +1,4 @@
+# Pasta para uploads de imagens das questões
+# Naming convention:
+# - quiz_{id}.jpg - Questões ativas
+# - suggestion_{id}.jpg - Sugestões pendentes

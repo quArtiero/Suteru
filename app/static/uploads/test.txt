@@ -1,0 +1,2 @@
+This is a test file to ensure the uploads directory works via HTTP.
+Access via: /static/uploads/test.txt

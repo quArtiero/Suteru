@@ -1,9 +1,112 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
-from app.utils import database
+from app.utils import database  
 from app.utils.database import PostgresConnectionFactory
+from werkzeug.utils import secure_filename
 import random
+import os
+
+# Safe PIL import
+try:
+    from PIL import Image
+    PIL_AVAILABLE = True
+except ImportError:
+    PIL_AVAILABLE = False
+    print("⚠️ PIL/Pillow não disponível - funcionalidade de imagens desabilitada")
 
 bp = Blueprint('quiz', __name__)
+
+# Image upload configuration
+UPLOAD_FOLDER = 'app/static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def process_image_upload(file, suggestion_id):
+    """Process and save uploaded image for a suggestion"""
+    if not file or not allowed_file(file.filename):
+        print(f"❌ Invalid file or file not allowed: {file.filename if file else 'None'}")
+        return None
+        
+    if not PIL_AVAILABLE:
+        print("⚠️ PIL not available - saving file directly")
+        
+    try:
+        # Generate secure filename
+        filename = f"suggestion_{suggestion_id}.jpg"
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        print(f"💾 Saving image to: {filepath}")
+        
+        # Ensure upload directory exists
+        os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+        
+        if PIL_AVAILABLE:
+            # Open and process image with PIL
+            image = Image.open(file)
+            
+            # Convert to RGB if necessary
+            if image.mode in ('RGBA', 'LA', 'P'):
+                image = image.convert('RGB')
+            
+            # Resize if too large (max 1200px width)
+            if image.width > 1200:
+                ratio = 1200 / image.width
+                new_height = int(image.height * ratio)
+                image = image.resize((1200, new_height), Image.Resampling.LANCZOS)
+            
+            # Save optimized image
+            image.save(filepath, 'JPEG', quality=85, optimize=True)
+        else:
+            # Fallback: save file directly
+            file.save(filepath)
+        
+        print(f"✅ Image saved successfully: {filename}")
+        return filename
+        
+    except Exception as e:
+        print(f"❌ Erro ao processar imagem: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
+
+def move_suggestion_image_to_quiz(suggestion_id, quiz_id):
+    """Move image from suggestion to quiz when approved"""
+    try:
+        old_path = os.path.join(UPLOAD_FOLDER, f"suggestion_{suggestion_id}.jpg")
+        new_path = os.path.join(UPLOAD_FOLDER, f"quiz_{quiz_id}.jpg")
+        
+        print(f"🔄 Moving image: {old_path} → {new_path}")
+        print(f"📁 Source exists: {os.path.exists(old_path)}")
+        
+        if os.path.exists(old_path):
+            os.rename(old_path, new_path)
+            print(f"✅ Image moved successfully: suggestion_{suggestion_id}.jpg → quiz_{quiz_id}.jpg")
+            return True
+        else:
+            print(f"❌ Source image not found: suggestion_{suggestion_id}.jpg")
+    except Exception as e:
+        print(f"❌ Erro ao mover imagem: {e}")
+        import traceback
+        traceback.print_exc()
+    return False
+
+def clean_html(text):
+    """Remove HTML tags from text"""
+    import re
+    clean = re.compile('<.*?>')
+    return re.sub(clean, '', text)
+
+def check_question_image(quiz_id):
+    """Check if image exists for a quiz question"""
+    image_path = os.path.join(UPLOAD_FOLDER, f"quiz_{quiz_id}.jpg")
+    print(f"🔍 Checking image for quiz {quiz_id}: {image_path}")
+    print(f"📁 Image exists: {os.path.exists(image_path)}")
+    if os.path.exists(image_path):
+        print(f"✅ Image found: quiz_{quiz_id}.jpg")
+        return f"quiz_{quiz_id}.jpg"
+    print(f"❌ No image found for quiz {quiz_id}")
+    return None
 
 @bp.route('/quizzes')
 def quizzes():
@@ -241,7 +344,9 @@ def quiz_continuous():
                         'd': quiz[6]
                     }
                 
-                return render_template("quiz/quiz.html", question=question_data, correct_answer=correct_answer, rational=rational)
+                # Check if image exists for this question
+                question_image = check_question_image(quiz[0])
+                return render_template("quiz/quiz.html", question=question_data, correct_answer=correct_answer, rational=rational, question_image=question_image)
             else:
                 session.pop("current_quiz_id", None)
                 session.pop("current_topic", None)
@@ -310,7 +415,9 @@ def quiz_continuous():
                 'd': quiz[6]
             }
         
-        return render_template("quiz/quiz.html", question=question_data, correct_answer=None)
+        # Check if image exists for this question
+        question_image = check_question_image(quiz[0])
+        return render_template("quiz/quiz.html", question=question_data, correct_answer=None, question_image=question_image)
     else:
         flash("Não há perguntas disponíveis para este tópico e série.", "info")
         return redirect(url_for("auth.dashboard"))
@@ -379,11 +486,43 @@ def suggest_question():
                     """
                     INSERT INTO quizzes 
                     (question, correct_answer, option1, option2, option3, option4, topic, grade, points) 
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id
                     """,
                     (question, correct_answer, option1, option2, option3, "", topic, grade, int(points))
                 )
+                quiz_id = c.fetchone()[0]
                 conn.commit()
+                
+                # Process image upload for direct submission
+                if 'question_image' in request.files:
+                    file = request.files['question_image']
+                    if file and file.filename and allowed_file(file.filename):
+                        # For direct submission, save as quiz image directly
+                        filename = f"quiz_{quiz_id}.jpg"
+                        filepath = os.path.join(UPLOAD_FOLDER, filename)
+                        
+                        # Ensure upload directory exists
+                        os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+                        print(f"💾 Saving admin/colaborador image to: {filepath}")
+                        
+                        if PIL_AVAILABLE:
+                            try:
+                                image = Image.open(file)
+                                if image.mode in ('RGBA', 'LA', 'P'):
+                                    image = image.convert('RGB')
+                                if image.width > 1200:
+                                    ratio = 1200 / image.width
+                                    new_height = int(image.height * ratio)
+                                    image = image.resize((1200, new_height), Image.Resampling.LANCZOS)
+                                image.save(filepath, 'JPEG', quality=85, optimize=True)
+                                print(f"✅ Admin image saved with PIL: {filename}")
+                            except Exception as e:
+                                print(f"❌ Erro ao salvar imagem: {e}")
+                        else:
+                            # Fallback: save file directly without processing
+                            file.save(filepath)
+                            print(f"✅ Admin image saved directly: {filename}")
+                
                 if is_admin:
                     flash("✅ Questão adicionada diretamente ao banco de dados!", "success") 
                     return redirect(url_for("admin.quizzes"))
@@ -393,16 +532,24 @@ def suggest_question():
             else:
                 # REGULAR USER - Add to suggestions for review
                 c.execute(
-                    """
-                    INSERT INTO suggested_questions 
-                    (user_id, question, correct_answer, option1, option2, option3, option4, topic, grade, points, difficulty, status) 
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'pendente')
-                    """,
-                    (session["user_id"], question, correct_answer, option1, option2, option3, "", topic, grade, points, difficulty)
-                )
-                conn.commit()
-                flash("Sua sugestão foi enviada para revisão!", "success")
-                return redirect(url_for("auth.dashboard"))
+                """
+                INSERT INTO suggested_questions 
+                (user_id, question, correct_answer, option1, option2, option3, option4, topic, grade, points, difficulty, status) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'pendente') RETURNING id
+                """,
+                (session["user_id"], question, correct_answer, option1, option2, option3, "", topic, grade, points, difficulty)
+            )
+            suggestion_id = c.fetchone()[0]
+            conn.commit()
+            
+            # Process image upload if present
+            if 'question_image' in request.files:
+                file = request.files['question_image']
+                if file and file.filename and allowed_file(file.filename):
+                    process_image_upload(file, suggestion_id)
+                    
+            flash("Sua sugestão foi enviada para revisão!", "success")
+            return redirect(url_for("auth.dashboard"))
                 
         except Exception as e:
             conn.rollback()
@@ -415,3 +562,28 @@ def suggest_question():
 def animation_demo():
     """Página de demonstração das animações Khan Academy style"""
     return render_template("quiz/animation-demo.html", title="Demonstração de Animações")
+
+@bp.route("/debug/images")
+def debug_images():
+    """Debug route to check uploaded images"""
+    if not ("user_role" in session and session["user_role"] in ["admin", "colaborador"]):
+        return "Access denied", 403
+        
+    import glob
+    upload_path = os.path.join(UPLOAD_FOLDER, "*.jpg")
+    images = glob.glob(upload_path)
+    
+    html = "<h2>🔍 Debug: Uploaded Images</h2>"
+    html += f"<p><strong>Upload folder:</strong> {UPLOAD_FOLDER}</p>"
+    html += f"<p><strong>Folder exists:</strong> {os.path.exists(UPLOAD_FOLDER)}</p>"
+    html += f"<p><strong>Images found:</strong> {len(images)}</p><br>"
+    
+    for img_path in images:
+        img_name = os.path.basename(img_path)
+        img_size = os.path.getsize(img_path)
+        html += f"<div style='border: 1px solid #ccc; padding: 10px; margin: 10px;'>"
+        html += f"<strong>{img_name}</strong> ({img_size} bytes)<br>"
+        html += f"<img src='/static/uploads/{img_name}' style='max-width: 300px; height: auto;' />"
+        html += f"</div>"
+    
+    return html

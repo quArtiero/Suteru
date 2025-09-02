@@ -166,6 +166,37 @@
   color: var(--primary-600);
 }
 
+/* Question Image Styling - Now above question text */
+.question-image-container {
+  margin-bottom: var(--space-6); /* Changed from margin-top to margin-bottom */
+  text-align: center;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  border: 1px solid var(--gray-200);
+}
+
+.question-image {
+  max-width: 100%;
+  max-height: 400px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-base);
+  cursor: pointer;
+}
+
+.question-image:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Mobile responsive for images */
+@media (max-width: 768px) {
+  .question-image {
+    max-height: 250px;
+  }
+}
+
 /* Options */
 .options-list {
   display: flex;

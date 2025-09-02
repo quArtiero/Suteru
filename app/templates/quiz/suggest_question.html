@@ -142,6 +142,95 @@
     font-size: 1.1em;
 }
 
+/* Image Upload Styling */
+.image-upload-container {
+    border: 2px dashed var(--primary-300);
+    border-radius: var(--radius-lg);
+    background: rgba(59, 130, 246, 0.02);
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.image-upload-container:hover {
+    border-color: var(--primary-500);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.image-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.image-upload-placeholder {
+    text-align: center;
+    padding: var(--space-8);
+    color: var(--text-secondary);
+    transition: all var(--transition-base);
+}
+
+.image-upload-placeholder i {
+    font-size: var(--text-4xl);
+    color: var(--primary-400);
+    margin-bottom: var(--space-4);
+    display: block;
+}
+
+.image-upload-placeholder p {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.image-upload-placeholder small {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+}
+
+.image-preview {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.image-preview img {
+    width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+}
+
+.remove-image-btn {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    background: var(--error-500);
+    color: white;
+    border: none;
+    border-radius: var(--radius-full);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-md);
+}
+
+.remove-image-btn:hover {
+    background: var(--error-600);
+    transform: scale(1.1);
+}
+
 /* Ensure all Quill formatting is preserved */
 .ql-editor strong,
 .preview-question-box strong,
@@ -205,7 +294,7 @@
 
     <!-- Main Form -->
     <div class="main-form-card">
-        <form method="POST" id="suggest-form">
+        <form method="POST" id="suggest-form" enctype="multipart/form-data">
             <!-- Progressive Form Steps -->
             <div class="section-header">
                 <div class="section-icon">
@@ -407,6 +496,36 @@
 
             <!-- Campo hidden para option4 (compatibilidade com BD) -->
             <input type="hidden" name="option4" value="">
+            
+            <!-- Step 3: Optional Image Upload -->
+            <div class="step-section" id="step-3">
+                <div class="step-header">
+                    <span class="step-number">3</span>
+                    <h4 class="step-title">📷 Imagem da Questão <span style="color: #6b7280; font-weight: 400;">(OPCIONAL)</span></h4>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="question_image">
+                        <i class="fas fa-image"></i>
+                        Upload de Imagem para Questão <strong style="color: #10b981;">(OPCIONAL)</strong>
+                        <span class="field-subtitle">Para gráficos, tabelas, DATA questions, etc. (PNG, JPG - máx 5MB) - Pule se não precisar!</span>
+                    </label>
+                    <div class="image-upload-container">
+                        <input type="file" id="question_image" name="question_image" accept="image/png,image/jpeg,image/jpg" class="image-input">
+                        <div class="image-preview" id="image-preview" style="display: none;">
+                            <img id="preview-img" src="" alt="Preview da questão">
+                            <button type="button" class="remove-image-btn" onclick="removeImage()">
+                                <i class="fas fa-times"></i> Remover
+                            </button>
+                        </div>
+                        <div class="image-upload-placeholder" id="upload-placeholder">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Clique para selecionar uma imagem</p>
+                            <small>PNG, JPG até 5MB</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Submit Button -->
             <div class="submit-section">
@@ -634,8 +753,8 @@ window.testNormal = function() {
         const content = document.getElementById(`preview-content-${letter}`);
         if (el && content) {
             el.classList.remove('is-correct');
-            el.style.cssText = '';
-            content.innerHTML = '<em>Aguardando conteúdo...</em>';
+            el.style.display = 'none'; // Ocultar inicialmente
+            content.innerHTML = '';
             content.className = 'option-content';
             
             const check = el.querySelector('.correct-check');
@@ -746,8 +865,8 @@ window.testeSemListeners = function() {
         const content = document.getElementById(`preview-content-${letter}`);
         if (el && content) {
             el.classList.remove('is-correct');
-            el.style.cssText = '';
-            content.innerHTML = '<em>Aguardando conteúdo...</em>';
+            el.style.display = 'none'; // Ocultar inicialmente
+            content.innerHTML = '';
             content.className = 'option-content';
             
             const check = el.querySelector('.correct-check');
@@ -856,8 +975,8 @@ window.testeNormalCompleto = function() {
         const content = document.getElementById(`preview-content-${letter}`);
         if (el && content) {
             el.classList.remove('is-correct');
-            el.style.cssText = '';
-            content.innerHTML = '<em>Aguardando conteúdo...</em>';
+            el.style.display = 'none'; // Ocultar inicialmente
+            content.innerHTML = '';
             content.className = 'option-content';
             
             const check = el.querySelector('.correct-check');
@@ -975,6 +1094,68 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.checkFormValidity();
             }, 500);
             
+            // Additional validation triggers for image uploads and other changes
+            setInterval(() => {
+                // Gentle background validation every 2 seconds to catch any missed events
+                if (!isUpdating) {
+                    window.checkFormValidity();
+                }
+            }, 2000);
+            
+            // Image upload handlers
+            const imageInput = document.getElementById('question_image');
+            const imagePreview = document.getElementById('image-preview');
+            const uploadPlaceholder = document.getElementById('upload-placeholder');
+            const previewImg = document.getElementById('preview-img');
+            
+            if (imageInput) {
+                imageInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        // Validate file size (5MB max)
+                        if (file.size > 5 * 1024 * 1024) {
+                            alert('Arquivo muito grande! Máximo 5MB.');
+                            this.value = '';
+                            return;
+                        }
+                        
+                        // Validate file type
+                        if (!file.type.match(/^image\/(png|jpg|jpeg)$/)) {
+                            alert('Tipo de arquivo inválido! Use PNG, JPG ou JPEG.');
+                            this.value = '';
+                            return;
+                        }
+                        
+                        // Show preview
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewImg.src = e.target.result;
+                            imagePreview.style.display = 'block';
+                            uploadPlaceholder.style.display = 'none';
+                            
+                            // Re-run validation after image upload
+                            setTimeout(() => {
+                                window.checkFormValidity();
+                            }, 100);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+            
+            // Remove image function
+            window.removeImage = function() {
+                imageInput.value = '';
+                imagePreview.style.display = 'none';
+                uploadPlaceholder.style.display = 'block';
+                previewImg.src = '';
+                
+                // Re-run validation after image removal
+                setTimeout(() => {
+                    window.checkFormValidity();
+                }, 100);
+            };
+            
         } catch (error) {
             console.error('Erro ao inicializar editores:', error);
         }
@@ -1033,7 +1214,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
-            // Criar array de 4 posições garantidas
+            // Criar array dinâmico baseado no número real de opções
             const previewOptions = new Array(4).fill(null);
             
             // Se temos opções, embaralhar e colocar nas primeiras posições
@@ -1045,7 +1226,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // console.log(`📊 ${allOptions.length} opções coletadas | Correta: ${allOptions.some(o => o.isCorrect) ? '✅' : '❌'}`);
             }
 
-            // Atualizar preview das opções (SEMPRE 4 opções visíveis)            
+            // Atualizar preview das opções (SÓ mostra opções com conteúdo)            
             ['a', 'b', 'c', 'd'].forEach((letter, index) => {
                 const optionElement = document.getElementById(`preview-option-${letter}`);
                 const contentElement = document.getElementById(`preview-content-${letter}`);
@@ -1058,10 +1239,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const checkIcon = optionElement.querySelector('.correct-check');
 
-                // SEMPRE mostrar a opção, mesmo que vazia
-                optionElement.style.display = 'flex'; // Garantir que está visível
-
-                if (previewOptions[index]) {
+                if (previewOptions[index] && previewOptions[index].content.trim()) {
+                    // TEM conteúdo - mostrar opção
+                    optionElement.style.display = 'flex';
                     // Tem conteúdo
                     contentElement.innerHTML = previewOptions[index].content;
                     contentElement.className = 'option-content ql-editor';
@@ -1107,8 +1287,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }
                 } else {
-                    // Sem conteúdo - mostrar placeholder
-                    contentElement.innerHTML = '<em>Aguardando conteúdo...</em>';
+                    // SEM conteúdo - OCULTAR completamente a opção
+                    optionElement.style.display = 'none';
+                    contentElement.innerHTML = '';
                     contentElement.className = 'option-content';
                     optionElement.classList.remove('is-correct');
                     checkIcon.style.display = 'none';
@@ -1162,17 +1343,24 @@ document.addEventListener('DOMContentLoaded', function() {
             let topicValid = false;
             let gradeValid = false;
             
+            console.log('🔍 FORM VALIDATION DEBUG:');
+            console.log('  Topic:', topic);
+            
             if (topic === 'SAT') {
                 const satSection = document.getElementById('sat_section').value;
                 const satLevel = document.getElementById('sat_level').value;
+                console.log('  SAT Section:', satSection);
+                console.log('  SAT Level:', satLevel);
                 topicValid = satSection && satLevel;
                 gradeValid = true; // SAT doesn't need regular grade
             } else if (topic === 'novo_tema') {
+                console.log('  New Topic:', newTopic);
                 topicValid = newTopic.trim();
                 gradeValid = document.getElementById('grade').value;
             } else if (topic) {
                 topicValid = true;
                 const grade = document.getElementById('grade').value;
+                console.log('  Grade:', grade);
                 gradeValid = grade;
             }
 
@@ -1182,10 +1370,20 @@ document.addEventListener('DOMContentLoaded', function() {
             const hasOption2 = editors.option2 && editors.option2.getText().trim().length > 0;
             const hasOption3 = editors.option3 && editors.option3.getText().trim().length > 0;
 
-            // Simplified validation - no difficulty/points required
+            console.log('  Topic Valid:', topicValid);
+            console.log('  Grade Valid:', gradeValid);
+            console.log('  Has Question:', hasQuestion);
+            console.log('  Has Correct Answer:', hasCorrectAnswer);
+            console.log('  Has Option1:', hasOption1);
+            console.log('  Has Option2:', hasOption2);
+            console.log('  Has Option3:', hasOption3);
+
+            // Simplified validation - no difficulty/points required - IMAGE IS OPTIONAL
             const isValid = topicValid && gradeValid && 
                            hasQuestion && hasCorrectAnswer && 
                            hasOption1 && hasOption2 && hasOption3;
+                           
+            console.log('  ✅ FINAL RESULT:', isValid);
 
             const submitBtn = document.getElementById('submit-btn');
             if (submitBtn) {
