@@ -293,57 +293,37 @@ def quiz_continuous():
             if quiz:
                 session["current_quiz_id"] = quiz[0]
                 
-                # Smart option arrangement for SAT vs regular questions (POST method)
-                if topic and topic.startswith('SAT'):
-                    # For SAT: Mix correct answer with incorrect options
-                    correct_answer_db = quiz[2]
-                    incorrect_options = [quiz[3], quiz[4], quiz[5], quiz[6]]
-                    valid_incorrect = [opt for opt in incorrect_options if opt and opt.strip()]
-                    
-                    # Create shuffled options list
-                    all_options = [correct_answer_db] + valid_incorrect
-                    random.shuffle(all_options)
-                    
-                    # Ensure we have 4 positions
-                    while len(all_options) < 4:
-                        all_options.append('')
-                    
-                    question_data = {
-                        'id': quiz[0],
-                        'pergunta': quiz[1],
-                        'alternativa_a': all_options[0],
-                        'alternativa_b': all_options[1],
-                        'alternativa_c': all_options[2],
-                        'alternativa_d': all_options[3],
-                        'materia': quiz[7]
-                    }
-                    
-                    # Store the option mapping for consistency
-                    session['current_quiz_options'] = {
-                        'a': all_options[0],
-                        'b': all_options[1],
-                        'c': all_options[2],
-                        'd': all_options[3]
-                    }
-                else:
-                    # Regular questions: use original structure
-                    question_data = {
-                        'id': quiz[0],
-                        'pergunta': quiz[1],
-                        'alternativa_a': quiz[3],
-                        'alternativa_b': quiz[4], 
-                        'alternativa_c': quiz[5],
-                        'alternativa_d': quiz[6],
-                        'materia': quiz[7]
-                    }
-                    
-                    # Store regular options mapping
-                    session['current_quiz_options'] = {
-                        'a': quiz[3],
-                        'b': quiz[4],
-                        'c': quiz[5],
-                        'd': quiz[6]
-                    }
+                # Smart option arrangement - ALL questions now use dynamic shuffling
+                # Mix correct answer with all available incorrect options
+                correct_answer_db = quiz[2]
+                incorrect_options = [quiz[3], quiz[4], quiz[5], quiz[6]]
+                valid_incorrect = [opt for opt in incorrect_options if opt and opt.strip()]
+                
+                # Create shuffled options list
+                all_options = [correct_answer_db] + valid_incorrect
+                random.shuffle(all_options)
+                
+                # Ensure we have 4 positions
+                while len(all_options) < 4:
+                    all_options.append('')
+                
+                question_data = {
+                    'id': quiz[0],
+                    'pergunta': quiz[1],
+                    'alternativa_a': all_options[0],
+                    'alternativa_b': all_options[1],
+                    'alternativa_c': all_options[2],
+                    'alternativa_d': all_options[3],
+                    'materia': quiz[7]
+                }
+                
+                # Store the option mapping for consistency (same for all question types)
+                session['current_quiz_options'] = {
+                    'a': all_options[0],
+                    'b': all_options[1],
+                    'c': all_options[2],
+                    'd': all_options[3]
+                }
                 
                 # Check if image exists for this question
                 question_image = check_question_image(quiz[0])
@@ -364,57 +344,37 @@ def quiz_continuous():
     if quiz:
         session["current_quiz_id"] = quiz[0]
         
-        # Smart option arrangement for SAT vs regular questions
-        if topic and topic.startswith('SAT'):
-            # For SAT: Mix correct answer with incorrect options
-            correct_answer = quiz[2]
-            incorrect_options = [quiz[3], quiz[4], quiz[5], quiz[6]]
-            valid_incorrect = [opt for opt in incorrect_options if opt and opt.strip()]
-            
-            # Create shuffled options list
-            all_options = [correct_answer] + valid_incorrect
-            random.shuffle(all_options)
-            
-            # Ensure we have 4 positions (pad with empty if needed)
-            while len(all_options) < 4:
-                all_options.append('')
-            
-            question_data = {
-                'id': quiz[0],
-                'pergunta': quiz[1],
-                'alternativa_a': all_options[0],
-                'alternativa_b': all_options[1],
-                'alternativa_c': all_options[2],
-                'alternativa_d': all_options[3],
-                'materia': quiz[7]
-            }
-            
-            # Store the option mapping for answer validation
-            session['current_quiz_options'] = {
-                'a': all_options[0],
-                'b': all_options[1],
-                'c': all_options[2],
-                'd': all_options[3]
-            }
-        else:
-            # Regular questions: use original structure
-            question_data = {
-                'id': quiz[0],
-                'pergunta': quiz[1],
-                'alternativa_a': quiz[3],
-                'alternativa_b': quiz[4], 
-                'alternativa_c': quiz[5],
-                'alternativa_d': quiz[6],
-                'materia': quiz[7]
-            }
-            
-            # Store regular options mapping
-            session['current_quiz_options'] = {
-                'a': quiz[3],
-                'b': quiz[4],
-                'c': quiz[5],
-                'd': quiz[6]
-            }
+        # Smart option arrangement - ALL questions now use dynamic shuffling (SAT + Regular)
+        # Mix correct answer with all available incorrect options
+        correct_answer = quiz[2]
+        incorrect_options = [quiz[3], quiz[4], quiz[5], quiz[6]]
+        valid_incorrect = [opt for opt in incorrect_options if opt and opt.strip()]
+        
+        # Create shuffled options list
+        all_options = [correct_answer] + valid_incorrect
+        random.shuffle(all_options)
+        
+        # Ensure we have 4 positions (pad with empty if needed)
+        while len(all_options) < 4:
+            all_options.append('')
+        
+        question_data = {
+            'id': quiz[0],
+            'pergunta': quiz[1],
+            'alternativa_a': all_options[0],
+            'alternativa_b': all_options[1],
+            'alternativa_c': all_options[2],
+            'alternativa_d': all_options[3],
+            'materia': quiz[7]
+        }
+        
+        # Store the option mapping for answer validation (same for all question types)
+        session['current_quiz_options'] = {
+            'a': all_options[0],
+            'b': all_options[1],
+            'c': all_options[2],
+            'd': all_options[3]
+        }
         
         # Check if image exists for this question
         question_image = check_question_image(quiz[0])
